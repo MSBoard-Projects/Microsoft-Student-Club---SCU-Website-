@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "NcQhEkYCHUPfyB1s7mUXuxFR3vkHuD3Gr2JzUEaLDocd87YcKOSUe3Ow2nBDOyLemckDyBGhoJPGt2rVViJdHQ==",
+  "dgSpecHash": "pZB34k/R5095r1db8NLdDpV11pkYeItpYbcJ1IchEa0mHXPmRZvgUkmEaw+6iknHLJoT8ogDhxk5PjrrkcmhfQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\aliar\\OneDrive\\Documents\\GitHub\\Microsoft-Student-Club---SCU-Website-\\MSC.WebAPI\\MSC.WebAPI.csproj",
   "expectedPackageFiles": [
@@ -8,6 +8,7 @@
     "C:\\Users\\aliar\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
     "C:\\Users\\aliar\\.nuget\\packages\\azure.storage.blobs\\12.25.1\\azure.storage.blobs.12.25.1.nupkg.sha512",
     "C:\\Users\\aliar\\.nuget\\packages\\azure.storage.common\\12.24.0\\azure.storage.common.12.24.0.nupkg.sha512",
+    "C:\\Users\\aliar\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\aliar\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\aliar\\.nuget\\packages\\microsoft.applicationinsights\\2.20.0\\microsoft.applicationinsights.2.20.0.nupkg.sha512",
     "C:\\Users\\aliar\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.20\\microsoft.aspnetcore.authentication.jwtbearer.8.0.20.nupkg.sha512",

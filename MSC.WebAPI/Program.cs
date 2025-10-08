@@ -6,6 +6,7 @@ using Serilog;
 using Serilog.Events;
 using Azure.Storage.Blobs;
 using MSC.WebAPI.Data;
+using MSC.WebAPI.Services;
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
@@ -63,6 +64,9 @@ try
     });
 
     builder.Services.AddAuthorization();
+
+    // Register services
+    builder.Services.AddScoped<IAuthService, AuthService>();
 
     // Configure Azure Blob Storage
     var blobConnectionString = builder.Configuration["Azure:BlobStorage:ConnectionString"];
