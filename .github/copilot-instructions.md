@@ -40,9 +40,16 @@ This is a **Microsoft Student Club (SCU) website** built with a decoupled archit
 - **`MemberTypes`**: `Id`, `TypeName` (e.g., "High Board", "Board", "Golden Member")
 - **`Events`**: `Id`, `Title`, `Description`, `EventDate`, `IsUpcoming`, `IsFeatured`, `ImageUrl`
 - **`SiteContent`**: `Id`, `ContentKey`, `ContentValue` (key-value store for editable text)
+- **`AdminUsers`**: `Id`, `Email`, `PasswordHash`, `Role` (enum: SuperAdmin, ContentEditor), `CreatedAt`, `LastLogin`
 
 ### Relationships
 - `Members.MemberTypeId` → `MemberTypes.Id` (many-to-one)
+
+### Image Storage Strategy
+- **All images** (member photos, event images, certificates) stored in **Azure Blob Storage**
+- Store only the **blob URL** in database fields (`ImageUrl`, `CertificateUrl`)
+- Use separate containers: `member-images`, `event-images`, `certificates`
+- Implement SAS (Shared Access Signature) tokens for secure uploads from admin panel
 
 ## API Endpoint Conventions
 
@@ -65,9 +72,20 @@ POST /api/events
 PUT /api/events/{id}
 DELETE /api/events/{id}
 POST /api/auth/login
+POST /api/admin/users          # Super Admin only
+PUT /api/admin/users/{id}      # Super Admin only
+DELETE /api/admin/users/{id}   # Super Admin only
 ```
 
 **Important**: All CUD (Create, Update, Delete) operations must be secured with ASP.NET Core Identity + JWT authentication.
+
+### Authentication & Authorization
+- **JWT Token Expiration**: 1 hour (no refresh token strategy required)
+- **Admin Roles**:
+  - **Super Admin**: Full permissions (manage content + manage admin users)
+  - **Content Editor**: Limited permissions (manage content only, cannot manage users)
+- Use `[Authorize(Roles = "SuperAdmin")]` for user management endpoints
+- Use `[Authorize(Roles = "SuperAdmin,ContentEditor")]` for content management endpoints
 
 ## Frontend Guidelines
 
@@ -96,8 +114,17 @@ POST /api/auth/login
 # Install EF Core tools
 dotnet tool install --global dotnet-ef
 
-# Create initial migration
+# Install required NuGet packages
 cd MSC.WebAPI
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+dotnet add package Microsoft.EntityFrameworkCore.Tools
+dotnet add package Azure.Storage.Blobs
+dotnet add package Serilog.AspNetCore
+dotnet add package Serilog.Sinks.ApplicationInsights
+dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore
+
+# Create initial migration
 dotnet ef migrations add InitialCreate
 dotnet ef database update
 ```
@@ -122,9 +149,24 @@ dotnet ef database update
 ## Azure Deployment Checklist
 
 1. **Azure SQL Database**: Provision instance and update connection string in `appsettings.json`
-2. **App Services**: Create two App Services (one for API, one for React build)
-3. **CORS Configuration**: Backend must allow requests from frontend URL
-4. **Environment Variables**: Store connection strings and JWT secrets in Azure App Service configuration
+2. **Azure Blob Storage**: Create storage account with containers (`member-images`, `event-images`, `certificates`)
+3. **App Services**: Create two App Services (one for API, one for React build)
+4. **Application Insights**: Set up for logging and performance monitoring
+5. **CORS Configuration**: Backend must allow requests from frontend URL
+6. **Environment Variables**: Store connection strings, JWT secrets, and blob storage keys in Azure App Service configuration
+
+## Logging & Monitoring
+
+### Serilog Configuration
+- Configure Serilog in `Program.cs` with structured logging
+- Log to both console (development) and Application Insights (production)
+- Use log levels appropriately: `Information` for requests, `Warning` for validation failures, `Error` for exceptions
+- Include correlation IDs in logs for request tracing
+
+### Application Insights
+- Track custom events for admin actions (e.g., member created, event updated)
+- Monitor API response times and database query performance
+- Set up alerts for error rate thresholds
 
 ## Testing Strategy
 
@@ -167,6 +209,38 @@ try {
   console.error(error);
   // Show error UI
 }
+```
+
+### Azure Blob Storage Integration
+Upload images from admin panel using Azure Storage SDK:
+```javascript
+// Frontend: Generate SAS token request
+const response = await fetch('/api/upload/generate-sas-token', {
+  method: 'POST',
+  headers: { 'Authorization': `Bearer ${token}` },
+  body: JSON.stringify({ containerName: 'member-images', fileName: file.name })
+});
+const { sasUrl } = await response.json();
+
+// Upload directly to Blob Storage
+await fetch(sasUrl, {
+  method: 'PUT',
+  headers: { 'x-ms-blob-type': 'BlockBlob' },
+  body: file
+});
+```
+
+Backend controller should generate time-limited SAS tokens (e.g., 15 minutes):
+```csharp
+// Generate SAS token with write permission
+var sasBuilder = new BlobSasBuilder
+{
+    BlobContainerName = containerName,
+    BlobName = fileName,
+    Resource = "b",
+    ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(15)
+};
+sasBuilder.SetPermissions(BlobSasPermissions.Write);
 ```
 
 ## Phase-Based Development
