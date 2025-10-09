@@ -8,6 +8,26 @@ using Azure.Storage.Blobs;
 using MSC.WebAPI.Data;
 using MSC.WebAPI.Services;
 using MSC.WebAPI.Utilities;
+using DotNetEnv; // Add this for .env file support
+
+// Load environment variables from .env file FIRST (before any configuration)
+try
+{
+    var envPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+    if (File.Exists(envPath))
+    {
+        Env.Load();
+        Console.WriteLine("✅ Environment variables loaded from .env file");
+    }
+    else
+    {
+        Console.WriteLine("⚠️ .env file not found at: " + envPath);
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"⚠️ Warning: Could not load .env file: {ex.Message}");
+}
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
@@ -21,6 +41,7 @@ Log.Logger = new LoggerConfiguration()
 try
 {
     Log.Information("Starting MSC Web API");
+    Log.Information("Environment variables loaded from .env file");
 
     // Check for command-line arguments to seed admin
     if (args.Length > 0 && args[0].Equals("seed-admin", StringComparison.OrdinalIgnoreCase))
@@ -32,13 +53,15 @@ try
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
             .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+            .AddEnvironmentVariables() // Add this to read from environment variables
             .Build();
         
-        var connectionString = config.GetConnectionString("DefaultConnection");
+        var adminConnectionString = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTION_STRING") 
+                                   ?? config.GetConnectionString("DefaultConnection");
         
         // Build DbContext options
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-        optionsBuilder.UseSqlServer(connectionString);
+        optionsBuilder.UseSqlServer(adminConnectionString);
         
         // Create DbContext and run seeder
         using (var context = new ApplicationDbContext(optionsBuilder.Options))
@@ -64,13 +87,15 @@ try
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
             .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+            .AddEnvironmentVariables() // Add this to read from environment variables
             .Build();
         
-        var connectionString = config.GetConnectionString("DefaultConnection");
+        var dataConnectionString = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTION_STRING") 
+                                  ?? config.GetConnectionString("DefaultConnection");
         
         // Build DbContext options
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-        optionsBuilder.UseSqlServer(connectionString);
+        optionsBuilder.UseSqlServer(dataConnectionString);
         
         // Create DbContext and run seeder
         using (var context = new ApplicationDbContext(optionsBuilder.Options))
@@ -84,6 +109,9 @@ try
 
     var builder = WebApplication.CreateBuilder(args);
 
+    // Add environment variables to configuration
+    builder.Configuration.AddEnvironmentVariables();
+
     // Add Serilog
     builder.Host.UseSerilog();
 
@@ -93,16 +121,27 @@ try
     builder.Services.AddSwaggerGen();
 
     // Configure Entity Framework with SQL Server
+    // First try to get from environment variable, then fall back to appsettings
+    var connectionString = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTION_STRING") 
+                          ?? builder.Configuration.GetConnectionString("DefaultConnection");
+    
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseSqlServer(
-            builder.Configuration.GetConnectionString("DefaultConnection"),
+            connectionString,
             sqlOptions => sqlOptions.EnableRetryOnFailure()
         ));
 
     // Configure JWT Authentication
-    var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not configured");
-    var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("JWT Issuer not configured");
-    var jwtAudience = builder.Configuration["Jwt:Audience"] ?? throw new InvalidOperationException("JWT Audience not configured");
+    // First try environment variables, then fall back to appsettings
+    var jwtKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY") 
+                ?? builder.Configuration["Jwt:Key"] 
+                ?? throw new InvalidOperationException("JWT Key not configured");
+    var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER")
+                   ?? builder.Configuration["Jwt:Issuer"] 
+                   ?? throw new InvalidOperationException("JWT Issuer not configured");
+    var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+                     ?? builder.Configuration["Jwt:Audience"] 
+                     ?? throw new InvalidOperationException("JWT Audience not configured");
 
     builder.Services.AddAuthentication(options =>
     {
@@ -129,24 +168,36 @@ try
     // Register services
     builder.Services.AddScoped<IAuthService, AuthService>();
 
-    // Configure Azure Blob Storage
-    var blobConnectionString = builder.Configuration["Azure:BlobStorage:ConnectionString"];
+    // Configure Azure Blob Storage - Use environment variable first
+    var blobConnectionString = Environment.GetEnvironmentVariable("AZURE_BLOB_STORAGE_CONNECTION_STRING")
+                              ?? builder.Configuration["Azure:BlobStorage:ConnectionString"];
     if (!string.IsNullOrEmpty(blobConnectionString))
     {
         builder.Services.AddSingleton(x => new BlobServiceClient(blobConnectionString));
+        Log.Information("Azure Blob Storage configured successfully");
+    }
+    else
+    {
+        Log.Warning("Azure Blob Storage connection string not found. Upload functionality will not work.");
     }
 
     // Configure CORS
+    var corsOrigins = Environment.GetEnvironmentVariable("CORS_ALLOWED_ORIGINS")
+                     ?? builder.Configuration["Cors:AllowedOrigins"]
+                     ?? "http://localhost:3000,http://localhost:3001";
+    
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("AllowReactApp", policy =>
         {
-            policy.WithOrigins(builder.Configuration["Cors:AllowedOrigins"]?.Split(',') ?? new[] { "http://localhost:3000" })
+            policy.WithOrigins(corsOrigins.Split(',', StringSplitOptions.RemoveEmptyEntries))
                   .AllowAnyMethod()
                   .AllowAnyHeader()
                   .AllowCredentials();
         });
     });
+    
+    Log.Information("CORS configured for origins: {Origins}", corsOrigins);
 
     var app = builder.Build();
 
