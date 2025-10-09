@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -8,24 +8,36 @@ const AdminLogin = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  // TEMPORARY: Auto-redirect to dashboard if already authenticated
+  useEffect(() => {
+    if (isAuthenticated()) {
+      console.log('TEMPORARY MODE: User already authenticated, redirecting to dashboard...');
+      navigate('/admin/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
+    console.log('TEMPORARY MODE: Attempting auto-login...'); // Log credentials
 
     try {
       const result = await login(email, password);
+      console.log('Login result received:', result); // Log result from AuthContext
 
       if (result.success) {
-        // Redirect to admin dashboard on successful login
+        console.log('Login successful, navigating to dashboard...');
         navigate('/admin/dashboard');
       } else {
+        console.error('Login failed with error:', result.error);
         setError(result.error || 'Login failed. Please check your credentials.');
       }
     } catch (err) {
+      console.error('An unexpected error occurred in handleSubmit:', err);
       setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);

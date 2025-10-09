@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { authApi } from '../services/api';
+// import { authApi } from '../services/api'; // TEMPORARY: Commented out for testing
 
 // Create Auth Context
 const AuthContext = createContext(null);
@@ -12,50 +12,40 @@ export const AuthProvider = ({ children }) => {
 
   // Initialize auth state from localStorage on mount
   useEffect(() => {
-    const storedToken = localStorage.getItem('authToken');
-    const storedUser = localStorage.getItem('user');
-
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-    }
-
+    // TEMPORARY: Auto-login as SuperAdmin for testing
+    const tempUser = {
+      email: 'admin@msc-scu.com',
+      role: 'SuperAdmin',
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours from now
+    };
+    const tempToken = 'TEMPORARY_ADMIN_TOKEN_FOR_TESTING';
+    
+    setUser(tempUser);
+    setToken(tempToken);
+    localStorage.setItem('authToken', tempToken);
+    localStorage.setItem('user', JSON.stringify(tempUser));
+    
     setLoading(false);
   }, []);
 
-  // Login function
+  // Login function - TEMPORARY: Bypass actual API call
   const login = async (email, password) => {
-    try {
-      // Call login API
-      const response = await authApi.login(email, password);
+    // TEMPORARY: Auto-approve any login attempt
+    console.log('TEMPORARY MODE: Login bypassed, auto-approving as SuperAdmin');
+    
+    const userData = {
+      email: 'admin@msc-scu.com',
+      role: 'SuperAdmin',
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    };
+    const authToken = 'TEMPORARY_ADMIN_TOKEN_FOR_TESTING';
 
-      // Extract token and user data from response
-      const { token: authToken, email: userEmail, role, expiresAt } = response;
+    setToken(authToken);
+    setUser(userData);
+    localStorage.setItem('authToken', authToken);
+    localStorage.setItem('user', JSON.stringify(userData));
 
-      // Create user object
-      const userData = {
-        email: userEmail,
-        role,
-        expiresAt,
-      };
-
-      // Store in state
-      setToken(authToken);
-      setUser(userData);
-
-      // Persist in localStorage
-      localStorage.setItem('authToken', authToken);
-      localStorage.setItem('user', JSON.stringify(userData));
-
-      return { success: true, user: userData };
-    } catch (error) {
-      console.error('Login failed:', error);
-      
-      // Extract error message from response
-      const errorMessage = error.response?.data?.message || 'Login failed. Please try again.';
-      
-      return { success: false, error: errorMessage };
-    }
+    return { success: true, user: userData };
   };
 
   // Logout function

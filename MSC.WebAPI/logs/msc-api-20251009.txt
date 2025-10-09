@@ -68,3 +68,447 @@ Microsoft.Extensions.Hosting.HostAbortedException: The host was aborted.
 2025-10-09 07:40:23.242 -09:00 [INF] Application started. Press Ctrl+C to shut down.
 2025-10-09 07:40:23.243 -09:00 [INF] Hosting environment: Development
 2025-10-09 07:40:23.244 -09:00 [INF] Content root path: C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI
+2025-10-09 07:47:41.622 -09:00 [INF] Starting MSC Web API
+2025-10-09 07:47:41.665 -09:00 [INF] Environment variables loaded from .env file
+2025-10-09 07:47:41.756 -09:00 [INF] Azure Blob Storage configured successfully
+2025-10-09 07:47:41.759 -09:00 [INF] CORS configured for origins: http://localhost:3000,http://localhost:3001,https://localhost:3000,https://localhost:3001
+2025-10-09 07:47:41.923 -09:00 [INF] User profile is available. Using 'C:\Users\aliar\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-10-09 07:47:41.995 -09:00 [INF] Now listening on: http://localhost:5113
+2025-10-09 07:47:41.999 -09:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-10-09 07:47:42.000 -09:00 [INF] Hosting environment: Development
+2025-10-09 07:47:42.001 -09:00 [INF] Content root path: C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI
+2025-10-09 07:48:08.703 -09:00 [INF] Application is shutting down...
+2025-10-09 07:49:09.794 -09:00 [INF] Starting MSC Web API
+2025-10-09 07:49:09.835 -09:00 [INF] Environment variables loaded from .env file
+2025-10-09 07:49:09.919 -09:00 [INF] Azure Blob Storage configured successfully
+2025-10-09 07:49:09.921 -09:00 [INF] CORS configured for origins: http://localhost:3000,http://localhost:3001,https://localhost:3000,https://localhost:3001
+2025-10-09 07:49:10.067 -09:00 [INF] User profile is available. Using 'C:\Users\aliar\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-10-09 07:49:10.130 -09:00 [INF] Now listening on: http://localhost:5113
+2025-10-09 07:49:10.133 -09:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-10-09 07:49:10.134 -09:00 [INF] Hosting environment: Development
+2025-10-09 07:49:10.135 -09:00 [INF] Content root path: C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI
+2025-10-09 08:40:37.438 -09:00 [INF] Request starting HTTP/1.1 POST http://localhost:5113/api/auth/login - application/json 70
+2025-10-09 08:40:37.510 -09:00 [WRN] Failed to determine the https port for redirect.
+2025-10-09 08:40:37.553 -09:00 [INF] Executing endpoint 'MSC.WebAPI.Controllers.AuthController.Login (MSC.WebAPI)'
+2025-10-09 08:40:37.594 -09:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[MSC.WebAPI.DTOs.LoginResponse]] Login(MSC.WebAPI.DTOs.LoginRequest) on controller MSC.WebAPI.Controllers.AuthController (MSC.WebAPI).
+2025-10-09 08:40:54.434 -09:00 [ERR] An error occurred using the connection to database 'SqlWebClub' on server 'tcp:serverwebclub.database.windows.net,1433'.
+2025-10-09 08:40:54.462 -09:00 [INF] A transient exception occurred during execution. The operation will be retried after 5000ms.
+Microsoft.Data.SqlClient.SqlException (0x80131904): Database 'SqlWebClub' on server 'serverwebclub.database.windows.net' is not currently available.  Please retry the connection later.  If the problem persists, contact customer support, and provide them the session tracing ID of '{7C63FB7B-29E1-437E-AED9-13F0AE7F63F3}'.
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.CompleteLogin(Boolean enlistOK)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean ignoreSniOpenTimeout, TimeoutTimer timeout, Boolean withFailover)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, DbConnectionPool pool)
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.WaitForPendingOpen()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+ClientConnectionId:1f7ca582-0399-48f7-af73-ee04fd00de73
+Error Number:40613,State:1,Class:20
+Microsoft.Data.SqlClient.SqlException (0x80131904): Database 'SqlWebClub' on server 'serverwebclub.database.windows.net' is not currently available.  Please retry the connection later.  If the problem persists, contact customer support, and provide them the session tracing ID of '{7C63FB7B-29E1-437E-AED9-13F0AE7F63F3}'.
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.CompleteLogin(Boolean enlistOK)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean ignoreSniOpenTimeout, TimeoutTimer timeout, Boolean withFailover)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, DbConnectionPool pool)
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.WaitForPendingOpen()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+ClientConnectionId:1f7ca582-0399-48f7-af73-ee04fd00de73
+Error Number:40613,State:1,Class:20
+2025-10-09 08:41:15.319 -09:00 [ERR] An error occurred using the connection to database 'SqlWebClub' on server 'tcp:serverwebclub.database.windows.net,1433'.
+2025-10-09 08:41:15.327 -09:00 [INF] A transient exception occurred during execution. The operation will be retried after 6021ms.
+Microsoft.Data.SqlClient.SqlException (0x80131904): Database 'SqlWebClub' on server 'serverwebclub.database.windows.net' is not currently available.  Please retry the connection later.  If the problem persists, contact customer support, and provide them the session tracing ID of '{69FCCBAB-F93D-4F8C-8D0C-2D3BDB3D43CF}'.
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.CompleteLogin(Boolean enlistOK)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean ignoreSniOpenTimeout, TimeoutTimer timeout, Boolean withFailover)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, DbConnectionPool pool)
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.WaitForPendingOpen()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+ClientConnectionId:36ab275d-6f87-4444-9e10-1edeb2909c3e
+Error Number:40613,State:1,Class:20
+Microsoft.Data.SqlClient.SqlException (0x80131904): Database 'SqlWebClub' on server 'serverwebclub.database.windows.net' is not currently available.  Please retry the connection later.  If the problem persists, contact customer support, and provide them the session tracing ID of '{69FCCBAB-F93D-4F8C-8D0C-2D3BDB3D43CF}'.
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.CompleteLogin(Boolean enlistOK)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean ignoreSniOpenTimeout, TimeoutTimer timeout, Boolean withFailover)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, DbConnectionPool pool)
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.WaitForPendingOpen()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+ClientConnectionId:36ab275d-6f87-4444-9e10-1edeb2909c3e
+Error Number:40613,State:1,Class:20
+2025-10-09 08:41:22.254 -09:00 [INF] Executed DbCommand (165ms) [Parameters=[@__request_Email_0='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[CreatedAt], [a].[Email], [a].[LastLogin], [a].[PasswordHash], [a].[Role]
+FROM [AdminUsers] AS [a]
+WHERE [a].[Email] = @__request_Email_0
+2025-10-09 08:41:22.802 -09:00 [INF] Executed DbCommand (112ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+UPDATE [AdminUsers] SET [LastLogin] = @p0
+OUTPUT 1
+WHERE [Id] = @p1;
+2025-10-09 08:41:22.836 -09:00 [INF] User logged in successfully: admin@msc-scu.com
+2025-10-09 08:41:22.843 -09:00 [INF] Executing OkObjectResult, writing value of type 'MSC.WebAPI.DTOs.LoginResponse'.
+2025-10-09 08:41:22.864 -09:00 [INF] Executed action MSC.WebAPI.Controllers.AuthController.Login (MSC.WebAPI) in 45264.3613ms
+2025-10-09 08:41:22.866 -09:00 [INF] Executed endpoint 'MSC.WebAPI.Controllers.AuthController.Login (MSC.WebAPI)'
+2025-10-09 08:41:22.869 -09:00 [INF] HTTP POST /api/auth/login responded 200 in 45355.4237 ms
+2025-10-09 08:41:22.879 -09:00 [INF] Request finished HTTP/1.1 POST http://localhost:5113/api/auth/login - 200 null application/json; charset=utf-8 45446.434ms
+2025-10-09 08:42:38.986 -09:00 [INF] Request starting HTTP/1.1 GET http://localhost:5113/api/members - null null
+2025-10-09 08:42:38.997 -09:00 [INF] Executing endpoint 'MSC.WebAPI.Controllers.MembersController.GetMembers (MSC.WebAPI)'
+2025-10-09 08:42:39.004 -09:00 [INF] Route matched with {action = "GetMembers", controller = "Members"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[MSC.WebAPI.Models.Member]]] GetMembers() on controller MSC.WebAPI.Controllers.MembersController (MSC.WebAPI).
+2025-10-09 08:42:39.223 -09:00 [INF] Executed DbCommand (142ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [m].[Id], [m].[CertificateUrl], [m].[DisplayOrder], [m].[FullName], [m].[ImageUrl], [m].[MemberTypeId], [m].[PositionTitle], [m0].[Id], [m0].[TypeName]
+FROM [Members] AS [m]
+INNER JOIN [MemberTypes] AS [m0] ON [m].[MemberTypeId] = [m0].[Id]
+ORDER BY [m].[DisplayOrder]
+2025-10-09 08:42:39.227 -09:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[MSC.WebAPI.Models.Member, MSC.WebAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-10-09 08:42:39.237 -09:00 [INF] Executed action MSC.WebAPI.Controllers.MembersController.GetMembers (MSC.WebAPI) in 231.2533ms
+2025-10-09 08:42:39.239 -09:00 [INF] Executed endpoint 'MSC.WebAPI.Controllers.MembersController.GetMembers (MSC.WebAPI)'
+2025-10-09 08:42:39.240 -09:00 [INF] HTTP GET /api/members responded 200 in 243.6020 ms
+2025-10-09 08:42:39.242 -09:00 [INF] Request finished HTTP/1.1 GET http://localhost:5113/api/members - 200 null application/json; charset=utf-8 255.2353ms
+2025-10-09 08:44:05.615 -09:00 [INF] Request starting HTTP/1.1 GET http://localhost:5113/api/members - null null
+2025-10-09 08:44:05.620 -09:00 [INF] Executing endpoint 'MSC.WebAPI.Controllers.MembersController.GetMembers (MSC.WebAPI)'
+2025-10-09 08:44:05.621 -09:00 [INF] Route matched with {action = "GetMembers", controller = "Members"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[MSC.WebAPI.Models.Member]]] GetMembers() on controller MSC.WebAPI.Controllers.MembersController (MSC.WebAPI).
+2025-10-09 08:44:05.786 -09:00 [INF] Executed DbCommand (96ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [m].[Id], [m].[CertificateUrl], [m].[DisplayOrder], [m].[FullName], [m].[ImageUrl], [m].[MemberTypeId], [m].[PositionTitle], [m0].[Id], [m0].[TypeName]
+FROM [Members] AS [m]
+INNER JOIN [MemberTypes] AS [m0] ON [m].[MemberTypeId] = [m0].[Id]
+ORDER BY [m].[DisplayOrder]
+2025-10-09 08:44:05.789 -09:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[MSC.WebAPI.Models.Member, MSC.WebAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-10-09 08:44:05.791 -09:00 [INF] Executed action MSC.WebAPI.Controllers.MembersController.GetMembers (MSC.WebAPI) in 167.7742ms
+2025-10-09 08:44:05.792 -09:00 [INF] Executed endpoint 'MSC.WebAPI.Controllers.MembersController.GetMembers (MSC.WebAPI)'
+2025-10-09 08:44:05.794 -09:00 [INF] HTTP GET /api/members responded 200 in 175.1588 ms
+2025-10-09 08:44:05.796 -09:00 [INF] Request finished HTTP/1.1 GET http://localhost:5113/api/members - 200 null application/json; charset=utf-8 180.5571ms
+2025-10-09 08:44:05.801 -09:00 [INF] Request starting HTTP/1.1 POST http://localhost:5113/api/auth/login - application/json 70
+2025-10-09 08:44:05.804 -09:00 [INF] Executing endpoint 'MSC.WebAPI.Controllers.AuthController.Login (MSC.WebAPI)'
+2025-10-09 08:44:05.806 -09:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[MSC.WebAPI.DTOs.LoginResponse]] Login(MSC.WebAPI.DTOs.LoginRequest) on controller MSC.WebAPI.Controllers.AuthController (MSC.WebAPI).
+2025-10-09 08:44:05.907 -09:00 [INF] Executed DbCommand (95ms) [Parameters=[@__request_Email_0='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[CreatedAt], [a].[Email], [a].[LastLogin], [a].[PasswordHash], [a].[Role]
+FROM [AdminUsers] AS [a]
+WHERE [a].[Email] = @__request_Email_0
+2025-10-09 08:44:06.152 -09:00 [INF] Executed DbCommand (102ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+UPDATE [AdminUsers] SET [LastLogin] = @p0
+OUTPUT 1
+WHERE [Id] = @p1;
+2025-10-09 08:44:06.156 -09:00 [INF] User logged in successfully: admin@msc-scu.com
+2025-10-09 08:44:06.158 -09:00 [INF] Executing OkObjectResult, writing value of type 'MSC.WebAPI.DTOs.LoginResponse'.
+2025-10-09 08:44:06.159 -09:00 [INF] Executed action MSC.WebAPI.Controllers.AuthController.Login (MSC.WebAPI) in 351.4837ms
+2025-10-09 08:44:06.161 -09:00 [INF] Executed endpoint 'MSC.WebAPI.Controllers.AuthController.Login (MSC.WebAPI)'
+2025-10-09 08:44:06.162 -09:00 [INF] HTTP POST /api/auth/login responded 200 in 357.5890 ms
+2025-10-09 08:44:06.164 -09:00 [INF] Request finished HTTP/1.1 POST http://localhost:5113/api/auth/login - 200 null application/json; charset=utf-8 362.7306ms
+2025-10-09 08:44:06.177 -09:00 [INF] Request starting HTTP/1.1 GET http://localhost:5113/api/adminusers - null null
+2025-10-09 08:44:06.227 -09:00 [INF] HTTP GET /api/adminusers responded 404 in 45.4881 ms
+2025-10-09 08:44:06.229 -09:00 [INF] Request finished HTTP/1.1 GET http://localhost:5113/api/adminusers - 404 0 null 51.889ms
+2025-10-09 08:44:06.232 -09:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5113/api/adminusers, Response status code: 404
+2025-10-09 08:44:08.314 -09:00 [INF] Request starting HTTP/1.1 GET http://localhost:5113/api/members - null null
+2025-10-09 08:44:08.317 -09:00 [INF] Executing endpoint 'MSC.WebAPI.Controllers.MembersController.GetMembers (MSC.WebAPI)'
+2025-10-09 08:44:08.318 -09:00 [INF] Route matched with {action = "GetMembers", controller = "Members"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[MSC.WebAPI.Models.Member]]] GetMembers() on controller MSC.WebAPI.Controllers.MembersController (MSC.WebAPI).
+2025-10-09 08:44:08.416 -09:00 [INF] Executed DbCommand (95ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [m].[Id], [m].[CertificateUrl], [m].[DisplayOrder], [m].[FullName], [m].[ImageUrl], [m].[MemberTypeId], [m].[PositionTitle], [m0].[Id], [m0].[TypeName]
+FROM [Members] AS [m]
+INNER JOIN [MemberTypes] AS [m0] ON [m].[MemberTypeId] = [m0].[Id]
+ORDER BY [m].[DisplayOrder]
+2025-10-09 08:44:08.419 -09:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[MSC.WebAPI.Models.Member, MSC.WebAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-10-09 08:44:08.420 -09:00 [INF] Executed action MSC.WebAPI.Controllers.MembersController.GetMembers (MSC.WebAPI) in 100.2016ms
+2025-10-09 08:44:08.421 -09:00 [INF] Executed endpoint 'MSC.WebAPI.Controllers.MembersController.GetMembers (MSC.WebAPI)'
+2025-10-09 08:44:08.423 -09:00 [INF] HTTP GET /api/members responded 200 in 105.6606 ms
+2025-10-09 08:44:08.424 -09:00 [INF] Request finished HTTP/1.1 GET http://localhost:5113/api/members - 200 null application/json; charset=utf-8 110.2428ms
+2025-10-09 08:44:08.431 -09:00 [INF] Request starting HTTP/1.1 GET http://localhost:5113/api/events - null null
+2025-10-09 08:44:08.433 -09:00 [INF] Executing endpoint 'MSC.WebAPI.Controllers.EventsController.GetEvents (MSC.WebAPI)'
+2025-10-09 08:44:08.437 -09:00 [INF] Route matched with {action = "GetEvents", controller = "Events"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[MSC.WebAPI.Models.Event]]] GetEvents() on controller MSC.WebAPI.Controllers.EventsController (MSC.WebAPI).
+2025-10-09 08:44:08.546 -09:00 [INF] Executed DbCommand (96ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [e].[Id], [e].[Description], [e].[EventDate], [e].[ImageUrl], [e].[IsFeatured], [e].[IsUpcoming], [e].[Title]
+FROM [Events] AS [e]
+ORDER BY [e].[EventDate] DESC
+2025-10-09 08:44:08.548 -09:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[MSC.WebAPI.Models.Event, MSC.WebAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-10-09 08:44:08.552 -09:00 [INF] Executed action MSC.WebAPI.Controllers.EventsController.GetEvents (MSC.WebAPI) in 113.46ms
+2025-10-09 08:44:08.554 -09:00 [INF] Executed endpoint 'MSC.WebAPI.Controllers.EventsController.GetEvents (MSC.WebAPI)'
+2025-10-09 08:44:08.555 -09:00 [INF] HTTP GET /api/events responded 200 in 121.6821 ms
+2025-10-09 08:44:08.556 -09:00 [INF] Request finished HTTP/1.1 GET http://localhost:5113/api/events - 200 null application/json; charset=utf-8 125.2629ms
+2025-10-09 08:59:15.051 -09:00 [INF] Request starting HTTP/1.1 GET http://localhost:5113/api/events - null null
+2025-10-09 08:59:15.056 -09:00 [INF] Executing endpoint 'MSC.WebAPI.Controllers.EventsController.GetEvents (MSC.WebAPI)'
+2025-10-09 08:59:15.058 -09:00 [INF] Route matched with {action = "GetEvents", controller = "Events"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[MSC.WebAPI.Models.Event]]] GetEvents() on controller MSC.WebAPI.Controllers.EventsController (MSC.WebAPI).
+2025-10-09 08:59:15.994 -09:00 [INF] Executed DbCommand (128ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [e].[Id], [e].[Description], [e].[EventDate], [e].[ImageUrl], [e].[IsFeatured], [e].[IsUpcoming], [e].[Title]
+FROM [Events] AS [e]
+ORDER BY [e].[EventDate] DESC
+2025-10-09 08:59:15.997 -09:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[MSC.WebAPI.Models.Event, MSC.WebAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-10-09 08:59:15.998 -09:00 [INF] Executed action MSC.WebAPI.Controllers.EventsController.GetEvents (MSC.WebAPI) in 939.1315ms
+2025-10-09 08:59:16.000 -09:00 [INF] Executed endpoint 'MSC.WebAPI.Controllers.EventsController.GetEvents (MSC.WebAPI)'
+2025-10-09 08:59:16.001 -09:00 [INF] HTTP GET /api/events responded 200 in 945.6695 ms
+2025-10-09 08:59:16.003 -09:00 [INF] Request finished HTTP/1.1 GET http://localhost:5113/api/events - 200 null application/json; charset=utf-8 952.7725ms
+2025-10-09 08:59:16.059 -09:00 [INF] Request starting HTTP/1.1 POST http://localhost:5113/api/auth/login - application/json 70
+2025-10-09 08:59:16.062 -09:00 [INF] Executing endpoint 'MSC.WebAPI.Controllers.AuthController.Login (MSC.WebAPI)'
+2025-10-09 08:59:16.063 -09:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[MSC.WebAPI.DTOs.LoginResponse]] Login(MSC.WebAPI.DTOs.LoginRequest) on controller MSC.WebAPI.Controllers.AuthController (MSC.WebAPI).
+2025-10-09 08:59:16.182 -09:00 [INF] Executed DbCommand (114ms) [Parameters=[@__request_Email_0='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[CreatedAt], [a].[Email], [a].[LastLogin], [a].[PasswordHash], [a].[Role]
+FROM [AdminUsers] AS [a]
+WHERE [a].[Email] = @__request_Email_0
+2025-10-09 08:59:16.464 -09:00 [INF] Executed DbCommand (143ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+UPDATE [AdminUsers] SET [LastLogin] = @p0
+OUTPUT 1
+WHERE [Id] = @p1;
+2025-10-09 08:59:16.472 -09:00 [INF] User logged in successfully: admin@msc-scu.com
+2025-10-09 08:59:16.473 -09:00 [INF] Executing OkObjectResult, writing value of type 'MSC.WebAPI.DTOs.LoginResponse'.
+2025-10-09 08:59:16.474 -09:00 [INF] Executed action MSC.WebAPI.Controllers.AuthController.Login (MSC.WebAPI) in 409.3856ms
+2025-10-09 08:59:16.476 -09:00 [INF] Executed endpoint 'MSC.WebAPI.Controllers.AuthController.Login (MSC.WebAPI)'
+2025-10-09 08:59:16.477 -09:00 [INF] HTTP POST /api/auth/login responded 200 in 415.3232 ms
+2025-10-09 08:59:16.478 -09:00 [INF] Request finished HTTP/1.1 POST http://localhost:5113/api/auth/login - 200 null application/json; charset=utf-8 418.8234ms
+2025-10-09 08:59:16.489 -09:00 [INF] Request starting HTTP/1.1 GET http://localhost:5113/api/admin/users - null null
+2025-10-09 08:59:16.496 -09:00 [INF] Executing endpoint 'MSC.WebAPI.Controllers.AdminUsersController.GetAdminUsers (MSC.WebAPI)'
+2025-10-09 08:59:16.502 -09:00 [INF] Route matched with {action = "GetAdminUsers", controller = "AdminUsers"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[MSC.WebAPI.DTOs.AdminUserResponse]]] GetAdminUsers() on controller MSC.WebAPI.Controllers.AdminUsersController (MSC.WebAPI).
+2025-10-09 08:59:16.640 -09:00 [INF] Executed DbCommand (116ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[Email], CAST([a].[Role] AS nvarchar(max)) AS [Role], [a].[CreatedAt], [a].[LastLogin]
+FROM [AdminUsers] AS [a]
+ORDER BY [a].[CreatedAt]
+2025-10-09 08:59:16.643 -09:00 [INF] Retrieved 1 admin users
+2025-10-09 08:59:16.644 -09:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[MSC.WebAPI.DTOs.AdminUserResponse, MSC.WebAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-10-09 08:59:16.652 -09:00 [INF] Executed action MSC.WebAPI.Controllers.AdminUsersController.GetAdminUsers (MSC.WebAPI) in 148.2977ms
+2025-10-09 08:59:16.653 -09:00 [INF] Executed endpoint 'MSC.WebAPI.Controllers.AdminUsersController.GetAdminUsers (MSC.WebAPI)'
+2025-10-09 08:59:16.654 -09:00 [INF] HTTP GET /api/admin/users responded 200 in 163.2054 ms
+2025-10-09 08:59:16.656 -09:00 [INF] Request finished HTTP/1.1 GET http://localhost:5113/api/admin/users - 200 null application/json; charset=utf-8 166.6857ms
+2025-10-09 09:12:35.940 -09:00 [INF] Request starting HTTP/1.1 POST http://localhost:5113/api/auth/login - application/json 70
+2025-10-09 09:12:35.943 -09:00 [INF] Executing endpoint 'MSC.WebAPI.Controllers.AuthController.Login (MSC.WebAPI)'
+2025-10-09 09:12:35.944 -09:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[MSC.WebAPI.DTOs.LoginResponse]] Login(MSC.WebAPI.DTOs.LoginRequest) on controller MSC.WebAPI.Controllers.AuthController (MSC.WebAPI).
+2025-10-09 09:12:36.829 -09:00 [INF] Executed DbCommand (157ms) [Parameters=[@__request_Email_0='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[CreatedAt], [a].[Email], [a].[LastLogin], [a].[PasswordHash], [a].[Role]
+FROM [AdminUsers] AS [a]
+WHERE [a].[Email] = @__request_Email_0
+2025-10-09 09:12:37.064 -09:00 [INF] Executed DbCommand (98ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+UPDATE [AdminUsers] SET [LastLogin] = @p0
+OUTPUT 1
+WHERE [Id] = @p1;
+2025-10-09 09:12:37.067 -09:00 [INF] User logged in successfully: admin@msc-scu.com
+2025-10-09 09:12:37.068 -09:00 [INF] Executing OkObjectResult, writing value of type 'MSC.WebAPI.DTOs.LoginResponse'.
+2025-10-09 09:12:37.069 -09:00 [INF] Executed action MSC.WebAPI.Controllers.AuthController.Login (MSC.WebAPI) in 1123.172ms
+2025-10-09 09:12:37.070 -09:00 [INF] Executed endpoint 'MSC.WebAPI.Controllers.AuthController.Login (MSC.WebAPI)'
+2025-10-09 09:12:37.071 -09:00 [INF] HTTP POST /api/auth/login responded 200 in 1128.2578 ms
+2025-10-09 09:12:37.073 -09:00 [INF] Request finished HTTP/1.1 POST http://localhost:5113/api/auth/login - 200 null application/json; charset=utf-8 1133.0923ms
+2025-10-09 09:19:04.743 -09:00 [INF] Request starting HTTP/1.1 GET http://localhost:5113/api/events - null null
+2025-10-09 09:19:04.746 -09:00 [INF] Executing endpoint 'MSC.WebAPI.Controllers.EventsController.GetEvents (MSC.WebAPI)'
+2025-10-09 09:19:04.747 -09:00 [INF] Route matched with {action = "GetEvents", controller = "Events"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[MSC.WebAPI.Models.Event]]] GetEvents() on controller MSC.WebAPI.Controllers.EventsController (MSC.WebAPI).
+2025-10-09 09:19:05.427 -09:00 [INF] Executed DbCommand (94ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [e].[Id], [e].[Description], [e].[EventDate], [e].[ImageUrl], [e].[IsFeatured], [e].[IsUpcoming], [e].[Title]
+FROM [Events] AS [e]
+ORDER BY [e].[EventDate] DESC
+2025-10-09 09:19:05.429 -09:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[MSC.WebAPI.Models.Event, MSC.WebAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-10-09 09:19:05.430 -09:00 [INF] Executed action MSC.WebAPI.Controllers.EventsController.GetEvents (MSC.WebAPI) in 681.3692ms
+2025-10-09 09:19:05.432 -09:00 [INF] Executed endpoint 'MSC.WebAPI.Controllers.EventsController.GetEvents (MSC.WebAPI)'
+2025-10-09 09:19:05.433 -09:00 [INF] HTTP GET /api/events responded 200 in 686.5153 ms
+2025-10-09 09:19:05.434 -09:00 [INF] Request finished HTTP/1.1 GET http://localhost:5113/api/events - 200 null application/json; charset=utf-8 691.3815ms
+2025-10-09 09:44:19.750 -09:00 [INF] Request starting HTTP/1.1 POST http://localhost:5113/api/auth/login - application/json 52
+2025-10-09 09:44:19.760 -09:00 [INF] CORS policy execution successful.
+2025-10-09 09:44:19.764 -09:00 [INF] Executing endpoint 'MSC.WebAPI.Controllers.AuthController.Login (MSC.WebAPI)'
+2025-10-09 09:44:19.766 -09:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[MSC.WebAPI.DTOs.LoginResponse]] Login(MSC.WebAPI.DTOs.LoginRequest) on controller MSC.WebAPI.Controllers.AuthController (MSC.WebAPI).
+2025-10-09 09:44:35.482 -09:00 [ERR] An error occurred using the connection to database 'SqlWebClub' on server 'tcp:serverwebclub.database.windows.net,1433'.
+2025-10-09 09:44:35.495 -09:00 [INF] A transient exception occurred during execution. The operation will be retried after 5000ms.
+Microsoft.Data.SqlClient.SqlException (0x80131904): Database 'SqlWebClub' on server 'serverwebclub.database.windows.net' is not currently available.  Please retry the connection later.  If the problem persists, contact customer support, and provide them the session tracing ID of '{AABC15A7-B805-479D-86A1-7258F03C5FDF}'.
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.CompleteLogin(Boolean enlistOK)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean ignoreSniOpenTimeout, TimeoutTimer timeout, Boolean withFailover)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, DbConnectionPool pool)
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.WaitForPendingOpen()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+ClientConnectionId:88fb3e7b-6e75-4b21-b8b1-6b1ec45f90d9
+Error Number:40613,State:1,Class:20
+Microsoft.Data.SqlClient.SqlException (0x80131904): Database 'SqlWebClub' on server 'serverwebclub.database.windows.net' is not currently available.  Please retry the connection later.  If the problem persists, contact customer support, and provide them the session tracing ID of '{AABC15A7-B805-479D-86A1-7258F03C5FDF}'.
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.CompleteLogin(Boolean enlistOK)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean ignoreSniOpenTimeout, TimeoutTimer timeout, Boolean withFailover)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, DbConnectionPool pool)
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.WaitForPendingOpen()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+ClientConnectionId:88fb3e7b-6e75-4b21-b8b1-6b1ec45f90d9
+Error Number:40613,State:1,Class:20
+2025-10-09 09:44:56.296 -09:00 [ERR] An error occurred using the connection to database 'SqlWebClub' on server 'tcp:serverwebclub.database.windows.net,1433'.
+2025-10-09 09:44:56.298 -09:00 [INF] A transient exception occurred during execution. The operation will be retried after 6040ms.
+Microsoft.Data.SqlClient.SqlException (0x80131904): Database 'SqlWebClub' on server 'serverwebclub.database.windows.net' is not currently available.  Please retry the connection later.  If the problem persists, contact customer support, and provide them the session tracing ID of '{94026369-55FC-436E-B918-CFDA5EF4B2F9}'.
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.CompleteLogin(Boolean enlistOK)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean ignoreSniOpenTimeout, TimeoutTimer timeout, Boolean withFailover)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, DbConnectionPool pool)
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.WaitForPendingOpen()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+ClientConnectionId:84b0df76-e113-49ec-961e-976f54254193
+Error Number:40613,State:1,Class:20
+Microsoft.Data.SqlClient.SqlException (0x80131904): Database 'SqlWebClub' on server 'serverwebclub.database.windows.net' is not currently available.  Please retry the connection later.  If the problem persists, contact customer support, and provide them the session tracing ID of '{94026369-55FC-436E-B918-CFDA5EF4B2F9}'.
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.CompleteLogin(Boolean enlistOK)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean ignoreSniOpenTimeout, TimeoutTimer timeout, Boolean withFailover)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, DbConnectionPool pool)
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.WaitForPendingOpen()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.<>c__DisplayClass30_0`2.<<ExecuteAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.ExecutionStrategy.ExecuteImplementationAsync[TState,TResult](Func`4 operation, Func`4 verifySucceeded, TState state, CancellationToken cancellationToken)
+ClientConnectionId:84b0df76-e113-49ec-961e-976f54254193
+Error Number:40613,State:1,Class:20
+2025-10-09 09:45:03.819 -09:00 [INF] Executed DbCommand (225ms) [Parameters=[@__request_Email_0='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[CreatedAt], [a].[Email], [a].[LastLogin], [a].[PasswordHash], [a].[Role]
+FROM [AdminUsers] AS [a]
+WHERE [a].[Email] = @__request_Email_0
+2025-10-09 09:45:04.095 -09:00 [INF] Executed DbCommand (139ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+UPDATE [AdminUsers] SET [LastLogin] = @p0
+OUTPUT 1
+WHERE [Id] = @p1;
+2025-10-09 09:45:04.098 -09:00 [INF] User logged in successfully: admin@msc-scu.com
+2025-10-09 09:45:04.099 -09:00 [INF] Executing OkObjectResult, writing value of type 'MSC.WebAPI.DTOs.LoginResponse'.
+2025-10-09 09:45:04.103 -09:00 [INF] Executed action MSC.WebAPI.Controllers.AuthController.Login (MSC.WebAPI) in 44336.1192ms
+2025-10-09 09:45:04.104 -09:00 [INF] Executed endpoint 'MSC.WebAPI.Controllers.AuthController.Login (MSC.WebAPI)'
+2025-10-09 09:45:04.105 -09:00 [INF] HTTP POST /api/auth/login responded 200 in 44352.0572 ms
+2025-10-09 09:45:04.107 -09:00 [INF] Request finished HTTP/1.1 POST http://localhost:5113/api/auth/login - 200 null application/json; charset=utf-8 44356.6511ms
+2025-10-09 09:52:34.970 -09:00 [INF] Request starting HTTP/1.1 GET http://localhost:5113/api/events - null null
+2025-10-09 09:52:34.973 -09:00 [INF] Executing endpoint 'MSC.WebAPI.Controllers.EventsController.GetEvents (MSC.WebAPI)'
+2025-10-09 09:52:34.975 -09:00 [INF] Route matched with {action = "GetEvents", controller = "Events"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[MSC.WebAPI.Models.Event]]] GetEvents() on controller MSC.WebAPI.Controllers.EventsController (MSC.WebAPI).
+2025-10-09 09:52:35.706 -09:00 [INF] Executed DbCommand (106ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [e].[Id], [e].[Description], [e].[EventDate], [e].[ImageUrl], [e].[IsFeatured], [e].[IsUpcoming], [e].[Title]
+FROM [Events] AS [e]
+ORDER BY [e].[EventDate] DESC
+2025-10-09 09:52:35.708 -09:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[MSC.WebAPI.Models.Event, MSC.WebAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-10-09 09:52:35.709 -09:00 [INF] Executed action MSC.WebAPI.Controllers.EventsController.GetEvents (MSC.WebAPI) in 732.7751ms
+2025-10-09 09:52:35.711 -09:00 [INF] Executed endpoint 'MSC.WebAPI.Controllers.EventsController.GetEvents (MSC.WebAPI)'
+2025-10-09 09:52:35.711 -09:00 [INF] HTTP GET /api/events responded 200 in 738.6257 ms
+2025-10-09 09:52:35.713 -09:00 [INF] Request finished HTTP/1.1 GET http://localhost:5113/api/events - 200 null application/json; charset=utf-8 743.2207ms
