@@ -193,3 +193,6 @@ C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\M
 C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\obj\Debug\net8.0\MSC.WebAPI.genruntimeconfig.cache
 C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\obj\Debug\net8.0\ref\MSC.WebAPI.dll
 C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\bin\Debug\net8.0\msc-webapp\package-lock.json
+C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\bin\Debug\net8.0\msc-webapp\package.json
+C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\bin\Debug\net8.0\msc-webapp\public\manifest.json
