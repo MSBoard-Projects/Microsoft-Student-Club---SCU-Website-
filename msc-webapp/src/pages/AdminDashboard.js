@@ -41,7 +41,10 @@ const AdminDashboard = () => {
               <p className="text-text mb-4">
                 Manage team members, add new members, and update member information.
               </p>
-              <button className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md w-full">
+              <button 
+                onClick={() => navigate('/admin/members')}
+                className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md w-full"
+              >
                 Manage Members
               </button>
             </div>
@@ -54,7 +57,10 @@ const AdminDashboard = () => {
               <p className="text-text mb-4">
                 Create, update, and manage club events and activities.
               </p>
-              <button className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md w-full">
+              <button 
+                onClick={() => navigate('/admin/events')}
+                className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md w-full"
+              >
                 Manage Events
               </button>
             </div>
@@ -67,7 +73,10 @@ const AdminDashboard = () => {
               <p className="text-text mb-4">
                 Edit site content like vision, mission, and other text sections.
               </p>
-              <button className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md w-full">
+              <button 
+                onClick={() => navigate('/admin/content')}
+                className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md w-full"
+              >
                 Manage Content
               </button>
             </div>
@@ -80,7 +89,10 @@ const AdminDashboard = () => {
               <p className="text-text mb-4">
                 Manage admin users and their permissions (SuperAdmin only).
               </p>
-              <button className="bg-accent hover:bg-primary text-navy hover:text-white px-4 py-2 rounded-md w-full font-semibold">
+              <button 
+                onClick={() => navigate('/admin/users')}
+                className="bg-accent hover:bg-primary text-navy hover:text-white px-4 py-2 rounded-md w-full font-semibold"
+              >
                 Manage Users
               </button>
             </div>

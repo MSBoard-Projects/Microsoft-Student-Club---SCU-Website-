@@ -13,6 +13,10 @@ import Team from './pages/Team';
 import Events from './pages/Events';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
+import MemberManagement from './pages/MemberManagement';
+import EventManagement from './pages/EventManagement';
+import SiteContentManagement from './pages/SiteContentManagement';
+import AdminUserManagement from './pages/AdminUserManagement';
 
 function App() {
   return (
@@ -35,6 +39,38 @@ function App() {
                 element={
                   <PrivateRoute>
                     <AdminDashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin/members"
+                element={
+                  <PrivateRoute>
+                    <MemberManagement />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin/events"
+                element={
+                  <PrivateRoute>
+                    <EventManagement />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin/content"
+                element={
+                  <PrivateRoute>
+                    <SiteContentManagement />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin/users"
+                element={
+                  <PrivateRoute>
+                    <AdminUserManagement />
                   </PrivateRoute>
                 }
               />
