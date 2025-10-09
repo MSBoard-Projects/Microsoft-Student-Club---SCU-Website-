@@ -293,7 +293,7 @@ public static class SampleDataSeeder
 
     private static async Task SeedSiteContent(ApplicationDbContext context)
     {
-        if (await context.SiteContent.AnyAsync())
+        if (await context.SiteContents.AnyAsync())
         {
             Console.WriteLine("⏭️  Site content already exists. Skipping...");
             return;
@@ -333,7 +333,7 @@ public static class SampleDataSeeder
             }
         };
 
-        context.SiteContent.AddRange(siteContent);
+        context.SiteContents.AddRange(siteContent);
         await context.SaveChangesAsync();
 
         Console.WriteLine($"✅ Created {siteContent.Count} site content entries");
