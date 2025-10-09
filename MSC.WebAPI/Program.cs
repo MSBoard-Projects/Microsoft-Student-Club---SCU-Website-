@@ -54,6 +54,34 @@ try
         return; // Exit the application after seeding
     }
 
+    // Check for command-line arguments to seed sample data
+    if (args.Length > 0 && args[0].Equals("seed-data", StringComparison.OrdinalIgnoreCase))
+    {
+        Log.Information("Running sample data seeder...");
+        
+        // Build a minimal configuration to get connection string
+        var config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+            .Build();
+        
+        var connectionString = config.GetConnectionString("DefaultConnection");
+        
+        // Build DbContext options
+        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+        optionsBuilder.UseSqlServer(connectionString);
+        
+        // Create DbContext and run seeder
+        using (var context = new ApplicationDbContext(optionsBuilder.Options))
+        {
+            await SampleDataSeeder.SeedSampleData(context);
+        }
+        
+        Log.Information("Sample data seeding completed. Exiting...");
+        return; // Exit the application after seeding
+    }
+
     var builder = WebApplication.CreateBuilder(args);
 
     // Add Serilog

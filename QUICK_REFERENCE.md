@@ -2,10 +2,32 @@
 
 ## 🚀 Quick Start Commands
 
-### Run QuickStart Script
+### Run QuickStart Script (Recommended)
 ```powershell
 .\QuickStart.ps1
 ```
+This will automatically:
+- Check prerequisites
+- Create/update database
+- Create admin user
+- Offer to seed sample data
+- Install npm packages
+- Launch both servers
+
+### Seed Sample Data (For Testing)
+```powershell
+.\SeedSampleData.ps1
+```
+Or manually:
+```powershell
+cd MSC.WebAPI
+dotnet run seed-data
+```
+
+This adds:
+- **13 Sample Members** (High Board, Board, Golden Members)
+- **8 Sample Events** (Featured, Upcoming, Past including Azure AI Bootcamp, Game Dev Hackathon)
+- **6 Site Content Entries** (Vision, Mission, Hero text)
 
 ### Manual Start (if needed)
 ```powershell
