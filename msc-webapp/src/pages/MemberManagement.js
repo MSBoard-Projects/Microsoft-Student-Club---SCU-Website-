@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import { membersApi } from '../services/api';
 import Button from '../components/Button';
 import Card from '../components/Card';
@@ -154,6 +155,7 @@ const MemberManagement = () => {
     e.preventDefault();
     
     if (!validateForm()) {
+      toast.error('Please fix the errors in the form');
       return;
     }
     
@@ -163,8 +165,10 @@ const MemberManagement = () => {
     try {
       if (modalMode === 'create') {
         await membersApi.create(formData);
+        toast.success('✅ Member created successfully!');
       } else {
         await membersApi.update(currentMember.id, formData);
+        toast.success('✅ Member updated successfully!');
       }
       
       // Refresh members list
@@ -174,7 +178,9 @@ const MemberManagement = () => {
       setShowModal(false);
     } catch (err) {
       console.error('Failed to save member:', err);
-      setError(err.response?.data?.message || 'Failed to save member. Please try again.');
+      const errorMsg = err.response?.data?.message || 'Failed to save member. Please try again.';
+      setError(errorMsg);
+      toast.error(`❌ ${errorMsg}`);
     } finally {
       setSubmitting(false);
     }
@@ -189,6 +195,7 @@ const MemberManagement = () => {
     
     try {
       await membersApi.delete(memberToDelete.id);
+      toast.success(`✅ ${memberToDelete.fullName} deleted successfully!`);
       
       // Refresh members list
       await fetchMembers();
@@ -198,7 +205,9 @@ const MemberManagement = () => {
       setMemberToDelete(null);
     } catch (err) {
       console.error('Failed to delete member:', err);
-      setError(err.response?.data?.message || 'Failed to delete member. Please try again.');
+      const errorMsg = err.response?.data?.message || 'Failed to delete member. Please try again.';
+      setError(errorMsg);
+      toast.error(`❌ ${errorMsg}`);
     } finally {
       setDeleting(false);
     }
