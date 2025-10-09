@@ -7,6 +7,7 @@ using Serilog.Events;
 using Azure.Storage.Blobs;
 using MSC.WebAPI.Data;
 using MSC.WebAPI.Services;
+using MSC.WebAPI.Utilities;
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
@@ -20,6 +21,38 @@ Log.Logger = new LoggerConfiguration()
 try
 {
     Log.Information("Starting MSC Web API");
+
+    // Check for command-line arguments to seed admin
+    if (args.Length > 0 && args[0].Equals("seed-admin", StringComparison.OrdinalIgnoreCase))
+    {
+        Log.Information("Running admin seeder...");
+        
+        // Build a minimal configuration to get connection string
+        var config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+            .Build();
+        
+        var connectionString = config.GetConnectionString("DefaultConnection");
+        
+        // Build DbContext options
+        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+        optionsBuilder.UseSqlServer(connectionString);
+        
+        // Create DbContext and run seeder
+        using (var context = new ApplicationDbContext(optionsBuilder.Options))
+        {
+            // Get email and password from args or use defaults
+            var email = args.Length > 1 ? args[1] : "admin@msc-scu.com";
+            var password = args.Length > 2 ? args[2] : "Admin123!";
+            
+            await AdminSeeder.SeedSuperAdmin(context, email, password);
+        }
+        
+        Log.Information("Admin seeding completed. Exiting...");
+        return; // Exit the application after seeding
+    }
 
     var builder = WebApplication.CreateBuilder(args);
 
