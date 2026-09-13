@@ -54,7 +54,9 @@ export function memberContactLinks(member: Partial<ClubMember>) {
 
 const confirmedHighBoardIds = new Set(['salwa-alaa-eldin-hegazy', 'ahmed-hatem', 'mohamed-mahmoud-2']);
 
-export const members: readonly ClubMember[] = records.map(record => {
+export const canonicalMemberId = (id: string) => id === 'mohamed-ahmed' ? 'mohamed-abdelazim' : id;
+
+export const members: readonly ClubMember[] = records.filter(record => canonicalMemberId(record.id) === record.id).map(record => {
   const group = confirmedHighBoardIds.has(record.id) ? 'high-board' : record.group;
   if (group !== 'member' && group !== 'instructor' && group !== 'board' && group !== 'high-board') throw new Error(`Invalid member group: ${group}`);
   return { ...record, group, ...(record.id === 'ali-arabi-ali' ? { bio: 'AI & Machine Learning Engineer \uD83E\uDD16 | Microsoft Certified AI-900 | Github Campus Expert\uD83D\uDEA9 | Software Engineer \uD83D\uDCBB | UI/UX Designer\uD83C\uDFA8| Microsoft Student Ambassador\uD83D\uDC31\u200D\uD83C\uDFCD| Best Speaker among 18 Egyptian Universities in 2024\uD83C\uDFA4' } : {}) };

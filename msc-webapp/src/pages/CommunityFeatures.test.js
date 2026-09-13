@@ -7,6 +7,7 @@ import Sponsors, { EventSponsors } from './Sponsors';
 import GoldenMembers, { RecurringGoldenSection, goldenRecipients, recurringRecipients } from './GoldenMembers';
 import { parseSponsors } from '../content/sponsors';
 import { goldenMembers, parseRatings, rankMembers } from '../content/ratings';
+import { members } from '../content/members';
 import { useShowcase } from '../context/ShowcaseContext';
 import { leaderboardApi, membersApi, sponsorsApi } from '../services/api';
 
@@ -149,12 +150,17 @@ test('an event never claims sponsorship from an unrelated event or a general clu
   expect(() => parseSponsors([{ ...sponsor(1, 'gold'), isPublished: false }])).toThrow();
 });
 
-test('local sponsor page displays the user-supplied logos without invented tiers or descriptions', () => {
+test('local sponsor page displays current supplied logos and approved partnership categories', () => {
   useShowcase.mockReturnValue({ source: 'local', data: { events: [] } });
   renderPage(<Sponsors />);
-  expect(screen.getAllByRole('img')).toHaveLength(22);
+  expect(screen.getAllByRole('img')).toHaveLength(20);
+  expect(within(screen.getByRole('region', { name: 'Strategic Partners' })).getByRole('img', { name: 'KAAF logo' })).toBeInTheDocument();
   expect(screen.getByRole('img', { name: 'Microsoft logo' })).toBeInTheDocument();
   expect(screen.getByRole('img', { name: 'GitHub logo' })).toBeInTheDocument();
+  expect(within(screen.getByRole('region', { name: 'Sponsors' })).getAllByRole('img')).toHaveLength(4);
+  expect(within(screen.getByRole('region', { name: 'Community Partners' })).getAllByRole('img')).toHaveLength(5);
+  expect(screen.getByText('Powered by Microsoft')).toBeInTheDocument();
+  expect(screen.getByText('Powered by GitHub')).toBeInTheDocument();
   expect(sponsorsApi.getPublished).not.toHaveBeenCalled();
   expect(screen.queryByRole('article')).not.toBeInTheDocument();
 });
@@ -217,4 +223,25 @@ test('golden directory combines category, month, recurring and name filters with
   expect(screen.queryByRole('link', { name: 'Zahraa Khaled' })).not.toBeInTheDocument();
   fireEvent.change(screen.getByRole('textbox', { name: 'Search golden honourees' }), { target: { value: 'not-a-name' } });
   expect(screen.getByText('No honourees match these filters.')).toBeInTheDocument();
+});
+
+test('golden cards and search follow canonical member identity changes, preserving only recognition details', () => {
+  const member = members.find(person => person.id === 'mohamed-abdelazim');
+  useShowcase.mockReturnValue({ source: 'local', data: { members } });
+  const { rerender } = renderPage(<GoldenMembers />);
+  fireEvent.change(screen.getByRole('textbox', { name: 'Search golden honourees' }), { target: { value: member.fullName } });
+  expect(screen.getAllByRole('article')).toHaveLength(1);
+  expect(screen.getByRole('link', { name: member.fullName })).toHaveAttribute('href', '/members/mohamed-abdelazim');
+  expect(screen.getByText(member.positionTitle)).toBeInTheDocument();
+  expect(screen.getByRole('img', { name: member.fullName })).toHaveAttribute('src', member.imageUrl);
+  expect(screen.getByText('2 recognitions')).toBeInTheDocument();
+  expect(screen.queryByText('Mohamed Ahmed')).not.toBeInTheDocument();
+  const updated = { ...member, fullName: 'Updated canonical name', positionTitle: 'Updated canonical role', imageUrl: '/updated-photo.jpg' };
+  useShowcase.mockReturnValue({ source: 'local', data: { members: members.map(person => person.id === member.id ? updated : person) } });
+  rerender(<MemoryRouter><GoldenMembers /></MemoryRouter>);
+  expect(screen.getByText('No honourees match these filters.')).toBeInTheDocument();
+  fireEvent.change(screen.getByRole('textbox', { name: 'Search golden honourees' }), { target: { value: 'Updated canonical role' } });
+  expect(screen.getByRole('link', { name: updated.fullName })).toHaveAttribute('href', '/members/mohamed-abdelazim');
+  expect(screen.getByRole('img', { name: updated.fullName })).toHaveAttribute('src', updated.imageUrl);
+  expect(screen.getByText('2 recognitions')).toBeInTheDocument();
 });

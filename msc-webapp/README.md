@@ -6,6 +6,10 @@ This is the React frontend for the Microsoft Student Club - Suez Canal Universit
 
 The public home, events, people and achievements experiences use strict TypeScript, React 19, Tailwind utilities, scoped CSS design tokens, and Framer Motion. The admin workspace keeps its existing styling. Both local preview and a validated API-backed content mode are supported. Persistence code, authenticated administration, tests and a database migration are prepared; no migration has been applied to a live database and no production deployment was performed.
 
+### Current Layout And Identity Checks
+
+After the grouped-logo, canonical-member and five-portrait updates: 64 tests passed across PublicExperience, CommunityFeatures, MemberDirectory and Events, together with strict TypeScript and scoped editor diagnostics. Headless Edge verified all five new portraits in profiles and leadership, the old-ID redirect, matching Golden name/role/image and search, 20 decoded logo assets, 11/5 accessible strip images, opposite movement, pause and reduced motion. Home and leadership had no horizontal overflow at 320, 390, 768, 1440 and 1920px. Desktop/mobile screenshots were inspected; no browser runtime errors were reported. No production build, live database update or deployment was performed for this change.
+
 ### Architecture
 
 ```text
@@ -16,12 +20,15 @@ App
 			PublicHeader                 desktop/mobile navigation and theme controls
 			ClubLanding
 				HeroSection                headline, parallax photo, logo, photo selector
-				StatisticsBanner           four viewport-triggered counters
+				SupporterPrograms          Microsoft and GitHub program relationships
 				UpcomingEvent              precision-aware schedule and countdown
-				EventGrid -> EventDetails  summaries, full description, date and gallery
+				Club story                 About, Goals, Vision and Mission
+				EventGrid -> EventDetails   upcoming/past events, dates and galleries
+				StatisticsBanner           four viewport-triggered counters
 				CommunityMoments           two opposing photo rows with pause and keyboard access
 				HighBoardSection           prominent president and optional public contact icons
-				GoldenMembersSection       latest completed monthly top three, including ties
+				RecurringGoldenSection     nine recurring workbook honourees
+				SupporterWall compact      opposing Logos 1 / Logos 2 strips
 			EventCollection              search, status/year/category filters, six-event pages
 			EventPage                    shareable /events/:id with shared gallery
 			GalleryPage                  searchable /gallery albums with shared photo viewer
@@ -40,13 +47,15 @@ App
 
 ### Homepage Community Highlights (2026-09-13)
 
-The homepage places two opposite-direction photo rows above the High Board, followed immediately by Golden Members. Photos come from existing event galleries, not third-party sites. Motion pauses offscreen, on hover and through an explicit pause control. Keyboard focus switches the focused row to manual scrolling and brings the focused photo into view. Repeated visual copies stay outside the tab order. Reduced-motion preference disables animation and leaves horizontally scrollable photos. No founding year is asserted.
+The homepage starts with the hero, primary Microsoft/GitHub programs, next upcoming event, club story, and full upcoming/past event catalogue. Two opposite-direction community photo rows appear above the High Board, followed by recurring Golden honourees and compact supporter strips. Photos come from supplied local albums, not third-party sites. Photo motion slows to 35% speed on hover, and pauses offscreen or through the explicit pause control. Keyboard focus switches the focused row to manual scrolling and brings the focused photo into view. Repeated visual copies stay outside the tab order. Reduced-motion preference disables animation and leaves horizontally scrollable photos. No founding year is asserted.
 
 The existing `ali-arabi-ali` profile remains President and is highlighted without adding a duplicate member. Leadership portraits retain their complete framing; missing portraits use initials. The following optional fields render icon links on leadership cards, member cards and profiles only when valid: `githubUrl`, `linkedInUrl`, `facebookUrl`, `instagramUrl`, `websiteUrl`, `publicEmail`, `publicPhone`. Social/site links require HTTPS without embedded credentials; phone uses international format such as `+201012345678` (example only). Empty values produce no icon. Only publish member-approved contact values; private roster contact fields are not imported. Ali approved publication but has not supplied the actual contact values, so no accounts have been guessed or added.
 
 In API mode, edit these fields in `/admin/members`. They are explicitly public, may be cleared, and are persisted by the authenticated member API and exposed by `/api/showcase`. [MemberPublicContacts migration](../MSC.WebAPI/Migrations/20260913135706_MemberPublicContacts.cs) adds seven nullable columns only and has **not** been applied to any live database. Apply the reviewed pending migrations and activate API content mode only through the existing approved deployment procedure. Local previews continue to use the local member records and do not persist admin API changes into source files.
 
-Golden Members uses the user-approved rule: select the most recent published, completed full calendar month, rank only the `member` group by its published `rate`, and include everyone at ranks 1-3 (including ties). Weekly, partial-month, future and unpublished periods are excluded; Board, High Board, instructors and unknown IDs are not candidates. The actual month and period title are displayed with a link to that leaderboard. An empty latest month does not silently fall back to older winners. Publish a full-month period through `/admin/ratings` to populate it; local preview deliberately has no invented ratings or winners.
+The homepage now uses workbook recognition history: nine people recognised in both February and April 2026, grouped into Heads, Instructors and Members. `/golden-members` retains all 36 honourees and 45 recognitions, with category, month, recurrence and name/role filters. Linked names, current roles, images and profile URLs come directly from the shared member roster; awards store recognition months/categories and historical source labels, not an independently maintained profile. A shared member update changes the Golden card and search results too. The 17 currently unlinked honourees retain historical recognition labels without invented portraits or profile links; confirmed roster IDs are needed before they can use shared identity data.
+
+The earlier ratings-based `GoldenMembersSection` remains available separately, but is no longer the homepage recognition source. Its latest-completed-month/top-three-with-ties rule and the published leaderboard are unchanged. Workbook honours do not fabricate leaderboard scores. Verification paragraphs below describe their historical implementation phases, not a fresh full-suite run.
 
 Verification: all 137 frontend tests passed, then 16 focused public tests passed after photo interaction refinements; TypeScript and editor diagnostics passed. The rebuilt backend content suite passed all 25 tests, including eight new public-contact validation/removal cases and extended roundtrip coverage. EF reported no pending model changes after migration generation. Headless Edge verified real opposite movement, pause, reduced motion, six responsive widths, portraits, section order, duplicate-photo clicks and visible keyboard focus with Enter/Escape restoration. A separate intercepted API-mode browser verified seven contact icons, admin save/read/remove, profile links, four winners tied at third place and four responsive widths; no fixture data was published. Temporary API preview was stopped. Screenshots were reviewed and this turn's generated images were then removed because C: ran out of space. No production build, live database update or deployment was performed.
 
@@ -58,12 +67,12 @@ Reviewed public pages only; third-party application submissions, membership paym
 | --- | --- | --- |
 | [IEEE El Shorouk events](https://ieeesha.org/events) | Upcoming/past sections, event details with location/date ranges, paginated archive | Retain our existing event details; add six-event pages and data-derived year/category filters alongside status and search. |
 | [El Shorouk applications](https://ieeesha.org/applications) | Registration/survey/feedback/general categories; no available forms during review | Defer until official forms, eligibility, data handling and submission ownership are supplied. |
-| [IEEE SCU home](https://ieeescu.org/) | Community photo gallery, mission/vision, awards, executive officers, Member of the Month | Gallery and animated homepage rows use our own photos. Leadership and public contact icons are implemented; Golden Members now follows the explicitly approved monthly ranking rule above. |
+| [IEEE SCU home](https://ieeescu.org/) | Community photo gallery, mission/vision, awards, executive officers, Member of the Month | Gallery and animated homepage rows use our own photos. Leadership and public contact icons are implemented; homepage honours now use the supplied recognition workbooks. |
 | [IEEE SCU committees](https://ieeescu.org/committees) and [El Shorouk committees](https://ieeesha.org/committees) | Committee descriptions; SCU also exposes technical/non-technical filters and detail pages | Defer until our committee names, descriptions and leaders are confirmed. Do not infer membership from job titles. |
 | [IEEE SCU join](https://ieeescu.org/join) and [membership](https://ieeescu.org/membership) | Recruitment link, benefits, eligibility/fees guidance, FAQ | A club joining/FAQ page needs MSC-specific policies and official links; IEEE membership benefits are not MSC benefits. |
 | [IEEE SCU contact](https://ieeescu.org/contact) and [El Shorouk contact](https://ieeesha.org/contact) | Official email, social channels, location; SCU separates partnership contacts | Defer until MSC public contact channels are approved; do not republish private roster contacts. |
 
-The new `/gallery` route derives albums from the same `ShowcaseProvider` event data as `/events`. It uses `gallery`, or a single `imageUrl` when no gallery is supplied; events without pictures are omitted. Repeated URLs within an album count once. Search matches event title, category and location; six-album pagination and the existing accessible event dialog provide photo browsing and event links. The current local content has one published album with 14 photos. No third-party photos, text or branding were copied.
+The `/gallery` route uses shared event galleries plus supplied community albums in local mode. It uses `gallery`, or a single `imageUrl` when no gallery is supplied; events without pictures are omitted. Repeated URLs within an album count once. Search matches event title, category and location; six-album pagination and the existing accessible event dialog provide photo browsing and event links. The original event gallery contains 14 photos, supplemented by the local community-photo import. No third-party photos or text were copied.
 
 The event archive combines title/description/category/location search with status, start year and category. Unknown dates have their own filter. Filter changes reset pagination; reset clears every filter. Both additions retain local/API content selection, loading/error/empty states and the existing public themes. No backend, database migration, registration workflow or production deployment was changed for this comparison.
 
@@ -135,14 +144,16 @@ For production deep links, configure your static host to serve the SPA entry doc
 
 ### Members And Certificates
 
-The supplied workbook produced 102 profiles: 74 Members, 5 Instructors (the source spelling is `Instructure`), 19 Board and 4 High Board. `Role` supplies the displayed position title; `Position` determines the group. The President's blank `Position` for Ali Arabi Ali is explicitly mapped to High Board following user confirmation. All four High Board profiles appear on the homepage, with the President first.
+The supplied workbook retains 102 raw records for import provenance. The public roster now has 101 canonical profiles: 73 Members, 5 Instructors (source spelling `Instructure`), 16 Board and 7 High Board. `Role` supplies the title; `Position` determines the group, with user-confirmed High Board overrides for Salwa Alaa Eldin Hegazy, Ahmed Hatem and Mohamed Mahmoud. The President's blank source `Position` for Ali Arabi Ali is explicitly mapped to High Board. All seven High Board profiles appear on the homepage, with the President first.
+
+The user confirmed that the old Mohamed Ahmed / Cyber V.Head identity is Mohamed Abdelazim / Cyber Security Vice Head. [src/content/members.ts](src/content/members.ts) maps `mohamed-ahmed` to `mohamed-abdelazim` and excludes the duplicate from the public projection without deleting source workbook records. The old profile URL redirects to the canonical profile, and Golden recognitions resolve to the same member. This local projection does not merge existing live database rows.
 
 - `/members`: Members and Instructors segments, name/role search, role filter and 12-profile pagination.
 - `/leadership`: separate High Board and Board sections with search and role filtering.
 - `/team`: compatibility redirect to `/members`.
-- 101 certificates are served from [public/club-certificates](public/club-certificates), with view/download links. Ali Arabi Ali has no supplied PDF, so no link is rendered for that profile.
-- 58 roster-approved portraits (41 Members, 15 Board, 2 High Board), including Ali Arabi Ali, are served from [public/club-media/members](public/club-media/members). The JPEGs total 3.44 MB, have a maximum dimension of 720px, respect EXIF orientation, and omit original image metadata. Square frames use `contain` so portrait heads and PDF-derived photos are not cropped on mobile. The original files are unchanged. Ali Arabi Ali's certificate is still unavailable.
-- 43 profiles have no confidently assigned local portrait; they retain initials. One additional profile, Mai Elsayed Hafez Amen, was explicitly skipped because the supplied WebP cannot be decoded by the installed Windows codec. The user chose to skip unsupported images rather than install another converter.
+- 101 source certificates remain in [public/club-certificates](public/club-certificates); 100 are linked by canonical public profiles after deduplication. Ali Arabi Ali has no supplied PDF, so no link is rendered for that profile.
+- 63 roster-approved portraits, including the five newly confirmed leadership photos, are served from [public/club-media/members](public/club-media/members). The JPEGs total 3.97 MB, have a maximum dimension of 720px, respect EXIF orientation, and omit original metadata. Square frames use `contain` so portraits are not cropped. Ordinary member portraits are compact (180px maximum), Golden portraits 220px, while Board/High Board retain their original full card width. Originals are unchanged.
+- 37 canonical profiles have no assigned local portrait and retain initials. One additional profile, Mai Elsayed Hafez Amen, was explicitly skipped because the supplied WebP cannot be decoded by the installed Windows codec. The user chose to skip unsupported images rather than install another converter.
 
 Re-import after updating the workbook or certificate files, from the repository root:
 
@@ -155,7 +166,7 @@ Re-import after updating the workbook or certificate files, from the repository 
 
 ### Roster-Only Portrait Import
 
-The certificate workbook remains the sole membership allowlist. Photo response workbooks under `Microsoft Data` are only identity evidence, never a source of additional profiles. [scripts/member-photo-matches.json](scripts/member-photo-matches.json) contains 59 explicitly reviewed assignments, not fuzzy name guesses. Most response matches use exact private email equality; five reviewed name-only matches and the explicitly named President portrait are marked separately. Neither emails, phone numbers, national IDs, response workbooks nor remote upload links are published.
+The certificate workbook remains the sole membership allowlist. Photo response workbooks under `Microsoft Data` are only identity evidence, never a source of additional profiles. [scripts/member-photo-matches.json](scripts/member-photo-matches.json) contains 64 explicitly reviewed assignments, not fuzzy guesses. Most matches use exact private email equality; five reviewed name-only matches and the named President portrait are marked separately. Five `user-confirmed` exceptions require exact approved IDs, Board folder and filenames: Ahmed Eyadaa, Ahmed Hariedy, Haidy mohamed salah, Salwa, and Mohamed Abdelazim. Neither emails, phone numbers, national IDs, response workbooks nor remote upload links are published. The raw 102-row report records 63 matched, 38 unassigned (including the suppressed duplicate) and one conversion-skipped.
 
 ```powershell
 & .\msc-webapp\scripts\Import-MemberPhotos.ps1 -InspectOnly
@@ -173,8 +184,8 @@ The report lists every profile as `matched`, `unassigned`, or `conversion-skippe
 | Mahmoud Mohamed Ali | Several Mahmoud Mohamed identities; ambiguous file label |
 | Salma Mohammad | Similarly named response has a different role and email |
 | DKWN, Denji, jujjj, Kim Jasmine | Upload labels do not establish a roster identity |
-| Ahmed Hariedy / ahmed hassan upload | Name alias needs confirmation |
-| Mohamed Abdelazim | No directly named portrait; do not substitute Mohamed Abdelmaksoud |
+
+Ahmed Hariedy and Mohamed Abdelazim now use their explicitly named, user-confirmed Board files. Mohamed Abdelmaksoud is a different person and is not used as a substitute portrait.
 
 Jana Alaa has two existing roster IDs with different roles, linked by the supplied workbooks. Both existing profiles are preserved; this import does not merge or add profiles. People present only in the response files remain excluded. After live API activation, changing these local seed URLs does not overwrite existing database rows: the initial catalogue import is additive. Use authenticated administration to update existing live portraits after separately approving activation.
 
@@ -207,7 +218,11 @@ The XLSX limit is 2 MB, 2,000 rows, 1,000 ZIP entries and 20 MB decompressed con
 
 ### Sponsors And Partners
 
-`/sponsors` groups published organisations into Diamond, Gold, Silver, Bronze and Community partners. Filters select tier and event/club-wide association. Event detail pages show only organisations explicitly linked to that event; general club partners are not automatically claimed as that event's sponsors. No real sponsor names or logos have yet been supplied, so the local preview is intentionally empty.
+Local `/sponsors` displays the 20 supplied logos in their approved relationship categories. The homepage shows Microsoft Student Club (SCU branch / Microsoft Campus Club), powered by Microsoft, and GitHub Campus Expert as community sponsor, powered by GitHub, without a full-width white background. The bottom has two compact opposing strips: 11 `Logos 1` assets (including KAAF) and five `Logos 2` assets. The four `LogoPro` images appear only in the primary-program area. Pause, keyboard scrolling, offscreen pausing and reduced motion are supported; logos remain uncropped.
+
+Regenerate logos without reprocessing photographs using `& .\msc-webapp\scripts\Import-CommunityMedia.ps1 -SponsorsOnly` from the repository root. [src/content/supporterLogos.json](src/content/supporterLogos.json) retains source grouping; [src/components/public/Supporters.tsx](src/components/public/Supporters.tsx) owns approved role labels. Alternate `(2)` files are excluded. Do not infer additional endorsements or event associations from a logo.
+
+In API mode, `/sponsors` retains Diamond, Gold, Silver, Bronze and Community tiers, with tier and event/club-wide filters. Event detail pages show only explicitly linked sponsors; general club partners are not automatically event sponsors. Local assets do not create live sponsor records.
 
 `/admin/sponsors` manages names, tier, description, logo URL, website URL, optional associated event, display order and publication status. New records start as drafts; a logo is required before publication. Logos use uncropped containment. URLs must be site-relative or HTTPS. Add optimized logo assets to the frontend or use approved hosted URLs; this feature does not introduce a new file-upload storage container.
 
@@ -217,7 +232,7 @@ Public `GET /api/sponsors` excludes drafts. `GET /api/sponsors/manage` and `POST
 
 [../MSC.WebAPI/Migrations/20260913121929_MemberProfilesRatingsSponsors.cs](../MSC.WebAPI/Migrations/20260913121929_MemberProfilesRatingsSponsors.cs) adds `Members.Bio`, `RatingPeriods`, `MemberRatings`, and `Sponsors`. **Generated but not applied to a live database.** Review this migration together with the earlier Identity and PublicShowcaseContent migrations under the activation checklist below. Rating rows have unique period/member constraints; periods have unique date ranges and optimistic concurrency versions. A rollback drops ratings, sponsors and biographies.
 
-The public preview remains `REACT_APP_CONTENT_SOURCE=local`. It shows the real profiles and Ali's supplied bio, but no fabricated ratings or sponsors. Persisted changes become public only after separately approved database activation and API-mode startup/build. The new admin pages use real authenticated endpoints; they do not simulate successful saves or store records only in the browser.
+The public preview remains `REACT_APP_CONTENT_SOURCE=local`. It shows confirmed profiles, Ali's supplied bio, workbook honours and supplied supporter assets, but no fabricated ratings. Persisted changes become public only after separately approved database activation and API-mode startup/build. The admin pages use real authenticated endpoints; they do not simulate successful saves or store records only in the browser.
 
 Validation on 2026-09-13: 124 frontend tests, 35 backend tests, strict types, production compilation without new ESLint warnings, and an offline EF model/snapshot check passed. The eight newly introduced ClosedXML dependency coordinates had no known CVEs in the dependency assessment. API tests use isolated SQLite and real XLSX generation/parsing, including anonymous access rejection, invalid rows, versioned replacement and sponsor draft/event behaviour. Edge/Playwright verified the real profile route/bio and, in isolated API-mode contexts, ranking search, multipart preview/retry, confirmed publication/read-back, biography update/read-back, sponsor publication/event association, logo rendering and responsive views at 320-1440px. All five browser write requests were intercepted; no live database or deployment was involved. Production output is in `%TEMP%/msc-community-build`; tracked build artifacts were not overwritten. Generic CRA browser-database deprecation notices remain.
 

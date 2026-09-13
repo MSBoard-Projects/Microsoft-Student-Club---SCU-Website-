@@ -83,6 +83,13 @@ foreach ($member in $members) {
     $publicIds[$member.id] = $true
 }
 $folders = @{ Board = 'Board\Image (File responses)'; Members = 'Members\Your Photo (File responses)' }
+$confirmedPortraits = @{
+    'ahmed-eyada' = 'Ahmed Eyadaa.jpg'
+    'ahmed-hariedy' = 'Ahmed Hariedy.jpg'
+    'haidy-mohamed-salah' = 'Haidy mohamed salah.jpg'
+    'salwa-alaa-eldin-hegazy' = 'Salwa.jpg'
+    'mohamed-abdelazim' = 'Mohamed Abdelazim.jpeg'
+}
 $manifest = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'member-photo-matches.json') -Raw -Encoding UTF8 | ConvertFrom-Json
 $selected = @{}
 $usedSources = @{}
@@ -93,6 +100,8 @@ foreach ($entry in $manifest) {
     $verification = if ($entry.verification) { $entry.verification } else { 'email' }
     if ($verification -eq 'filename') {
         if ($entry.id -ne 'ali-arabi-ali' -or $entry.pattern -cne 'Ali Arabi.jpg') { throw 'Only the explicit President portrait can bypass the response workbooks.' }
+    } elseif ($verification -eq 'user-confirmed') {
+        if ($entry.folder -cne 'Board' -or -not $confirmedPortraits.ContainsKey($entry.id) -or $entry.pattern -cne $confirmedPortraits[$entry.id]) { throw "Unconfirmed portrait assignment: $($entry.id)" }
     } elseif ($verification -in @('email', 'name')) {
         $responseMatches = @($responses | Where-Object { $_.Folder -eq $entry.folder -and $_.Name -eq $entry.responseName -and $_.HasPhoto })
         if ($verification -eq 'email') { $responseMatches = @($responseMatches | Where-Object { $_.Email -eq $rosterById[$entry.id][$columns.Email].ToLowerInvariant() }) }

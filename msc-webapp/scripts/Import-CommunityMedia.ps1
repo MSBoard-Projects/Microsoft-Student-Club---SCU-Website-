@@ -1,4 +1,4 @@
-param([string]$SourceRoot, [string]$SponsorsRoot)
+param([string]$SourceRoot, [string]$SponsorsRoot, [switch]$SponsorsOnly)
 
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName PresentationCore
@@ -68,7 +68,7 @@ function Save-Image($image, [string]$filePath, [int]$maxWidth, [int]$maxHeight, 
     try { $encoder.Save($output) } finally { $output.Dispose() }
     return [pscustomobject]@{ width = $resized.PixelWidth; height = $resized.PixelHeight }
 }
-$imageFiles = @(Get-ChildItem -LiteralPath $SourceRoot -File -Recurse | Where-Object { $_.Extension -match '^\.(jpe?g|png|heic)$' })
+$imageFiles = @(if (-not $SponsorsOnly) { Get-ChildItem -LiteralPath $SourceRoot -File -Recurse | Where-Object { $_.Extension -match '^\.(jpe?g|png|heic)$' } })
 $albumNumber = 0
 $photoCount = 0
 $heicCount = 0
@@ -98,19 +98,22 @@ $albums = @($imageFiles | Group-Object DirectoryName | Sort-Object Name | ForEac
     [pscustomobject][ordered]@{ id = $id; title = $relative.Replace('\', ' / '); photos = $photos }
 })
 $logos = @(Get-ChildItem -LiteralPath $SponsorsRoot -File -Filter '*.png' -Recurse | Where-Object { $_.BaseName -notmatch '\(2\)$' } | Sort-Object FullName | ForEach-Object {
+    $group = $_.Directory.Name
+    if ($group -notin @('Logo Pro', 'Logos 1', 'Logos 2')) { throw "Unknown logo group '$group'. Use Logo Pro, Logos 1 or Logos 2." }
     $image = Read-Image $_.FullName
     $crop = [Windows.Media.Imaging.CroppedBitmap]::new($image, [ClubMediaBounds]::Find($image))
     $id = ($_.BaseName.ToLowerInvariant() -replace '[^a-z0-9]+', '-').Trim('-')
     $filename = "logo-$id.png"
     $dimensions = Save-Image $crop (Join-Path $destination $filename) 600 300 -Png
-    [pscustomobject][ordered]@{ id = $id; name = $_.BaseName; src = "/club-media/community-import/$filename"; width = $dimensions.width; height = $dimensions.height }
+    [pscustomobject][ordered]@{ id = $id; name = $_.BaseName; group = $group; src = "/club-media/community-import/$filename"; width = $dimensions.width; height = $dimensions.height }
     $crop = $null
     $image = $null
     [GC]::Collect()
     [GC]::WaitForPendingFinalizers()
 })
-if (-not $albums.Count -or -not $logos.Count) { throw 'No albums or sponsor logos were imported.' }
-[IO.File]::WriteAllText((Join-Path $frontend 'src\content\communityMedia.json'), (ConvertTo-Json -InputObject $albums -Depth 7) + [Environment]::NewLine, [Text.UTF8Encoding]::new($false))
+if ((-not $SponsorsOnly -and -not $albums.Count) -or -not $logos.Count) { throw 'No albums or sponsor logos were imported.' }
+if (@($logos.id | Sort-Object -Unique).Count -ne $logos.Count) { throw 'Duplicate logo IDs across folders.' }
+if (-not $SponsorsOnly) { [IO.File]::WriteAllText((Join-Path $frontend 'src\content\communityMedia.json'), (ConvertTo-Json -InputObject $albums -Depth 7) + [Environment]::NewLine, [Text.UTF8Encoding]::new($false)) }
 [IO.File]::WriteAllText((Join-Path $frontend 'src\content\supporterLogos.json'), (ConvertTo-Json -InputObject $logos -Depth 4) + [Environment]::NewLine, [Text.UTF8Encoding]::new($false))
 $bytes = (Get-ChildItem -LiteralPath $destination -File | Measure-Object Length -Sum).Sum
 Write-Output "Imported $photoCount photos from $($albums.Count) albums ($heicCount HEIC), $($logos.Count) logos; $([Math]::Round($bytes / 1MB, 2)) MB. Originals unchanged."

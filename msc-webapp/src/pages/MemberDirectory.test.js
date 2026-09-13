@@ -11,14 +11,16 @@ jest.mock('../services/api', () => ({ eventsApi: { getAll: jest.fn() } }));
 const render = component => renderComponent(component, { wrapper: MemoryRouter });
 
 test('public member import includes only publication fields and every linked PDF exists', () => {
-  expect(members).toHaveLength(102);
-  expect(new Set(members.map(member => member.id)).size).toBe(102);
-  expect(members.filter(member => member.group === 'member')).toHaveLength(74);
+  expect(members).toHaveLength(101);
+  expect(new Set(members.map(member => member.id)).size).toBe(101);
+  expect(members.some(member => member.id === 'mohamed-ahmed')).toBe(false);
+  expect(members.find(member => member.id === 'mohamed-abdelazim')).toMatchObject({ fullName: 'Mohamed Abdelazim', positionTitle: 'Cyber Security Vice Head', group: 'board' });
+  expect(members.filter(member => member.group === 'member')).toHaveLength(73);
   expect(members.filter(member => member.group === 'board')).toHaveLength(16);
   expect(members.filter(member => member.group === 'instructor')).toHaveLength(5);
   expect(highBoard).toHaveLength(7);
   for (const id of ['salwa-alaa-eldin-hegazy', 'ahmed-hatem', 'mohamed-mahmoud-2']) expect(highBoard.some(member => member.id === id)).toBe(true);
-  expect(members.filter(member => member.certificateUrl)).toHaveLength(101);
+  expect(members.filter(member => member.certificateUrl)).toHaveLength(100);
   members.forEach(member => {
     expect(Object.keys(member).filter(key => key !== 'bio').sort()).toEqual(['certificateUrl', 'fullName', 'group', 'id', 'imageUrl', 'positionTitle']);
     if (member.certificateUrl) {
@@ -34,11 +36,11 @@ test('published portraits are restricted to reviewed roster IDs with valid local
   const reviewed = JSON.parse(readFileSync(path.resolve(__dirname, '../../scripts/member-photo-matches.json'), 'utf8'));
   const report = JSON.parse(readFileSync(path.resolve(__dirname, '../../scripts/member-photo-report.json'), 'utf8'));
   const portraits = members.filter(member => member.imageUrl);
-  expect(reviewed).toHaveLength(59);
-  expect(portraits).toHaveLength(58);
+  expect(reviewed).toHaveLength(64);
+  expect(portraits).toHaveLength(63);
   expect(report).toHaveLength(102);
-  expect(report.filter(entry => entry.status === 'matched')).toHaveLength(58);
-  expect(report.filter(entry => entry.status === 'unassigned')).toHaveLength(43);
+  expect(report.filter(entry => entry.status === 'matched')).toHaveLength(63);
+  expect(report.filter(entry => entry.status === 'unassigned')).toHaveLength(38);
   expect(report.filter(entry => entry.status === 'conversion-skipped').map(entry => entry.id)).toEqual(['mai-elsayed-hafez-amen']);
   expect(new Set(reviewed.map(entry => entry.id)).size).toBe(reviewed.length);
   reviewed.forEach(entry => expect(members.some(member => member.id === entry.id)).toBe(true));
@@ -64,11 +66,11 @@ test('a supplied portrait has the roster name as alt text and unassigned portrai
 
 test('member directory paginates, searches and separates instructors from members and leadership', () => {
   render(<MembersPage />);
-  expect(screen.getByText('74 people / Page 1 of 7')).toBeInTheDocument();
+  expect(screen.getByText('73 people / Page 1 of 7')).toBeInTheDocument();
   expect(screen.getAllByRole('article')).toHaveLength(12);
   expect(screen.queryByText('Ali Arabi Ali')).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Next page' }));
-  expect(screen.getByText('74 people / Page 2 of 7')).toBeInTheDocument();
+  expect(screen.getByText('73 people / Page 2 of 7')).toBeInTheDocument();
   fireEvent.change(screen.getByRole('textbox', { name: 'Search people' }), { target: { value: '  MOSTAFA BAKRY  ' } });
   expect(screen.getByText('1 person / Page 1 of 1')).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'View certificate: Mostafa Bakry' })).toHaveAttribute('href', '/club-certificates/Certificate_Mostafa_Bakry.pdf');
@@ -122,4 +124,11 @@ test('unknown profile IDs have a recovery link without inventing a member', () =
   renderComponent(<MemoryRouter initialEntries={['/members/not-a-member']}><Routes><Route path="/members/:id" element={<MemberProfile />} /></Routes></MemoryRouter>);
   expect(screen.getByRole('heading', { name: 'Member not found' })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Back to members' })).toHaveAttribute('href', '/members');
+});
+
+test('the confirmed old identity redirects to the canonical leadership profile', () => {
+  renderComponent(<MemoryRouter initialEntries={['/members/mohamed-ahmed']}><Routes><Route path="/members/:id" element={<MemberProfile />} /></Routes></MemoryRouter>);
+  expect(screen.getByRole('heading', { level: 1, name: 'Mohamed Abdelazim' })).toBeInTheDocument();
+  expect(screen.getByText('Cyber Security Vice Head')).toBeInTheDocument();
+  expect(screen.getByRole('img', { name: 'Mohamed Abdelazim' })).toHaveAttribute('src', '/club-media/members/mohamed-abdelazim.jpg');
 });

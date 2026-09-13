@@ -1,4 +1,9 @@
 [
+  { "id": "ahmed-eyada", "folder": "Board", "pattern": "Ahmed Eyadaa.jpg", "verification": "user-confirmed" },
+  { "id": "ahmed-hariedy", "folder": "Board", "pattern": "Ahmed Hariedy.jpg", "verification": "user-confirmed" },
+  { "id": "haidy-mohamed-salah", "folder": "Board", "pattern": "Haidy mohamed salah.jpg", "verification": "user-confirmed" },
+  { "id": "salwa-alaa-eldin-hegazy", "folder": "Board", "pattern": "Salwa.jpg", "verification": "user-confirmed" },
+  { "id": "mohamed-abdelazim", "folder": "Board", "pattern": "Mohamed Abdelazim.jpeg", "verification": "user-confirmed" },
   { "id": "mostafa-bakry", "folder": "Members", "pattern": "IMG_20260306_014944_737 - MOSTAFA BAKRY*.jpg", "responseName": "Mostafa Mohamed Bakry" },
   { "id": "tasneem-ali", "folder": "Members", "pattern": "IMG-20260216-WA0072 - Tasneem aly.jpg", "responseName": "Tasneem Ali Mohamed Mahmoud" },
   { "id": "mohammed-saber", "folder": "Members", "pattern": "IMG_20250823_201128 - Mohamed sabir Elazazy.jpg", "responseName": "Mohammed Saber Mohammed" },

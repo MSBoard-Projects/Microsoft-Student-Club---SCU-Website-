@@ -8,6 +8,8 @@ import HeroSection from './HeroSection';
 import StatisticsBanner, { Counter } from './StatisticsBanner';
 import PublicHeader from './PublicHeader';
 import CommunityMoments from './CommunityMoments';
+import { SupporterWall } from './Supporters';
+import supporterLogos from '../../content/supporterLogos.json';
 import { PublicThemeProvider } from './ThemeProvider';
 import { clubContent } from '../../content/club';
 import { communityAlbums, teamPhoto } from '../../content/communityAlbums';
@@ -33,6 +35,26 @@ beforeEach(() => {
   useReducedMotion.mockReturnValue(false);
   useInView.mockReturnValue(true);
   animate.mockImplementation(() => ({ stop: jest.fn() }));
+});
+
+test('compact supporters preserve folder grouping, expose logos once, and pause on request or offscreen', () => {
+  const { container, rerender } = render(<MemoryRouter><SupporterWall compact /></MemoryRouter>);
+  for (const group of ['Logos 1', 'Logos 2']) {
+    expect(within(screen.getByRole('region', { name: group })).getAllByRole('img').map(image => image.alt)).toEqual(supporterLogos.filter(logo => logo.group === group).map(logo => `${logo.name} logo`));
+  }
+  expect(container.querySelectorAll('.club-supporter-reverse')).toHaveLength(1);
+  expect(container.querySelector('.club-supporter-grid')).toBeNull();
+  expect(container.querySelector('.club-program-band')).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Pause logo animation' }));
+  expect(screen.getByRole('region', { name: 'Sponsors & supporters' })).toHaveAttribute('data-paused', 'true');
+  fireEvent.click(screen.getByRole('button', { name: 'Play logo animation' }));
+  expect(screen.getByRole('region', { name: 'Sponsors & supporters' })).toHaveAttribute('data-paused', 'false');
+  useInView.mockReturnValue(false);
+  rerender(<MemoryRouter><SupporterWall compact /></MemoryRouter>);
+  expect(screen.getByRole('region', { name: 'Sponsors & supporters' })).toHaveAttribute('data-paused', 'true');
+  useReducedMotion.mockReturnValue(true);
+  rerender(<MemoryRouter><SupporterWall compact /></MemoryRouter>);
+  expect(screen.queryByRole('button', { name: /logo animation/ })).not.toBeInTheDocument();
 });
 
 test('counter starts at zero, counts to its value and cleans up on value changes', () => {
@@ -188,15 +210,18 @@ test('community photo rows interleave albums and slow down on hover without paus
   expect(new Set(labels).size).toBe(6);
 });
 
-test('homepage includes the supplied story, student programs at both ends and recurring honours before sponsors', () => {
+test('homepage orders programs, next event, story and event catalogue before recurring honours and compact sponsors', () => {
   useReducedMotion.mockReturnValue(true);
   const { container } = render(<MemoryRouter><ClubLanding /></MemoryRouter>);
   expect(screen.getByRole('heading', { name: 'About Us' })).toBeInTheDocument();
   expect(screen.getByText('Creating a dynamic student community where Microsoft technologies fuel innovation, leadership, and real-world impact, bridging the gap between academia and industry.')).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: 'Mission' })).toBeInTheDocument();
-  expect(screen.getAllByRole('img', { name: 'Microsoft logo' })).toHaveLength(2);
-  expect(screen.getAllByRole('img', { name: 'GitHub logo' })).toHaveLength(2);
-  expect(within(screen.getByRole('region', { name: 'Sponsors & supporters' })).getAllByRole('img')).toHaveLength(22);
+  expect(screen.getAllByRole('img', { name: 'Microsoft logo' })).toHaveLength(1);
+  expect(screen.getAllByRole('img', { name: 'GitHub logo' })).toHaveLength(1);
+  expect(within(screen.getByRole('region', { name: 'Sponsors & supporters' })).getAllByRole('img')).toHaveLength(16);
   expect(container.querySelector('.club-hero').nextElementSibling).toHaveClass('club-program-band');
+  expect(container.querySelector('.club-program-band').nextElementSibling).toHaveClass('club-upcoming');
+  expect(container.querySelector('.club-upcoming').nextElementSibling).toHaveAttribute('id', 'club-story');
+  expect(container.querySelector('#club-story').nextElementSibling).toHaveAttribute('id', 'club-events');
   expect(container.querySelector('.club-supporters').previousElementSibling).toHaveClass('club-golden');
 });

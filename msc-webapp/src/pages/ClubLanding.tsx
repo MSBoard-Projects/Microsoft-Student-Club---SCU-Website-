@@ -26,16 +26,7 @@ export default function ClubLanding({ statistics }: { statistics?: ClubStatistic
     <>
       <HeroSection assets={clubContent.assets} />
       <SupporterPrograms />
-      <StatisticsBanner statistics={statistics ?? data.statistics} />
       <UpcomingEvent event={events.filter(event => event.status === 'upcoming').sort((first, second) => (first.startsAt ?? '9999').localeCompare(second.startsAt ?? '9999'))[0]} />
-      <section className="club-section" id="club-events">
-        <div className="club-container">
-          <div className="club-section-heading"><div><span className="club-eyebrow">EXPERIENCES THAT STAY WITH YOU</span><h2>Off the syllabus.</h2><p>Real people. New perspectives. A community that takes learning further.</p></div><Link to="/events" className="club-text-link">All events <Icon glyph={FiArrowUpRight} /></Link></div>
-          {loading ? <div className="club-notice" role="status">Loading events...</div> : error ? <div className="club-notice" role="alert">{error}<button type="button" onClick={retry}>Try again</button></div> : events.length ? <EventGrid events={events.slice(0, 3)} onSelect={setSelected} /> : <p className="club-notice">No events published yet.</p>}
-        </div>
-      </section>
-      <CommunityMoments events={[...communityAlbums, ...events]} onSelect={setSelected} />
-      <HighBoardSection />
       <section className="club-section club-story" id="club-story">
         <div className="club-container club-story-grid">
           <GlassImage src="/club-media/hero-orientation.jpg" alt="Club members sharing a moment at orientation" className="club-story-photo" position="center 35%" />
@@ -49,8 +40,17 @@ export default function ClubLanding({ statistics }: { statistics?: ClubStatistic
         </div>
         <div className="club-container club-purpose-grid"><div><h3>Vision</h3><p>Creating a dynamic student community where Microsoft technologies fuel innovation, leadership, and real-world impact, bridging the gap between academia and industry.</p></div><div><h3>Mission</h3><p>To provide hands-on learning opportunities, networking platforms, and real-world project experiences that empower students to develop cutting-edge skills and become future leaders in the tech and business world.</p></div></div>
       </section>
+      <section className="club-section" id="club-events">
+        <div className="club-container">
+          <div className="club-section-heading"><div><span className="club-eyebrow">EXPERIENCES THAT STAY WITH YOU</span><h2>Upcoming & past events</h2><p>Real people. New perspectives. A community that takes learning further.</p></div><Link to="/events" className="club-text-link">All events <Icon glyph={FiArrowUpRight} /></Link></div>
+          {loading ? <div className="club-notice" role="status">Loading events...</div> : error ? <div className="club-notice" role="alert">{error}<button type="button" onClick={retry}>Try again</button></div> : events.length ? <EventGrid events={events} onSelect={setSelected} /> : <p className="club-notice">No events published yet.</p>}
+        </div>
+      </section>
+      <StatisticsBanner statistics={statistics ?? data.statistics} />
+      <CommunityMoments events={[...communityAlbums, ...events]} onSelect={setSelected} />
+      <HighBoardSection />
       <RecurringGoldenSection />
-      <SupporterWall />
+      <SupporterWall compact />
       {selected && <EventDetails key={selected.id} event={selected} onClose={() => setSelected(null)} />}
     </>
   );
