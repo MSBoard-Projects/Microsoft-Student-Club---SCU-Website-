@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MSC.WebAPI.Data;
 using MSC.WebAPI.Models;
+using MSC.WebAPI.DTOs;
 
 namespace MSC.WebAPI.Controllers
 {
@@ -90,8 +91,10 @@ namespace MSC.WebAPI.Controllers
         // POST: api/members
         [HttpPost]
         [Authorize(Roles = "SuperAdmin,ContentEditor")]
-        public async Task<ActionResult<Member>> CreateMember(Member member)
+        public async Task<ActionResult<Member>> CreateMember(MemberWriteRequest request)
         {
+            if (request.Id != 0) return BadRequest(new { message = "New members must not specify an ID" });
+            var member = request.ToEntity();
             try
             {
                 if (!ModelState.IsValid)
@@ -126,13 +129,14 @@ namespace MSC.WebAPI.Controllers
         // PUT: api/members/5
         [HttpPut("{id}")]
         [Authorize(Roles = "SuperAdmin,ContentEditor")]
-        public async Task<IActionResult> UpdateMember(int id, Member member)
+        public async Task<IActionResult> UpdateMember(int id, MemberWriteRequest request)
         {
-            if (id != member.Id)
+            if (request.Id != 0 && id != request.Id)
             {
                 return BadRequest(new { message = "ID mismatch" });
             }
 
+            var member = request.ToEntity(id);
             if (!ModelState.IsValid)
             {
                 return BadRequest(new { errors = ModelState });

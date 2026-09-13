@@ -196,3 +196,13 @@ C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\M
 C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\bin\Debug\net8.0\msc-webapp\package-lock.json
 C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\bin\Debug\net8.0\msc-webapp\package.json
 C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\bin\Debug\net8.0\msc-webapp\public\manifest.json
+C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\bin\Debug\net8.0\DotNetEnv.dll
+C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\bin\Debug\net8.0\Sprache.dll
+C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\bin\Debug\net8.0\ClosedXML.dll
+C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\bin\Debug\net8.0\ClosedXML.Parser.dll
+C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\bin\Debug\net8.0\DocumentFormat.OpenXml.dll
+C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\bin\Debug\net8.0\DocumentFormat.OpenXml.Framework.dll
+C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\bin\Debug\net8.0\ExcelNumberFormat.dll
+C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\bin\Debug\net8.0\RBush.dll
+C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\bin\Debug\net8.0\SixLabors.Fonts.dll
+C:\Users\aliar\OneDrive\Documents\GitHub\Microsoft-Student-Club---SCU-Website-\MSC.WebAPI\bin\Debug\net8.0\System.IO.Packaging.dll

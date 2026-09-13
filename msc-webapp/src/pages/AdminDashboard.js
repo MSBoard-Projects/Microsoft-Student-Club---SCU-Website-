@@ -1,172 +1,124 @@
-import React from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { FaUsers, FaCalendarAlt, FaFileAlt, FaUsersCog, FaSignOutAlt, FaCheckCircle } from 'react-icons/fa';
+import React, { useDeferredValue, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { FiArrowUpRight, FiCalendar, FiChevronLeft, FiChevronRight, FiRefreshCw, FiSearch, FiStar, FiUsers } from 'react-icons/fi';
+import { eventsApi, membersApi } from '../services/api';
 import PageTransition from '../components/PageTransition';
+import './AdminDashboard.css';
 
-const AdminDashboard = () => {
-  const { user, logout, isSuperAdmin, canManageContent } = useAuth();
-  const navigate = useNavigate();
+const initialResource = { status: 'loading', items: [] };
+const pageSize = 5;
+const groups = [{ id: 1, name: 'High Board', color: 'blue' }, { id: 2, name: 'Board', color: 'green' }, { id: 3, name: 'Golden Member', color: 'gold' }];
 
-  const handleLogout = () => {
-    logout();
-    navigate('/admin/login');
-  };
+function resourceFrom(result) {
+  return result.status === 'fulfilled' && Array.isArray(result.value)
+    ? { status: 'ready', items: result.value } : { status: 'error', items: [] };
+}
 
-  return (
-    <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-[#203a6c] to-[#0078d4] text-white py-8 shadow-lg">
-          <div className="container mx-auto px-4 flex justify-between items-center">
-            <div className="animate-fadeIn">
-              <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
-              <p className="text-sm opacity-90">
-                Welcome back, <span className="font-semibold">{user?.email}</span>
-                <span className="ml-2 px-3 py-1 bg-white/20 rounded-full text-xs font-bold">
-                  {user?.role}
-                </span>
-              </p>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transform hover:scale-105 transition-all duration-200"
-            >
-              <FaSignOutAlt />
-              Logout
-            </button>
-          </div>
-        </div>
+function dateLabel(value) {
+  const date = new Date(value);
+  return value && !Number.isNaN(date.getTime())
+    ? date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Date not set';
+}
 
-        {/* Dashboard Content */}
-        <div className="container mx-auto px-4 py-12">
-          <h2 className="text-2xl font-bold text-gray-800 mb-8">Management Tools</h2>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Members Management */}
-            {canManageContent() && (
-              <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 card-hover animate-fadeIn">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="bg-gradient-to-br from-[#0078d4] to-[#50e6ff] text-white p-4 rounded-full">
-                    <FaUsers className="text-3xl" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-navy">Members</h2>
-                </div>
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  Manage team members, add new members, and update member information.
-                </p>
-                <button 
-                  onClick={() => navigate('/admin/members')}
-                  className="bg-[#0078d4] hover:bg-[#0061b3] text-white px-6 py-3 rounded-lg w-full font-semibold shadow-md transform hover:scale-105 transition-all duration-200"
-                >
-                  Manage Members
-                </button>
-              </div>
-            )}
+function Metric({ label, count, resource, icon: Icon, to, color }) {
+  return <Link className={`overview-metric metric-${color}`} to={to}>
+    <div className="metric-top"><Icon aria-hidden="true" /><FiArrowUpRight aria-hidden="true" /></div>
+    <span className="metric-label">{label}</span>
+    {resource.status === 'loading' ? <span className="overview-skeleton metric-placeholder" aria-label={`Loading ${label}`} />
+      : <strong className="metric-value">{resource.status === 'error' ? 'Unavailable' : count}</strong>}
+  </Link>;
+}
 
-            {/* Events Management */}
-            {canManageContent() && (
-              <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 card-hover animate-fadeIn animate-delay-100">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-full">
-                    <FaCalendarAlt className="text-3xl" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-navy">Events</h2>
-                </div>
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  Create, update, and manage club events and activities.
-                </p>
-                <button 
-                  onClick={() => navigate('/admin/events')}
-                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg w-full font-semibold shadow-md transform hover:scale-105 transition-all duration-200"
-                >
-                  Manage Events
-                </button>
-              </div>
-            )}
+export default function AdminDashboard() {
+  const [members, setMembers] = useState(initialResource);
+  const [events, setEvents] = useState(initialResource);
+  const [revision, setRevision] = useState(0);
+  const [tab, setTab] = useState('upcoming');
+  const [search, setSearch] = useState('');
+  const query = useDeferredValue(search.trim().toLowerCase());
+  const [page, setPage] = useState(0);
 
-            {/* Site Content Management */}
-            {canManageContent() && (
-              <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 card-hover animate-fadeIn animate-delay-200">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-4 rounded-full">
-                    <FaFileAlt className="text-3xl" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-navy">Site Content</h2>
-                </div>
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  Edit site content like vision, mission, and other text sections.
-                </p>
-                <button 
-                  onClick={() => navigate('/admin/content')}
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg w-full font-semibold shadow-md transform hover:scale-105 transition-all duration-200"
-                >
-                  Manage Content
-                </button>
-              </div>
-            )}
+  useEffect(() => {
+    let active = true;
+    setMembers(initialResource);
+    setEvents(initialResource);
+    Promise.allSettled([membersApi.getAll(), eventsApi.getAll()]).then(([memberResult, eventResult]) => {
+      if (active) {
+        setMembers(resourceFrom(memberResult));
+        setEvents(resourceFrom(eventResult));
+        setPage(0);
+      }
+    });
+    return () => { active = false; };
+  }, [revision]);
 
-            {/* User Management (SuperAdmin Only) */}
-            {isSuperAdmin() && (
-              <div className="bg-gradient-to-br from-[#50e6ff] to-[#0078d4] text-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-300 card-hover animate-fadeIn animate-delay-300">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="bg-white/20 backdrop-blur-sm p-4 rounded-full">
-                    <FaUsersCog className="text-3xl" />
-                  </div>
-                  <h2 className="text-2xl font-bold">Admin Users</h2>
-                </div>
-                <p className="mb-6 leading-relaxed opacity-95">
-                  Manage admin users and their permissions (SuperAdmin only).
-                </p>
-                <button 
-                  onClick={() => navigate('/admin/users')}
-                  className="bg-white text-[#0078d4] px-6 py-3 rounded-lg w-full font-bold shadow-md transform hover:scale-105 transition-all duration-200 hover:bg-gray-50"
-                >
-                  Manage Users
-                </button>
-              </div>
-            )}
-          </div>
+  const loading = members.status === 'loading' || events.status === 'loading';
+  const upcoming = events.items.filter(event => event.isUpcoming);
+  const filteredEvents = events.items
+    .filter(event => (tab === 'all' || event.isUpcoming) && (event.title || '').toLowerCase().includes(query))
+    .sort((first, second) => tab === 'upcoming' ? new Date(first.eventDate) - new Date(second.eventDate) : new Date(second.eventDate) - new Date(first.eventDate));
+  const currentPage = Math.min(page, Math.max(0, Math.ceil(filteredEvents.length / pageSize) - 1));
+  const visibleEvents = filteredEvents.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+  const refresh = () => setRevision(value => value + 1);
 
-          {/* Role Information */}
-          <div className="mt-12 bg-white p-8 rounded-2xl shadow-lg animate-fadeIn animate-delay-400">
-            <h3 className="text-2xl font-bold text-navy mb-6 flex items-center gap-3">
-              <FaCheckCircle className="text-green-500" />
-              Your Permissions
-            </h3>
-            <ul className="space-y-3 text-gray-700">
-              {canManageContent() && (
-                <>
-                  <li className="flex items-center gap-3">
-                    <FaCheckCircle className="text-green-500" />
-                    Manage Members (Create, Update, Delete)
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <FaCheckCircle className="text-green-500" />
-                    Manage Events (Create, Update, Delete)
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <FaCheckCircle className="text-green-500" />
-                    Manage Site Content (Create, Update, Delete)
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <FaCheckCircle className="text-green-500" />
-                    Upload Images to Azure Blob Storage
-                  </li>
-                </>
-              )}
-              {isSuperAdmin() && (
-                <li className="flex items-center gap-3 text-[#0078d4] font-semibold">
-                  <FaCheckCircle className="text-[#50e6ff]" />
-                  Manage Admin Users (SuperAdmin Exclusive)
-                </li>
-              )}
-            </ul>
-          </div>
-        </div>
+  return <PageTransition><div className="club-overview">
+    <header className="overview-heading">
+      <div><p className="overview-eyebrow">MICROSOFT STUDENT CLUB / SCU</p><h1>Club overview</h1></div>
+      <div className="overview-actions">
+        <button type="button" className="overview-icon-button" onClick={refresh} disabled={loading} aria-label="Refresh overview" title="Refresh overview"><FiRefreshCw className={loading ? 'overview-spinning' : ''} aria-hidden="true" /></button>
+        <Link className="overview-primary" to="/admin/events"><FiCalendar aria-hidden="true" />Manage events<FiArrowUpRight aria-hidden="true" /></Link>
       </div>
-    </PageTransition>
-  );
-};
-
-export default AdminDashboard;
+    </header>
+    <section aria-label="Club statistics" className="overview-metrics" aria-busy={loading}>
+      <Metric label="Club members" count={members.items.length} resource={members} icon={FiUsers} to="/admin/members" color="blue" />
+      <Metric label="Total events" count={events.items.length} resource={events} icon={FiCalendar} to="/admin/events" color="green" />
+      <Metric label="Upcoming events" count={upcoming.length} resource={events} icon={FiArrowUpRight} to="/admin/events" color="cyan" />
+      <Metric label="Featured events" count={events.items.filter(event => event.isFeatured).length} resource={events} icon={FiStar} to="/admin/events" color="gold" />
+    </section>
+    <div className="overview-columns">
+      <section className="overview-events" aria-labelledby="events-heading">
+        <div className="overview-section-title"><h2 id="events-heading">Event schedule</h2><Link to="/admin/events" className="overview-text-link">View all<FiArrowUpRight aria-hidden="true" /></Link></div>
+        <div className="overview-filters">
+          <div className="overview-segments" role="group" aria-label="Filter events">
+            <button type="button" aria-pressed={tab === 'upcoming'} onClick={() => { setTab('upcoming'); setPage(0); }}>Upcoming</button>
+            <button type="button" aria-pressed={tab === 'all'} onClick={() => { setTab('all'); setPage(0); }}>All events</button>
+          </div>
+          <label className="overview-search"><FiSearch aria-hidden="true" /><span className="sr-only">Search events</span><input type="search" placeholder="Search events" value={search} onChange={event => { setSearch(event.target.value); setPage(0); }} /></label>
+        </div>
+        <div className="overview-event-list" aria-busy={events.status === 'loading'}>
+          {events.status === 'loading' && <div role="status" aria-label="Loading events">{[0, 1, 2].map(index => <div key={index} className="overview-event-skeleton"><span className="overview-skeleton" /><span className="overview-skeleton" /></div>)}</div>}
+          {events.status === 'error' && <div role="alert" className="overview-empty"><FiCalendar aria-hidden="true" /><h3>Events could not be loaded</h3><button type="button" className="overview-text-link" onClick={refresh} disabled={loading}><FiRefreshCw aria-hidden="true" />Try again</button></div>}
+          {events.status === 'ready' && visibleEvents.length === 0 && <div className="overview-empty"><FiCalendar aria-hidden="true" /><h3>{query ? 'No matching events' : tab === 'upcoming' ? 'No upcoming events' : 'No events yet'}</h3>
+            {query ? <button className="overview-text-link" onClick={() => { setSearch(''); setPage(0); }}>Clear search</button> : <Link className="overview-text-link" to="/admin/events">Manage events<FiArrowUpRight aria-hidden="true" /></Link>}
+          </div>}
+          {visibleEvents.map(event => <article key={event.id} className="overview-event-row">
+            <div className="overview-event-visual"><FiCalendar aria-hidden="true" />{event.imageUrl && <img src={event.imageUrl} alt="" loading="lazy" onError={failure => { failure.currentTarget.hidden = true; }} />}</div>
+            <div className="overview-event-info"><h3>{event.title}</h3><time dateTime={event.eventDate}>{dateLabel(event.eventDate)}</time></div>
+            <span className={`overview-status ${event.isUpcoming ? 'status-upcoming' : 'status-past'}`}>{event.isUpcoming ? 'Upcoming' : 'Past'}</span>
+            <Link to="/admin/events" className="overview-icon-button" aria-label={`Manage ${event.title}`} title={`Manage ${event.title}`}><FiArrowUpRight aria-hidden="true" /></Link>
+          </article>)}
+        </div>
+        {events.status === 'ready' && filteredEvents.length > 0 && <div className="overview-pagination"><span aria-live="polite">{currentPage * pageSize + 1}-{Math.min((currentPage + 1) * pageSize, filteredEvents.length)} of {filteredEvents.length} events</span><div>
+          <button className="overview-icon-button" aria-label="Previous page" title="Previous page" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}><FiChevronLeft aria-hidden="true" /></button>
+          <button className="overview-icon-button" aria-label="Next page" title="Next page" disabled={(currentPage + 1) * pageSize >= filteredEvents.length} onClick={() => setPage(currentPage + 1)}><FiChevronRight aria-hidden="true" /></button>
+        </div></div>}
+      </section>
+      <section className="overview-roster" aria-labelledby="roster-heading">
+        <div className="overview-section-title"><h2 id="roster-heading">The team</h2><Link to="/admin/members" className="overview-icon-button" title="Manage members" aria-label="Manage members"><FiArrowUpRight aria-hidden="true" /></Link></div>
+        {members.status === 'loading' && <div role="status" aria-label="Loading members" className="overview-roster-loading"><span className="overview-skeleton" /><span className="overview-skeleton" /><span className="overview-skeleton" /></div>}
+        {members.status === 'error' && <div className="overview-empty" role="alert"><FiUsers aria-hidden="true" /><h3>Members could not be loaded</h3><button type="button" className="overview-text-link" onClick={refresh} disabled={loading}>Try again</button></div>}
+        {members.status === 'ready' && <>
+          <ul className="overview-group-list">{groups.map(group => {
+            const count = members.items.filter(member => member.memberTypeId === group.id || member.memberType?.typeName === group.name).length;
+            return <li key={group.id}><div><span className={`overview-group-dot dot-${group.color}`} />{group.name}<strong>{count}</strong></div><meter aria-label={`${group.name} members`} min="0" max={Math.max(1, members.items.length)} value={count}>{count}</meter></li>;
+          })}</ul>
+          {members.items.length === 0 ? <p className="overview-muted">No club members yet.</p> : <div className="overview-member-preview">{members.items.slice(0, 5).map(member => <div key={member.id} className="overview-member-avatar" title={member.fullName}>
+            <span>{(member.fullName || '?').split(' ').slice(0, 2).map(part => part[0]).join('')}</span>{member.imageUrl && <img src={member.imageUrl} alt={member.fullName} loading="lazy" onError={failure => { failure.currentTarget.hidden = true; }} />}
+          </div>)}<span>{members.items.length} members</span></div>}
+          <Link className="overview-roster-link" to="/admin/members">Open member directory<FiArrowUpRight aria-hidden="true" /></Link>
+        </>}
+        <div className="overview-deferred"><span className="overview-eyebrow">ATTENDANCE & REWARDS</span><h3>Not connected yet</h3><p>QR check-in, attendance points, and certificates are unavailable.</p></div>
+      </section>
+    </div>
+  </div></PageTransition>;
+}

@@ -91,6 +91,29 @@ if ($createAdmin -eq "" -or $createAdmin -eq "Y" -or $createAdmin -eq "y") {
 
 Write-Host ""
 
+# Step 3.5: Seed sample data
+Write-Host "Step 3.5: Adding sample data (optional)..." -ForegroundColor Yellow
+
+$seedData = Read-Host "  Do you want to add sample members and events for testing? (Y/n)"
+if ($seedData -eq "" -or $seedData -eq "Y" -or $seedData -eq "y") {
+    Write-Host "  Adding sample data..." -ForegroundColor Gray
+    Write-Host "    - 13 Members (High Board, Board, Golden Members)" -ForegroundColor Gray
+    Write-Host "    - 8 Events (Featured, Upcoming, Past)" -ForegroundColor Gray
+    Write-Host "    - 6 Site Content entries" -ForegroundColor Gray
+    
+    dotnet run seed-data
+    
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "  ✅ Sample data added successfully" -ForegroundColor Green
+    } else {
+        Write-Host "  ⚠️  Sample data seeding failed (data may already exist)" -ForegroundColor Yellow
+    }
+} else {
+    Write-Host "  ⏭️  Skipping sample data seeding" -ForegroundColor Gray
+}
+
+Write-Host ""
+
 # Step 4: Install frontend dependencies
 Write-Host "Step 4: Installing frontend dependencies..." -ForegroundColor Yellow
 

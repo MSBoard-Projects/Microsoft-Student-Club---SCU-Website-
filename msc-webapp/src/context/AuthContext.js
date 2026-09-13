@@ -1,95 +1,125 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useRef } from 'react';
 import { authApi } from '../services/api';
 
 // Create Auth Context
 const AuthContext = createContext(null);
+
+const clearStoredSession = () => {
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('user');
+};
+
+const validUser = (user) => user &&
+  ['SuperAdmin', 'ContentEditor'].includes(user.role) &&
+  Number.isFinite(Date.parse(user.expiresAt)) && Date.parse(user.expiresAt) > Date.now();
 
 // Auth Provider Component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
+  const operation = useRef(0);
 
-  // Initialize auth state from localStorage on mount
   useEffect(() => {
-    const storedToken = localStorage.getItem('authToken');
-    const storedUser = localStorage.getItem('user');
-
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-    }
-
-    setLoading(false);
+    let active = true;
+    const clearSession = () => {
+      operation.current += 1;
+      clearStoredSession();
+      setUser(null);
+      setToken(null);
+    };
+    const restore = async () => {
+      const storedToken = localStorage.getItem('authToken');
+      if (!storedToken) {
+        clearSession();
+        setLoading(false);
+        return;
+      }
+      try {
+        const restoredUser = await authApi.getSession();
+        if (!validUser(restoredUser)) throw new Error('Invalid session');
+        if (active && localStorage.getItem('authToken') === storedToken) {
+          setUser(restoredUser);
+          setToken(storedToken);
+          localStorage.setItem('user', JSON.stringify(restoredUser));
+        }
+      } catch {
+        if (active && localStorage.getItem('authToken') === storedToken) clearSession();
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    const syncStorage = (event) => {
+      if (event.key === 'authToken' || event.key === null) {
+        setUser(null);
+        setToken(null);
+        setLoading(true);
+        restore();
+      }
+    };
+    window.addEventListener('auth-expired', clearSession);
+    window.addEventListener('storage', syncStorage);
+    restore();
+    return () => {
+      active = false;
+      window.removeEventListener('auth-expired', clearSession);
+      window.removeEventListener('storage', syncStorage);
+    };
   }, []);
 
-  // Login function
+  useEffect(() => {
+    if (!user) return undefined;
+    const timeout = setTimeout(() => {
+      window.dispatchEvent(new Event('auth-expired'));
+    }, Math.min(Math.max(0, Date.parse(user.expiresAt) - Date.now()), 2147483647));
+    return () => clearTimeout(timeout);
+  }, [user]);
+
   const login = async (email, password) => {
+    const request = ++operation.current;
     try {
-      // Call login API
-      const response = await authApi.login(email, password);
-
-      // Extract token and user data from response
-      const { token: authToken, email: userEmail, role, expiresAt } = response;
-
-      // Create user object
-      const userData = {
-        email: userEmail,
-        role,
-        expiresAt,
-      };
-
-      // Store in state
-      setToken(authToken);
-      setUser(userData);
-
-      // Persist in localStorage
+      const { token: authToken, ...userData } = await authApi.login(email.trim(), password);
+      if (!authToken || !validUser(userData)) throw new Error('Invalid login response');
+      if (request !== operation.current) return { success: false, error: 'Login cancelled.' };
       localStorage.setItem('authToken', authToken);
       localStorage.setItem('user', JSON.stringify(userData));
-
+      setToken(authToken);
+      setUser(userData);
       return { success: true, user: userData };
     } catch (error) {
-      console.error('Login failed:', error);
-      
-      // Extract error message from response
-      const errorMessage = error.response?.data?.message || 'Login failed. Please try again.';
-      
-      return { success: false, error: errorMessage };
+      if (request === operation.current) {
+        clearStoredSession();
+        setToken(null);
+        setUser(null);
+      }
+      return { success: false, error: error.response?.data?.message || 'Unable to sign in. Please try again.' };
     }
   };
 
-  // Logout function
-  const logout = () => {
-    // Clear state
+  const logout = async () => {
+    const previousToken = token;
+    operation.current += 1;
     setToken(null);
     setUser(null);
-
-    // Clear localStorage
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
+    clearStoredSession();
+    if (previousToken) {
+      try {
+        await authApi.logout(previousToken);
+      } catch {
+        return { success: false, error: 'Local session cleared; server logout could not be confirmed.' };
+      }
+    }
+    return { success: true };
   };
 
   // Check if user is authenticated
   const isAuthenticated = () => {
-    if (!token || !user) return false;
-
-    // Check if token is expired
-    const expiresAt = new Date(user.expiresAt);
-    const now = new Date();
-
-    if (now >= expiresAt) {
-      // Token expired, logout user
-      logout();
-      return false;
-    }
-
-    return true;
+    return Boolean(token && validUser(user));
   };
 
   // Check if user has specific role
   const hasRole = (role) => {
-    if (!user) return false;
-    return user.role === role;
+    return isAuthenticated() && user.role === role;
   };
 
   // Check if user is SuperAdmin

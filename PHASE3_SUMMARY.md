@@ -1,4 +1,56 @@
-# Phase 3: Frontend Development - COMPLETED ✅
+# Phase 3: Frontend Foundation
+
+## Current Status (2026-09-12)
+
+The roadmap defines Phase 3 as the React frontend foundation: routing, navigation, authentication UI, and reusable application structure. It does not define Phase 3 as deployment, database optimization, attendance, or advanced rewards. The historical roadmap places broader testing in Phase 7 and deployment in Phase 8; focused tests below validate the current changes, not completion of those later phases.
+
+Frontend implementation is complete for this continuation, with the full frontend test suite and production compilation passing. Interactive browser acceptance remains incomplete because the integrated browser was backgrounded and stopped completing pointer/keyboard interactions. This is not a production-readiness or live-integration sign-off.
+
+The user explicitly deferred all five Phase 2 integrations: Excel upload, QR attendance, points, certificates, and API wiring. No backend, database, infrastructure, dependency-version, or real credential changes were made. There is no demo login or production authentication bypass.
+
+### Delivered
+
+- Public navigation now exposes its expanded state and controlled menu to assistive technology, marks the active route, closes on route changes, and closes with Escape while returning focus to the toggle. The toggle has a stable 44px target.
+- Protected routes wait for session restoration and retain the requested admin path, query, and fragment when redirecting to login.
+- Login returns to a known admin route using history replacement. Unsupported paths, external URLs, and login-loop destinations fall back to the overview. Login errors are announced as alerts and submission exposes its busy state.
+- Public unknown routes render a 404 view with a return-home link. Authenticated unknown admin routes render the same view inside the protected workspace with an overview link.
+- Replaced the obsolete Create React App "Learn React" test with real-router application tests. Jest-only mappings point to the installed router's CommonJS exports; test-only TextEncoder/TextDecoder support avoids changing production dependencies.
+
+### Verification
+
+| Check | Result |
+| --- | --- |
+| Complete frontend Jest suite | 46 tests passed across 10 suites |
+| New routing tests | 11 passed, with real BrowserRouter/App routes and mocked auth/page data boundaries |
+| New navigation tests | 3 passed, including Escape/focus and route-change behavior |
+| Production build | Passed with three pre-existing Footer placeholder-link warnings |
+| Editor diagnostics | No errors in changed application files |
+| Browser startup/public 404 | Loaded successfully; desktop screenshot inspected |
+| Mobile/browser interactions | Not accepted: backgrounded tabs timed out on click stability and keyboard navigation; no fresh mobile screenshot was obtained |
+| Real login, CRUD, database, uploads, deployment | Deferred; not exercised |
+
+The build also reports outdated browser compatibility metadata and a Node deprecation notice. These are existing toolchain warnings, not changes to the deferred integration scope. Tracked build artifacts were not overwritten: output was directed to `%TEMP%\msc-phase3-build`.
+
+Run tests from the repository root:
+
+```powershell
+npm --prefix msc-webapp test -- --watchAll=false --runInBand
+```
+
+Run a build without changing the tracked build directory:
+
+```powershell
+& { $previousBuildPath = $env:BUILD_PATH; try { $env:BUILD_PATH = Join-Path $env:TEMP 'msc-phase3-build'; npm --prefix msc-webapp run build } finally { $env:BUILD_PATH = $previousBuildPath } }
+```
+
+Use the existing `Frontend UI preview` task. `/phase3-missing` demonstrates the public 404 view without an API connection. Real login still requires the deferred API and database setup. Once browser interaction is available, manually verify at 390 x 844 and 1440 x 1000: menu open/close, Escape focus return, active links, 404 return links, and authenticated deep-link return with an approved test backend. Unit tests are not evidence of real server authentication.
+
+## Historical Snapshot
+
+The material below is retained as historical context only. Its completion labels, API connectivity claims, ports, bundle sizes, and known-issue list are superseded by the current status above and PHASE1_AUTHENTICATION.md / PHASE2_UI_PROGRESS.md.
+
+<details>
+<summary>Original Phase 3 foundation report</summary>
 
 ## Summary
 
@@ -298,3 +350,5 @@ The React frontend is fully set up with:
 - Production-ready build
 
 All placeholder pages are ready for data integration in the next phase!
+
+</details>

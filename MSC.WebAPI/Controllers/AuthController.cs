@@ -1,7 +1,10 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MSC.WebAPI.Data;
 using MSC.WebAPI.DTOs;
+using MSC.WebAPI.Models;
 using MSC.WebAPI.Services;
 
 namespace MSC.WebAPI.Controllers
@@ -10,25 +13,53 @@ namespace MSC.WebAPI.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly UserManager<AdminUser> _users;
+        private readonly SignInManager<AdminUser> _signIn;
         private readonly IAuthService _authService;
         private readonly ILogger<AuthController> _logger;
-        private readonly IConfiguration _configuration;
 
         public AuthController(
-            ApplicationDbContext context,
+            UserManager<AdminUser> users,
+            SignInManager<AdminUser> signIn,
             IAuthService authService,
-            ILogger<AuthController> logger,
-            IConfiguration configuration)
+            ILogger<AuthController> logger)
         {
-            _context = context;
+            _users = users;
+            _signIn = signIn;
             _authService = authService;
             _logger = logger;
-            _configuration = configuration;
+        }
+
+        [Authorize]
+        [HttpGet("session")]
+        public IActionResult Session()
+        {
+            if (!long.TryParse(User.FindFirstValue(JwtRegisteredClaimNames.Exp), out var expiry))
+            {
+                return Unauthorized(new { message = "Invalid session" });
+            }
+
+            return Ok(new
+            {
+                email = User.FindFirstValue(ClaimTypes.Email),
+                role = User.FindFirstValue(ClaimTypes.Role),
+                expiresAt = DateTimeOffset.FromUnixTimeSeconds(expiry).UtcDateTime
+            });
+        }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var user = await _users.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (user == null) return Unauthorized();
+            var result = await _users.UpdateSecurityStampAsync(user);
+            return result.Succeeded ? NoContent() : Conflict(new { message = "Account changed. Please retry logout." });
         }
 
         // POST: api/auth/login
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<ActionResult<LoginResponse>> Login(LoginRequest request)
         {
             try
@@ -39,8 +70,7 @@ namespace MSC.WebAPI.Controllers
                 }
 
                 // Find user by email
-                var user = await _context.AdminUsers
-                    .FirstOrDefaultAsync(u => u.Email == request.Email);
+                var user = await _users.FindByEmailAsync(request.Email.Trim());
 
                 if (user == null)
                 {
@@ -49,7 +79,8 @@ namespace MSC.WebAPI.Controllers
                 }
 
                 // Verify password
-                if (!_authService.VerifyPassword(request.Password, user.PasswordHash))
+                var result = await _signIn.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
+                if (!result.Succeeded)
                 {
                     _logger.LogWarning("Login attempt failed: Invalid password - {Email}", request.Email);
                     return Unauthorized(new { message = "Invalid email or password" });
@@ -57,20 +88,23 @@ namespace MSC.WebAPI.Controllers
 
                 // Update last login time
                 user.LastLogin = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
+                var update = await _users.UpdateAsync(user);
+                if (!update.Succeeded)
+                {
+                    return Conflict(new { message = "Account changed. Please sign in again." });
+                }
 
                 // Generate JWT token
                 var token = _authService.GenerateJwtToken(user);
-                var expiresInHours = int.Parse(_configuration["Jwt:ExpiresInHours"] ?? "1");
 
                 _logger.LogInformation("User logged in successfully: {Email}", user.Email);
 
                 return Ok(new LoginResponse
                 {
                     Token = token,
-                    Email = user.Email,
+                    Email = user.Email!,
                     Role = user.Role.ToString(),
-                    ExpiresAt = DateTime.UtcNow.AddHours(expiresInHours)
+                    ExpiresAt = new JwtSecurityTokenHandler().ReadJwtToken(token).ValidTo
                 });
             }
             catch (Exception ex)

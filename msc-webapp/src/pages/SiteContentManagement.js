@@ -7,6 +7,8 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import FormInput from '../components/FormInput';
 import FormTextarea from '../components/FormTextarea';
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { CollectionToolbar, CollectionPagination, COLLECTION_PAGE_SIZE } from '../components/CollectionControls';
 
 /**
  * Site Content Management Page (Admin CRUD interface)
@@ -16,6 +18,10 @@ const SiteContentManagement = () => {
   const [contents, setContents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [saveError, setSaveError] = useState('');
+  const [deleteError, setDeleteError] = useState('');
   
   // Modal state
   const [showModal, setShowModal] = useState(false);
@@ -47,6 +53,7 @@ const SiteContentManagement = () => {
     try {
       const data = await siteContentApi.getAll();
       setContents(data);
+      setPage(1);
     } catch (err) {
       console.error('Failed to fetch site content:', err);
       setError('Failed to load site content. Please try again.');
@@ -54,6 +61,12 @@ const SiteContentManagement = () => {
       setLoading(false);
     }
   };
+
+  const query = search.trim().toLowerCase();
+  const filteredContents = contents.filter(content =>
+    [content.contentKey, content.contentValue].some(value => value?.toLowerCase().includes(query))
+  );
+  const visibleContents = filteredContents.slice((page - 1) * COLLECTION_PAGE_SIZE, page * COLLECTION_PAGE_SIZE);
 
   // Open create modal
   const handleCreate = () => {
@@ -63,6 +76,7 @@ const SiteContentManagement = () => {
       contentValue: ''
     });
     setFormErrors({});
+    setSaveError('');
     setCurrentContent(null);
     setShowModal(true);
   };
@@ -75,12 +89,14 @@ const SiteContentManagement = () => {
       contentValue: content.contentValue
     });
     setFormErrors({});
+    setSaveError('');
     setCurrentContent(content);
     setShowModal(true);
   };
 
   // Open delete confirmation
   const handleDeleteClick = (content) => {
+    setDeleteError('');
     setContentToDelete(content);
     setShowDeleteModal(true);
   };
@@ -116,13 +132,14 @@ const SiteContentManagement = () => {
   // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
     
     if (!validateForm()) {
       return;
     }
     
     setSubmitting(true);
-    setError('');
+    setSaveError('');
     
     try {
       if (modalMode === 'create') {
@@ -141,7 +158,7 @@ const SiteContentManagement = () => {
       setShowModal(false);
     } catch (err) {
       console.error('Failed to save content:', err);
-      setError(err.response?.data?.message || 'Failed to save content. Please try again.');
+      setSaveError(err.response?.data?.message || 'Failed to save content. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -149,10 +166,10 @@ const SiteContentManagement = () => {
 
   // Handle delete
   const handleDelete = async () => {
-    if (!contentToDelete) return;
+    if (!contentToDelete || deleting) return;
     
     setDeleting(true);
-    setError('');
+    setDeleteError('');
     
     try {
       await siteContentApi.delete(contentToDelete.contentKey);
@@ -165,19 +182,18 @@ const SiteContentManagement = () => {
       setContentToDelete(null);
     } catch (err) {
       console.error('Failed to delete content:', err);
-      setError(err.response?.data?.message || 'Failed to delete content. Please try again.');
+      setDeleteError(err.response?.data?.message || 'Failed to delete content. Please try again.');
     } finally {
       setDeleting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="collection-page">
+      <div>
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-text">Site Content Management</h1>
-          <p className="text-gray-600 mt-2">Manage editable text sections (Vision, Mission, etc.)</p>
+        <div className="collection-heading">
+          <h1>Site Content Management</h1>
         </div>
 
         {/* Error Message */}
@@ -188,27 +204,25 @@ const SiteContentManagement = () => {
         )}
 
         {/* Actions Bar */}
-        <div className="mb-6 flex justify-end">
-          <Button onClick={handleCreate} variant="primary">
-            + Add Content
-          </Button>
-        </div>
+        <CollectionToolbar label="content" search={search} onSearch={value => { setSearch(value); setPage(1); }}
+          onRefresh={fetchContents} loading={loading} onCreate={handleCreate} createLabel="Add Content" />
 
         {/* Content List */}
         {loading ? (
           <div className="flex justify-center py-12">
             <LoadingSpinner size="lg" text="Loading content..." />
           </div>
-        ) : contents.length === 0 ? (
-          <Card>
-            <p className="text-center text-gray-500 py-8">No site content found.</p>
-          </Card>
+        ) : error && contents.length === 0 ? null : filteredContents.length === 0 ? (
+          <div className="collection-empty">
+            <h2>{contents.length === 0 ? 'No site content yet' : 'No matching content'}</h2>
+            {search && <button type="button" onClick={() => { setSearch(''); setPage(1); }}>Clear filters</button>}
+          </div>
         ) : (
-          <div className="space-y-4">
-            {contents.map(content => (
+          <div className="collection-list">
+            {visibleContents.map(content => (
               <Card key={content.id}>
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
+                <div className="collection-list-row">
+                  <div className="collection-list-copy">
                     <h3 className="text-lg font-semibold text-text mb-2">
                       {content.contentKey}
                     </h3>
@@ -218,21 +232,9 @@ const SiteContentManagement = () => {
                   </div>
                   
                   {/* Actions */}
-                  <div className="flex space-x-2 ml-4">
-                    <Button 
-                      onClick={() => handleEdit(content)} 
-                      variant="secondary" 
-                      size="sm"
-                    >
-                      Edit
-                    </Button>
-                    <Button 
-                      onClick={() => handleDeleteClick(content)} 
-                      variant="danger" 
-                      size="sm"
-                    >
-                      Delete
-                    </Button>
+                  <div className="collection-row-actions">
+                    <button type="button" className="collection-icon" onClick={() => handleEdit(content)} aria-label={`Edit ${content.contentKey}`} title={`Edit ${content.contentKey}`}><FiEdit2 aria-hidden="true" /></button>
+                    <button type="button" className="collection-icon collection-danger" onClick={() => handleDeleteClick(content)} aria-label={`Delete ${content.contentKey}`} title={`Delete ${content.contentKey}`}><FiTrash2 aria-hidden="true" /></button>
                   </div>
                 </div>
               </Card>
@@ -240,15 +242,19 @@ const SiteContentManagement = () => {
           </div>
         )}
 
+        {!loading && filteredContents.length > 0 && <CollectionPagination label="content entries" page={page} total={filteredContents.length} onPage={setPage} />}
+
         {/* Create/Edit Modal */}
         <Modal
           isOpen={showModal}
           onClose={() => setShowModal(false)}
           title={modalMode === 'create' ? 'Add New Content' : 'Edit Content'}
           size="lg"
+          busy={submitting}
         >
-          <form onSubmit={handleSubmit}>
-            <div className="space-y-4">
+          <form onSubmit={handleSubmit} aria-busy={submitting}>
+            {saveError && <div role="alert" className="collection-form-error">{saveError}</div>}
+            <fieldset disabled={submitting} className="space-y-4">
               {/* Content Key (disabled in edit mode) */}
               <FormInput
                 label="Content Key"
@@ -272,7 +278,7 @@ const SiteContentManagement = () => {
                 required
                 helperText="The text content that will be displayed on the website."
               />
-            </div>
+            </fieldset>
 
             {/* Modal Footer with Actions */}
             <div className="mt-6 flex justify-end space-x-3">
@@ -301,7 +307,9 @@ const SiteContentManagement = () => {
           onClose={() => setShowDeleteModal(false)}
           title="Confirm Delete"
           size="sm"
+          busy={deleting}
         >
+          {deleteError && <div role="alert" className="collection-form-error">{deleteError}</div>}
           <div className="mb-6">
             <p className="text-gray-700">
               Are you sure you want to delete the content with key <strong>{contentToDelete?.contentKey}</strong>? 

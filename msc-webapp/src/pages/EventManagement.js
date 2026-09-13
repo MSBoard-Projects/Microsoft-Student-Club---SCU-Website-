@@ -8,6 +8,7 @@ import ErrorMessage from '../components/ErrorMessage';
 import FormInput from '../components/FormInput';
 import FormTextarea from '../components/FormTextarea';
 import ImageUpload from '../components/ImageUpload';
+import { CollectionToolbar, CollectionPagination, COLLECTION_PAGE_SIZE } from '../components/CollectionControls';
 
 /**
  * Event Management Page (Admin CRUD interface)
@@ -18,6 +19,8 @@ const EventManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filterType, setFilterType] = useState('all'); // all, upcoming, featured
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
   
   // Modal state
   const [showModal, setShowModal] = useState(false);
@@ -54,6 +57,7 @@ const EventManagement = () => {
     try {
       const data = await eventsApi.getAll();
       setEvents(data);
+      setPage(1);
     } catch (err) {
       console.error('Failed to fetch events:', err);
       setError('Failed to load events. Please try again.');
@@ -63,11 +67,17 @@ const EventManagement = () => {
   };
 
   // Filter events
-  const filteredEvents = events.filter(event => {
-    if (filterType === 'upcoming') return event.isUpcoming;
-    if (filterType === 'featured') return event.isFeatured;
-    return true; // 'all'
-  });
+  const query = search.trim().toLowerCase();
+  const filteredEvents = events.filter(event =>
+    (filterType === 'all' || (filterType === 'upcoming' ? event.isUpcoming : event.isFeatured)) &&
+    [event.title, event.description, event.location].some(value => value?.toLowerCase().includes(query))
+  );
+  const visibleEvents = filteredEvents.slice((page - 1) * COLLECTION_PAGE_SIZE, page * COLLECTION_PAGE_SIZE);
+  const clearFilters = () => {
+    setSearch('');
+    setFilterType('all');
+    setPage(1);
+  };
 
   // Open create modal
   const handleCreate = () => {
@@ -224,12 +234,11 @@ const EventManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="collection-page">
+      <div>
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-text">Event Management</h1>
-          <p className="text-gray-600 mt-2">Manage club events, dates, and information</p>
+        <div className="collection-heading">
+          <h1>Event Management</h1>
         </div>
 
         {/* Error Message */}
@@ -240,37 +249,26 @@ const EventManagement = () => {
         )}
 
         {/* Actions Bar */}
-        <div className="mb-6 flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <label className="text-sm font-medium text-text">Filter by:</label>
-            <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
-            >
-              <option value="all">All Events</option>
-              <option value="upcoming">Upcoming Events</option>
-              <option value="featured">Featured Events</option>
-            </select>
-          </div>
-          
-          <Button onClick={handleCreate} variant="primary">
-            + Add Event
-          </Button>
-        </div>
+        <CollectionToolbar
+          label="events" search={search} onSearch={value => { setSearch(value); setPage(1); }}
+          filter={filterType} onFilter={value => { setFilterType(value); setPage(1); }}
+          options={[{ value: 'all', label: 'All Events' }, { value: 'upcoming', label: 'Upcoming Events' }, { value: 'featured', label: 'Featured Events' }]}
+          onRefresh={fetchEvents} loading={loading} onCreate={handleCreate} createLabel="Add Event"
+        />
 
         {/* Events List */}
         {loading ? (
           <div className="flex justify-center py-12">
             <LoadingSpinner size="lg" text="Loading events..." />
           </div>
-        ) : filteredEvents.length === 0 ? (
-          <Card>
-            <p className="text-center text-gray-500 py-8">No events found.</p>
-          </Card>
+        ) : error && events.length === 0 ? null : filteredEvents.length === 0 ? (
+          <div className="collection-empty">
+            <h2>{events.length === 0 ? 'No events yet' : 'No matching events'}</h2>
+            {(search || filterType !== 'all') && <button type="button" onClick={clearFilters}>Clear filters</button>}
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredEvents.map(event => (
+          <div className="collection-grid">
+            {visibleEvents.map(event => (
               <Card key={event.id}>
                 {/* Event Image */}
                 {event.imageUrl && (
@@ -330,6 +328,10 @@ const EventManagement = () => {
               </Card>
             ))}
           </div>
+        )}
+
+        {!loading && filteredEvents.length > 0 && (
+          <CollectionPagination label="events" page={page} total={filteredEvents.length} onPage={setPage} />
         )}
 
         {/* Create/Edit Modal */}

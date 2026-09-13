@@ -1,0 +1,156 @@
+[
+    {
+        "id":  "adf",
+        "name":  "ADF",
+        "src":  "/club-media/community-import/logo-adf.png",
+        "width":  600,
+        "height":  279
+    },
+    {
+        "id":  "ieee",
+        "name":  "IEEE",
+        "src":  "/club-media/community-import/logo-ieee.png",
+        "width":  300,
+        "height":  300
+    },
+    {
+        "id":  "oleg",
+        "name":  "Oleg",
+        "src":  "/club-media/community-import/logo-oleg.png",
+        "width":  386,
+        "height":  300
+    },
+    {
+        "id":  "rally",
+        "name":  "Rally",
+        "src":  "/club-media/community-import/logo-rally.png",
+        "width":  301,
+        "height":  300
+    },
+    {
+        "id":  "tros",
+        "name":  "TROS",
+        "src":  "/club-media/community-import/logo-tros.png",
+        "width":  300,
+        "height":  300
+    },
+    {
+        "id":  "creativa",
+        "name":  "Creativa",
+        "src":  "/club-media/community-import/logo-creativa.png",
+        "width":  299,
+        "height":  300
+    },
+    {
+        "id":  "finance",
+        "name":  "Finance",
+        "src":  "/club-media/community-import/logo-finance.png",
+        "width":  303,
+        "height":  300
+    },
+    {
+        "id":  "github-campus-expert",
+        "name":  "GitHub Campus Expert",
+        "src":  "/club-media/community-import/logo-github-campus-expert.png",
+        "width":  590,
+        "height":  300
+    },
+    {
+        "id":  "github",
+        "name":  "GitHub",
+        "src":  "/club-media/community-import/logo-github.png",
+        "width":  600,
+        "height":  140
+    },
+    {
+        "id":  "iti",
+        "name":  "ITI",
+        "src":  "/club-media/community-import/logo-iti.png",
+        "width":  409,
+        "height":  300
+    },
+    {
+        "id":  "itida-tiec",
+        "name":  "itida _ tiec",
+        "src":  "/club-media/community-import/logo-itida-tiec.png",
+        "width":  600,
+        "height":  174
+    },
+    {
+        "id":  "kaaf",
+        "name":  "KAAF",
+        "src":  "/club-media/community-import/logo-kaaf.png",
+        "width":  600,
+        "height":  204
+    },
+    {
+        "id":  "microsoft-campus-club-scu",
+        "name":  "Microsoft Campus Club SCU",
+        "src":  "/club-media/community-import/logo-microsoft-campus-club-scu.png",
+        "width":  300,
+        "height":  300
+    },
+    {
+        "id":  "microsoft-student-ambassador",
+        "name":  "Microsoft Student Ambassador",
+        "src":  "/club-media/community-import/logo-microsoft-student-ambassador.png",
+        "width":  300,
+        "height":  300
+    },
+    {
+        "id":  "microsoft-student-club-scu",
+        "name":  "Microsoft Student Club SCU",
+        "src":  "/club-media/community-import/logo-microsoft-student-club-scu.png",
+        "width":  600,
+        "height":  239
+    },
+    {
+        "id":  "microsoft",
+        "name":  "Microsoft",
+        "src":  "/club-media/community-import/logo-microsoft.png",
+        "width":  600,
+        "height":  128
+    },
+    {
+        "id":  "mlh",
+        "name":  "MLH",
+        "src":  "/club-media/community-import/logo-mlh.png",
+        "width":  600,
+        "height":  252
+    },
+    {
+        "id":  "redbull",
+        "name":  "RedBull",
+        "src":  "/club-media/community-import/logo-redbull.png",
+        "width":  496,
+        "height":  300
+    },
+    {
+        "id":  "sprints",
+        "name":  "Sprints",
+        "src":  "/club-media/community-import/logo-sprints.png",
+        "width":  462,
+        "height":  300
+    },
+    {
+        "id":  "suez-canal-university",
+        "name":  "Suez Canal University",
+        "src":  "/club-media/community-import/logo-suez-canal-university.png",
+        "width":  289,
+        "height":  300
+    },
+    {
+        "id":  "tech-shift-summit",
+        "name":  "TECH SHIFT SUMMIT",
+        "src":  "/club-media/community-import/logo-tech-shift-summit.png",
+        "width":  600,
+        "height":  262
+    },
+    {
+        "id":  "tmayoz",
+        "name":  "Tmayoz",
+        "src":  "/club-media/community-import/logo-tmayoz.png",
+        "width":  165,
+        "height":  300
+    }
+]

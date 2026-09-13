@@ -2,10 +2,32 @@
 
 ## 🚀 Quick Start Commands
 
-### Run QuickStart Script
+### Run QuickStart Script (Recommended)
 ```powershell
 .\QuickStart.ps1
 ```
+This will automatically:
+- Check prerequisites
+- Create/update database
+- Create admin user
+- Offer to seed sample data
+- Install npm packages
+- Launch both servers
+
+### Seed Sample Data (For Testing)
+```powershell
+.\SeedSampleData.ps1
+```
+Or manually:
+```powershell
+cd MSC.WebAPI
+dotnet run seed-data
+```
+
+This adds:
+- **13 Sample Members** (High Board, Board, Golden Members)
+- **8 Sample Events** (Featured, Upcoming, Past including Azure AI Bootcamp, Game Dev Hackathon)
+- **6 Site Content Entries** (Vision, Mission, Hero text)
 
 ### Manual Start (if needed)
 ```powershell
@@ -162,6 +184,47 @@ dotnet run seed-admin
 # Or with custom credentials:
 dotnet run seed-admin custom@email.com MyPassword123!
 ```
+
+### Seed Sample Data (Members, Events, Content)
+```powershell
+cd MSC.WebAPI
+dotnet run seed-data
+```
+
+**What gets seeded:**
+- **High Board Members (3):**
+  - Sarah Johnson (President)
+  - Michael Chen (Vice President)
+  - Emily Rodriguez (Secretary)
+
+- **Board Members (4):**
+  - David Kim (Technical Lead)
+  - Jessica Thompson (Events Coordinator)
+  - Ahmed Al-Rashid (Marketing Director)
+  - Maria Garcia (Community Manager)
+
+- **Golden Members (6):**
+  - Robert Anderson (Alumni - Software Engineer at Microsoft)
+  - Lisa Nguyen (Alumni - Cloud Architect at Azure)
+  - James Patterson (Alumni - AI Researcher)
+  - Sophia Williams (Alumni - Data Scientist at Google)
+  - Daniel Lee (Alumni - DevOps Engineer)
+  - Olivia Brown (Alumni - Product Manager at Microsoft)
+
+- **Events (8):**
+  - 🌟 Tech Summit 2025 (Upcoming, Featured)
+  - 🌟 Game Development Hackathon (Upcoming, Featured)
+  - 🌟 Azure AI Bootcamp (Past, Featured)
+  - ☁️ Cloud Computing Workshop (Upcoming)
+  - 📱 Mobile App Development with React Native (Upcoming)
+  - 🔒 Cybersecurity Essentials (Past)
+  - 🌐 Web Development Basics (Past)
+  - 🚀 Introduction to DevOps (Upcoming)
+
+- **Site Content (6):**
+  - Hero title and subtitle
+  - Vision title and description
+  - Mission title and description
 
 ---
 

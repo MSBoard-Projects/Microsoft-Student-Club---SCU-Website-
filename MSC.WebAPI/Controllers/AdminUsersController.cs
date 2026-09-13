@@ -1,4 +1,6 @@
+using System.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MSC.WebAPI.Data;
@@ -14,16 +16,16 @@ namespace MSC.WebAPI.Controllers
     public class AdminUsersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly IAuthService _authService;
+        private readonly UserManager<AdminUser> _users;
         private readonly ILogger<AdminUsersController> _logger;
 
         public AdminUsersController(
             ApplicationDbContext context,
-            IAuthService authService,
+            UserManager<AdminUser> users,
             ILogger<AdminUsersController> logger)
         {
             _context = context;
-            _authService = authService;
+            _users = users;
             _logger = logger;
         }
 
@@ -41,7 +43,7 @@ namespace MSC.WebAPI.Controllers
                     .Select(u => new AdminUserResponse
                     {
                         Id = u.Id,
-                        Email = u.Email,
+                        Email = u.Email!,
                         Role = u.Role.ToString(),
                         CreatedAt = u.CreatedAt,
                         LastLogin = u.LastLogin
@@ -72,7 +74,7 @@ namespace MSC.WebAPI.Controllers
                     .Select(u => new AdminUserResponse
                     {
                         Id = u.Id,
-                        Email = u.Email,
+                        Email = u.Email!,
                         Role = u.Role.ToString(),
                         CreatedAt = u.CreatedAt,
                         LastLogin = u.LastLogin
@@ -104,9 +106,7 @@ namespace MSC.WebAPI.Controllers
             try
             {
                 // Check if email already exists
-                var existingUser = await _context.AdminUsers
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(u => u.Email == request.Email);
+                var existingUser = await _users.FindByEmailAsync(request.Email.Trim());
 
                 if (existingUser != null)
                 {
@@ -114,20 +114,20 @@ namespace MSC.WebAPI.Controllers
                     return BadRequest(new { message = "Email already exists" });
                 }
 
-                // Hash password
-                var passwordHash = _authService.HashPassword(request.Password);
-
                 // Create new admin user
                 var adminUser = new AdminUser
                 {
-                    Email = request.Email,
-                    PasswordHash = passwordHash,
+                    Email = request.Email.Trim(),
+                    UserName = request.Email.Trim(),
                     Role = request.Role,
                     CreatedAt = DateTime.UtcNow
                 };
 
-                _context.AdminUsers.Add(adminUser);
-                await _context.SaveChangesAsync();
+                var result = await _users.CreateAsync(adminUser, request.Password);
+                if (!result.Succeeded)
+                {
+                    return BadRequest(new { errors = result.Errors.Select(error => error.Description) });
+                }
 
                 _logger.LogInformation("Created new admin user {UserId} with email {Email} and role {Role}", 
                     adminUser.Id, adminUser.Email, adminUser.Role);
@@ -158,6 +158,7 @@ namespace MSC.WebAPI.Controllers
         {
             try
             {
+                await using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
                 var adminUser = await _context.AdminUsers.FindAsync(id);
 
                 if (adminUser == null)
@@ -170,32 +171,50 @@ namespace MSC.WebAPI.Controllers
                 if (!string.IsNullOrEmpty(request.Email))
                 {
                     // Check if new email already exists
-                    var existingUser = await _context.AdminUsers
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(u => u.Email == request.Email && u.Id != id);
+                    var existingUser = await _users.FindByEmailAsync(request.Email.Trim());
 
-                    if (existingUser != null)
+                    if (existingUser != null && existingUser.Id != id)
                     {
                         _logger.LogWarning("Attempted to update admin user {UserId} with existing email: {Email}", id, request.Email);
                         return BadRequest(new { message = "Email already exists" });
                     }
 
-                    adminUser.Email = request.Email;
+                    adminUser.Email = request.Email.Trim();
+                    adminUser.UserName = adminUser.Email;
                 }
 
                 // Update password if provided
                 if (!string.IsNullOrEmpty(request.Password))
                 {
-                    adminUser.PasswordHash = _authService.HashPassword(request.Password);
+                    foreach (var validator in _users.PasswordValidators)
+                    {
+                        var validation = await validator.ValidateAsync(_users, adminUser, request.Password);
+                        if (!validation.Succeeded)
+                        {
+                            return BadRequest(new { errors = validation.Errors.Select(error => error.Description) });
+                        }
+                    }
+                    adminUser.PasswordHash = _users.PasswordHasher.HashPassword(adminUser, request.Password);
                 }
 
                 // Update role if provided
                 if (request.Role.HasValue)
                 {
+                    if (adminUser.Role == AdminRole.SuperAdmin && request.Role != AdminRole.SuperAdmin &&
+                        await _context.AdminUsers.CountAsync(user => user.Role == AdminRole.SuperAdmin) <= 1)
+                    {
+                        return BadRequest(new { message = "Cannot demote the last SuperAdmin user" });
+                    }
                     adminUser.Role = request.Role.Value;
                 }
 
-                await _context.SaveChangesAsync();
+                adminUser.SecurityStamp = Guid.NewGuid().ToString();
+                var result = await _users.UpdateAsync(adminUser);
+                if (!result.Succeeded)
+                {
+                    return BadRequest(new { errors = result.Errors.Select(error => error.Description) });
+                }
+                await transaction.CommitAsync();
 
                 _logger.LogInformation("Updated admin user {UserId}", id);
                 return NoContent();
@@ -215,6 +234,7 @@ namespace MSC.WebAPI.Controllers
         {
             try
             {
+                await using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
                 var adminUser = await _context.AdminUsers.FindAsync(id);
 
                 if (adminUser == null)
@@ -236,8 +256,12 @@ namespace MSC.WebAPI.Controllers
                     }
                 }
 
-                _context.AdminUsers.Remove(adminUser);
-                await _context.SaveChangesAsync();
+                var result = await _users.DeleteAsync(adminUser);
+                if (!result.Succeeded)
+                {
+                    return BadRequest(new { errors = result.Errors.Select(error => error.Description) });
+                }
+                await transaction.CommitAsync();
 
                 _logger.LogInformation("Deleted admin user {UserId} with email {Email}", id, adminUser.Email);
                 return NoContent();
