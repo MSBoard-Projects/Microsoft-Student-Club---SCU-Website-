@@ -1,0 +1,10 @@
+.content-manager .collection-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+.content-manager .collection-heading > button { display: inline-flex; align-items: center; gap: 10px; }
+.content-form-fields { display: grid; gap: 16px; }
+.content-form-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+.content-category { display: grid; gap: 8px; font-size: 14px; font-weight: 500; color: #2e2e2e; }.content-category select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; background: white; }
+.content-checkbox { display: flex; align-items: center; gap: 10px; min-height: 36px; font-size: 14px; }
+.content-statistics-form { max-width: 620px; }.content-statistics-form > button { margin-top: 24px; }
+.content-records { border-top: 1px solid #dfe5e9; }.content-record { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 0; border-bottom: 1px solid #dfe5e9; }.content-record > div:first-child { min-width: 0; }.content-record h2 { font-size: 16px; font-weight: 600; overflow-wrap: anywhere; }.content-record p { font-size: 12px; margin-top: 6px; color: #53616b; overflow-wrap: anywhere; }
+.content-record-actions { display: flex; gap: 8px; flex-shrink: 0; }.content-record-actions button { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid #dfe5e9; border-radius: 5px; }.content-record-actions button:hover { background: #edf6fc; }.content-record-actions button:last-child { color: #b42318; }
+.content-record-count { margin: 12px 0; font-size: 13px; color: #53616b; }.content-save-status { padding: 12px 16px; border-left: 3px solid #14804a; background: #f0faf4; }.content-mutation-error { margin-top: 16px; color: #b42318; }

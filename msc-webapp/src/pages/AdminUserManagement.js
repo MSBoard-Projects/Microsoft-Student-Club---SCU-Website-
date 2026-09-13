@@ -8,6 +8,8 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import FormInput from '../components/FormInput';
 import FormSelect from '../components/FormSelect';
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { CollectionToolbar, CollectionPagination, COLLECTION_PAGE_SIZE } from '../components/CollectionControls';
 
 /**
  * Admin User Management Page (SuperAdmin only)
@@ -15,9 +17,15 @@ import FormSelect from '../components/FormSelect';
  */
 const AdminUserManagement = () => {
   const { user, isSuperAdmin } = useAuth();
+  const canManageUsers = isSuperAdmin();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
+  const [filterRole, setFilterRole] = useState('all');
+  const [page, setPage] = useState(1);
+  const [saveError, setSaveError] = useState('');
+  const [deleteError, setDeleteError] = useState('');
   
   // Modal state
   const [showModal, setShowModal] = useState(false);
@@ -46,10 +54,10 @@ const AdminUserManagement = () => {
 
   // Fetch users on mount
   useEffect(() => {
-    if (isSuperAdmin) {
+    if (canManageUsers) {
       fetchUsers();
     }
-  }, [isSuperAdmin]);
+  }, [canManageUsers]);
 
   // Fetch all admin users
   const fetchUsers = async () => {
@@ -58,12 +66,26 @@ const AdminUserManagement = () => {
     try {
       const data = await adminUsersApi.getAll();
       setUsers(data);
+      setPage(1);
     } catch (err) {
       console.error('Failed to fetch admin users:', err);
       setError('Failed to load admin users. Please try again.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const superAdminCount = users.filter(adminUser => adminUser.role === 'SuperAdmin').length;
+  const editingLastSuperAdmin = modalMode === 'edit' && currentUser?.role === 'SuperAdmin' && superAdminCount === 1;
+  const query = search.trim().toLowerCase();
+  const filteredUsers = users.filter(adminUser =>
+    (filterRole === 'all' || adminUser.role === filterRole) &&
+    [adminUser.email, roleOptions.find(option => option.value === adminUser.role)?.label].some(value => value?.toLowerCase().includes(query))
+  );
+  const visibleUsers = filteredUsers.slice((page - 1) * COLLECTION_PAGE_SIZE, page * COLLECTION_PAGE_SIZE);
+  const closeEditor = () => {
+    setShowModal(false);
+    setFormData(previous => ({ ...previous, password: '' }));
   };
 
   // Open create modal
@@ -75,6 +97,7 @@ const AdminUserManagement = () => {
       role: 'ContentEditor'
     });
     setFormErrors({});
+    setSaveError('');
     setCurrentUser(null);
     setShowModal(true);
   };
@@ -88,6 +111,7 @@ const AdminUserManagement = () => {
       role: adminUser.role
     });
     setFormErrors({});
+    setSaveError('');
     setCurrentUser(adminUser);
     setShowModal(true);
   };
@@ -95,7 +119,6 @@ const AdminUserManagement = () => {
   // Open delete confirmation
   const handleDeleteClick = (adminUser) => {
     // Check if trying to delete last SuperAdmin
-    const superAdminCount = users.filter(u => u.role === 'SuperAdmin').length;
     if (adminUser.role === 'SuperAdmin' && superAdminCount === 1) {
       setError('Cannot delete the last Super Admin account.');
       return;
@@ -107,6 +130,7 @@ const AdminUserManagement = () => {
       return;
     }
 
+    setDeleteError('');
     setUserToDelete(adminUser);
     setShowDeleteModal(true);
   };
@@ -127,15 +151,23 @@ const AdminUserManagement = () => {
     
     if (!formData.email.trim()) {
       errors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
       errors.email = 'Invalid email format';
     }
     
     // Password required only for create mode or if user entered something in edit mode
     if (modalMode === 'create' && !formData.password) {
       errors.password = 'Password is required';
-    } else if (formData.password && formData.password.length < 6) {
-      errors.password = 'Password must be at least 6 characters';
+    } else if (formData.password && formData.password.length < 12) {
+      errors.password = 'Password must be at least 12 characters';
+    } else if (formData.password && (!/[A-Z]/.test(formData.password) || !/[a-z]/.test(formData.password) || !/[0-9]/.test(formData.password) || !/[^a-zA-Z0-9]/.test(formData.password))) {
+      errors.password = 'Include uppercase, lowercase, a number, and a symbol.';
+    }
+
+    if (!roleOptions.some(option => option.value === formData.role)) {
+      errors.role = 'Select a valid role.';
+    } else if (editingLastSuperAdmin && formData.role !== 'SuperAdmin') {
+      errors.role = 'Cannot change the role of the last Super Admin.';
     }
     
     setFormErrors(errors);
@@ -145,21 +177,22 @@ const AdminUserManagement = () => {
   // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting || !canManageUsers) return;
     
     if (!validateForm()) {
       return;
     }
     
     setSubmitting(true);
-    setError('');
+    setSaveError('');
     
     try {
       if (modalMode === 'create') {
-        await adminUsersApi.create(formData);
+        await adminUsersApi.create({ ...formData, email: formData.email.trim() });
       } else {
         // For update, only send password if it was changed
         const updateData = {
-          email: formData.email,
+          email: formData.email.trim(),
           role: formData.role
         };
         if (formData.password) {
@@ -172,10 +205,12 @@ const AdminUserManagement = () => {
       await fetchUsers();
       
       // Close modal
-      setShowModal(false);
+      closeEditor();
     } catch (err) {
       console.error('Failed to save admin user:', err);
-      setError(err.response?.data?.message || 'Failed to save admin user. Please try again.');
+      const errors = err.response?.data?.errors;
+      const details = typeof errors === 'string' ? errors : Object.values(errors || {}).flat().filter(value => typeof value === 'string').join(' ');
+      setSaveError(err.response?.data?.message || details || 'Failed to save admin user. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -183,10 +218,10 @@ const AdminUserManagement = () => {
 
   // Handle delete
   const handleDelete = async () => {
-    if (!userToDelete) return;
+    if (!userToDelete || deleting || !canManageUsers) return;
     
     setDeleting(true);
-    setError('');
+    setDeleteError('');
     
     try {
       await adminUsersApi.delete(userToDelete.id);
@@ -199,7 +234,7 @@ const AdminUserManagement = () => {
       setUserToDelete(null);
     } catch (err) {
       console.error('Failed to delete admin user:', err);
-      setError(err.response?.data?.message || 'Failed to delete admin user. Please try again.');
+      setDeleteError(err.response?.data?.message || 'Failed to delete admin user. Please try again.');
     } finally {
       setDeleting(false);
     }
@@ -227,30 +262,25 @@ const AdminUserManagement = () => {
   };
 
   // Redirect if not SuperAdmin
-  if (!isSuperAdmin) {
+  if (!canManageUsers) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Card>
-            <div className="text-center py-8">
-              <h2 className="text-2xl font-bold text-text mb-4">Access Denied</h2>
+      <div className="collection-page">
+            <div className="collection-empty">
+              <h1 className="text-2xl font-bold text-text mb-4">Access Denied</h1>
               <p className="text-gray-600">
                 You do not have permission to access this page. Only Super Admins can manage admin users.
               </p>
             </div>
-          </Card>
-        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="collection-page">
+      <div>
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-text">Admin User Management</h1>
-          <p className="text-gray-600 mt-2">Manage admin accounts and permissions (SuperAdmin only)</p>
+        <div className="collection-heading">
+          <h1>Admin User Management</h1>
         </div>
 
         {/* Error Message */}
@@ -261,29 +291,29 @@ const AdminUserManagement = () => {
         )}
 
         {/* Actions Bar */}
-        <div className="mb-6 flex justify-end">
-          <Button onClick={handleCreate} variant="primary">
-            + Add Admin User
-          </Button>
-        </div>
+        <CollectionToolbar label="admin users" search={search} onSearch={value => { setSearch(value); setPage(1); }}
+          filter={filterRole} onFilter={value => { setFilterRole(value); setPage(1); }}
+          options={[{ value: 'all', label: 'All roles' }, ...roleOptions]}
+          onRefresh={fetchUsers} loading={loading} onCreate={handleCreate} createLabel="Add Admin User" />
 
         {/* Users List */}
         {loading ? (
           <div className="flex justify-center py-12">
             <LoadingSpinner size="lg" text="Loading admin users..." />
           </div>
-        ) : users.length === 0 ? (
-          <Card>
-            <p className="text-center text-gray-500 py-8">No admin users found.</p>
-          </Card>
+        ) : error && users.length === 0 ? null : filteredUsers.length === 0 ? (
+          <div className="collection-empty">
+            <h2>{users.length === 0 ? 'No admin users yet' : 'No matching admin users'}</h2>
+            {(search || filterRole !== 'all') && <button type="button" onClick={() => { setSearch(''); setFilterRole('all'); setPage(1); }}>Clear filters</button>}
+          </div>
         ) : (
-          <div className="space-y-4">
-            {users.map(adminUser => (
+          <div className="collection-list">
+            {visibleUsers.map(adminUser => (
               <Card key={adminUser.id}>
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-lg font-semibold text-text">
+                <div className="collection-list-row">
+                  <div className="collection-list-copy">
+                    <div className="collection-list-title">
+                      <h3>
                         {adminUser.email}
                       </h3>
                       <span className={`px-3 py-1 text-xs font-semibold rounded ${
@@ -311,22 +341,12 @@ const AdminUserManagement = () => {
                   </div>
                   
                   {/* Actions */}
-                  <div className="flex space-x-2 ml-4">
-                    <Button 
-                      onClick={() => handleEdit(adminUser)} 
-                      variant="secondary" 
-                      size="sm"
-                    >
-                      Edit
-                    </Button>
-                    <Button 
-                      onClick={() => handleDeleteClick(adminUser)} 
-                      variant="danger" 
-                      size="sm"
-                      disabled={adminUser.id === user?.id}
-                    >
-                      Delete
-                    </Button>
+                  <div className="collection-row-actions">
+                    <button type="button" className="collection-icon" onClick={() => handleEdit(adminUser)} aria-label={`Edit ${adminUser.email}`} title={`Edit ${adminUser.email}`}><FiEdit2 aria-hidden="true" /></button>
+                    <button type="button" className="collection-icon collection-danger" onClick={() => handleDeleteClick(adminUser)}
+                      aria-label={`Delete ${adminUser.email}`}
+                      title={adminUser.id === user?.id ? 'Cannot delete your own account' : adminUser.role === 'SuperAdmin' && superAdminCount === 1 ? 'Cannot delete the last Super Admin' : `Delete ${adminUser.email}`}
+                      disabled={adminUser.id === user?.id || (adminUser.role === 'SuperAdmin' && superAdminCount === 1)}><FiTrash2 aria-hidden="true" /></button>
                   </div>
                 </div>
               </Card>
@@ -334,15 +354,19 @@ const AdminUserManagement = () => {
           </div>
         )}
 
+        {!loading && filteredUsers.length > 0 && <CollectionPagination label="admin users" page={page} total={filteredUsers.length} onPage={setPage} />}
+
         {/* Create/Edit Modal */}
         <Modal
           isOpen={showModal}
-          onClose={() => setShowModal(false)}
+          onClose={closeEditor}
           title={modalMode === 'create' ? 'Add New Admin User' : 'Edit Admin User'}
           size="md"
+          busy={submitting}
         >
-          <form onSubmit={handleSubmit}>
-            <div className="space-y-4">
+          <form onSubmit={handleSubmit} aria-busy={submitting}>
+            {saveError && <div role="alert" className="collection-form-error">{saveError}</div>}
+            <fieldset disabled={submitting} className="space-y-4">
               {/* Email */}
               <FormInput
                 label="Email"
@@ -363,7 +387,7 @@ const AdminUserManagement = () => {
                 onChange={handleInputChange}
                 error={formErrors.password}
                 required={modalMode === 'create'}
-                helperText="Minimum 6 characters"
+                helperText="At least 12 characters, including uppercase, lowercase, a digit, and a symbol"
               />
 
               {/* Role */}
@@ -373,6 +397,9 @@ const AdminUserManagement = () => {
                 value={formData.role}
                 onChange={handleInputChange}
                 options={roleOptions}
+                error={formErrors.role}
+                disabled={editingLastSuperAdmin}
+                helperText={editingLastSuperAdmin ? 'The last Super Admin must retain this role.' : ''}
                 required
               />
 
@@ -382,13 +409,13 @@ const AdminUserManagement = () => {
                   <strong>{formData.role === 'SuperAdmin' ? 'Super Admin' : 'Content Editor'}:</strong> {getPermissionDescription(formData.role)}
                 </p>
               </div>
-            </div>
+            </fieldset>
 
             {/* Modal Footer with Actions */}
             <div className="mt-6 flex justify-end space-x-3">
               <Button
                 type="button"
-                onClick={() => setShowModal(false)}
+                onClick={closeEditor}
                 variant="ghost"
                 disabled={submitting}
               >
@@ -411,7 +438,9 @@ const AdminUserManagement = () => {
           onClose={() => setShowDeleteModal(false)}
           title="Confirm Delete"
           size="sm"
+          busy={deleting}
         >
+          {deleteError && <div role="alert" className="collection-form-error">{deleteError}</div>}
           <div className="mb-6">
             <p className="text-gray-700">
               Are you sure you want to delete the admin user <strong>{userToDelete?.email}</strong>? 

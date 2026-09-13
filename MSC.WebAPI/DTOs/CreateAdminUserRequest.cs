@@ -10,10 +10,11 @@ namespace MSC.WebAPI.DTOs
         public required string Email { get; set; }
 
         [Required]
-        [MinLength(8)]
+        [MinLength(12)]
         public required string Password { get; set; }
 
         [Required]
+        [EnumDataType(typeof(AdminRole))]
         public AdminRole Role { get; set; }
     }
 }

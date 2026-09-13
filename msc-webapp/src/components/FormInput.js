@@ -15,6 +15,9 @@ const FormInput = ({
   disabled = false,
   error = '',
   helperText = '',
+  min,
+  max,
+  step,
   className = '',
   showValidIcon = false
 }) => {
@@ -35,6 +38,9 @@ const FormInput = ({
           id={name}
           name={name}
           type={type}
+          min={min}
+          max={max}
+          step={step}
           value={value}
           onChange={onChange}
           placeholder={placeholder}

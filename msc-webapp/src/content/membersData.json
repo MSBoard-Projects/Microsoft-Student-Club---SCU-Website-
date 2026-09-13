@@ -1,0 +1,818 @@
+[
+    {
+        "id":  "mostafa-bakry",
+        "fullName":  "Mostafa Bakry",
+        "positionTitle":  "Human Resources Generalist",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/mostafa-bakry.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Mostafa_Bakry.pdf"
+    },
+    {
+        "id":  "tasneem-ali",
+        "fullName":  "Tasneem Ali",
+        "positionTitle":  "Human Resources Specialist",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/tasneem-ali.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Tasneem_Ali.pdf"
+    },
+    {
+        "id":  "mohammed-saber",
+        "fullName":  "Mohammed Saber",
+        "positionTitle":  "Human Resources Specialist",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/mohammed-saber.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Mohammed_Saber.pdf"
+    },
+    {
+        "id":  "dana-mohamed",
+        "fullName":  "Dana Mohamed",
+        "positionTitle":  "Human Resources Specialist",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/dana-mohamed.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Dana_Mohamed.pdf"
+    },
+    {
+        "id":  "habiba-mohamed",
+        "fullName":  "Habiba Mohamed",
+        "positionTitle":  "Human Resources Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/habiba-mohamed.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Habiba_Mohamed.pdf"
+    },
+    {
+        "id":  "rana-soliman",
+        "fullName":  "Rana Soliman",
+        "positionTitle":  "Human Resources Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/rana-soliman.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Rana_Soliman.pdf"
+    },
+    {
+        "id":  "dina-amr",
+        "fullName":  "Dina Amr",
+        "positionTitle":  "Human Resources Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/dina-amr.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Dina_Amr.pdf"
+    },
+    {
+        "id":  "rawan-alaa-ali",
+        "fullName":  "Rawan Alaa Ali",
+        "positionTitle":  "Human Resources Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/rawan-alaa-ali.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Rawan_Alaa_Ali.pdf"
+    },
+    {
+        "id":  "mariam-mohamed",
+        "fullName":  "Mariam Mohamed",
+        "positionTitle":  "Human Resources Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Mariam_Mohamed.pdf"
+    },
+    {
+        "id":  "menna-ibrahim",
+        "fullName":  "Menna Ibrahim",
+        "positionTitle":  "Human Resources Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/menna-ibrahim.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Menna_Ibrahim.pdf"
+    },
+    {
+        "id":  "nawal-samir",
+        "fullName":  "Nawal Samir",
+        "positionTitle":  "Human Resources Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/nawal-samir.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Nawal_Samir.pdf"
+    },
+    {
+        "id":  "reem-tamer",
+        "fullName":  "Reem Tamer",
+        "positionTitle":  "Human Resources Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/reem-tamer.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Reem_Tamer.pdf"
+    },
+    {
+        "id":  "manar-housiny",
+        "fullName":  "Manar Housiny",
+        "positionTitle":  "Human Resources Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Manar_Housiny.pdf"
+    },
+    {
+        "id":  "moaz-reda",
+        "fullName":  "Moaz Reda",
+        "positionTitle":  "Human Resources Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Moaz_Reda.pdf"
+    },
+    {
+        "id":  "zekra-hassan",
+        "fullName":  "Zekra Hassan",
+        "positionTitle":  "Human Resources Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/zekra-hassan.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Zekra_Hassan.pdf"
+    },
+    {
+        "id":  "menna-allah-abdelwhab",
+        "fullName":  "Menna allah abdelwhab",
+        "positionTitle":  "Human Resources Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/menna-allah-abdelwhab.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Menna_allah_abdelwhab.pdf"
+    },
+    {
+        "id":  "arwa-mohamed",
+        "fullName":  "Arwa Mohamed",
+        "positionTitle":  "Human Resources Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Arwa_Mohamed.pdf"
+    },
+    {
+        "id":  "ayat-khaled-emam",
+        "fullName":  "Ayat Khaled Emam",
+        "positionTitle":  "Human Resources Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/ayat-khaled-emam.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Ayat_Khaled_Emam.pdf"
+    },
+    {
+        "id":  "rowan-akram",
+        "fullName":  "Rowan Akram",
+        "positionTitle":  "Public Relation Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Rowan_Akram.pdf"
+    },
+    {
+        "id":  "hoda-ali",
+        "fullName":  "Hoda Ali",
+        "positionTitle":  "Public Relation Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/hoda-ali.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Hoda_Ali.pdf"
+    },
+    {
+        "id":  "ahmed-nashaat",
+        "fullName":  "Ahmed Nashaat",
+        "positionTitle":  "Public Relation Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Ahmed_Nashaat.pdf"
+    },
+    {
+        "id":  "mariam-rafat",
+        "fullName":  "Mariam Rafat",
+        "positionTitle":  "Public Relation Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/mariam-rafat.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Mariam_Rafat.pdf"
+    },
+    {
+        "id":  "ahmad-said",
+        "fullName":  "Ahmad said",
+        "positionTitle":  "Public Relation Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Ahmad_said.pdf"
+    },
+    {
+        "id":  "roaa-ali",
+        "fullName":  "Roaa Ali",
+        "positionTitle":  "Public Relation Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/roaa-ali.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Roaa_Ali.pdf"
+    },
+    {
+        "id":  "fady-naser",
+        "fullName":  "Fady Naser",
+        "positionTitle":  "Project Manager Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Fady_Naser.pdf"
+    },
+    {
+        "id":  "salma-abdelsalam",
+        "fullName":  "Salma Abdelsalam",
+        "positionTitle":  "Project Manager Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Salma_Abdelsalam.pdf"
+    },
+    {
+        "id":  "salma-mohammad",
+        "fullName":  "Salma Mohammad",
+        "positionTitle":  "Project Manager Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Salma_Mohammad.pdf"
+    },
+    {
+        "id":  "enas-mohamed",
+        "fullName":  "Enas Mohamed",
+        "positionTitle":  "Project Manager Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Enas_Mohamed.pdf"
+    },
+    {
+        "id":  "mohamed-reda",
+        "fullName":  "Mohamed Reda",
+        "positionTitle":  "Project Manager Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Mohamed_Reda.pdf"
+    },
+    {
+        "id":  "hager-abu-elmajd",
+        "fullName":  "Hager Abu Elmajd",
+        "positionTitle":  "Media Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/hager-abu-elmajd.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Hager_Abu_Elmajd.pdf"
+    },
+    {
+        "id":  "yasmen-abdalla",
+        "fullName":  "Yasmen Abdalla",
+        "positionTitle":  "Media Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Yasmen_Abdalla.pdf"
+    },
+    {
+        "id":  "mohamed-sayed",
+        "fullName":  "Mohamed Sayed",
+        "positionTitle":  "Media Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Mohamed_Sayed.pdf"
+    },
+    {
+        "id":  "aya-mohamed",
+        "fullName":  "Aya Mohamed",
+        "positionTitle":  "Media Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Aya_Mohamed.pdf"
+    },
+    {
+        "id":  "ahmed-hossam",
+        "fullName":  "Ahmed Hossam",
+        "positionTitle":  "Media Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Ahmed_Hossam.pdf"
+    },
+    {
+        "id":  "zainab-abdelaziz-sayed",
+        "fullName":  "Zainab Abdelaziz Sayed",
+        "positionTitle":  "Frontend Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/zainab-abdelaziz-sayed.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Zainab_Abdelaziz_Sayed.pdf"
+    },
+    {
+        "id":  "adham-mohamed-ibrahim",
+        "fullName":  "Adham Mohamed Ibrahim",
+        "positionTitle":  "Frontend Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/adham-mohamed-ibrahim.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Adham_Mohamed_Ibrahim.pdf"
+    },
+    {
+        "id":  "amira-mahmoud-mohamed",
+        "fullName":  "Amira Mahmoud Mohamed",
+        "positionTitle":  "Frontend Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/amira-mahmoud-mohamed.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Amira_Mahmoud_Mohamed.pdf"
+    },
+    {
+        "id":  "hager-hany-ahmad-ali",
+        "fullName":  "Hager Hany Ahmad Ali",
+        "positionTitle":  "Frontend Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Hager_Hany_Ahmad_Ali.pdf"
+    },
+    {
+        "id":  "aya-tallah-mohamed",
+        "fullName":  "Aya Tallah Mohamed",
+        "positionTitle":  "Frontend Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/aya-tallah-mohamed.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Aya_Tallah_Mohamed.pdf"
+    },
+    {
+        "id":  "nour-mahmoud-farouk-abdelfatah",
+        "fullName":  "Nour Mahmoud Farouk Abdelfatah",
+        "positionTitle":  "Frontend Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/nour-mahmoud-farouk-abdelfatah.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Nour_Mahmoud_Farouk_Abdelfatah.pdf"
+    },
+    {
+        "id":  "shahd-ayman-mohamed-salem",
+        "fullName":  "Shahd Ayman Mohamed Salem",
+        "positionTitle":  "Frontend Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/shahd-ayman-mohamed-salem.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Shahd_Ayman_Mohamed_Salem.pdf"
+    },
+    {
+        "id":  "yasmine-mohamed-ibrahim-hasan",
+        "fullName":  "Yasmine Mohamed Ibrahim Hasan",
+        "positionTitle":  "Frontend Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/yasmine-mohamed-ibrahim-hasan.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Yasmine_Mohamed_Ibrahim_Hasan.pdf"
+    },
+    {
+        "id":  "jana-alaa-ibrahim",
+        "fullName":  "Jana Alaa Ibrahim",
+        "positionTitle":  "Frontend Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/jana-alaa-ibrahim.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Jana_Alaa_Ibrahim.pdf"
+    },
+    {
+        "id":  "abdelrahman-tarek-mohamed",
+        "fullName":  "Abdelrahman Tarek Mohamed",
+        "positionTitle":  "Frontend Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Abdelrahman_Tarek_Mohamed.pdf"
+    },
+    {
+        "id":  "yassin-ahmad-mahmoud",
+        "fullName":  "Yassin Ahmad Mahmoud",
+        "positionTitle":  "Frontend Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Yassin_Ahmad_Mahmoud.pdf"
+    },
+    {
+        "id":  "nada-tarek",
+        "fullName":  "Nada Tarek",
+        "positionTitle":  "Frontend Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/nada-tarek.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Nada_Tarek.pdf"
+    },
+    {
+        "id":  "khuloud-shawky-ibrahim",
+        "fullName":  "Khuloud Shawky Ibrahim",
+        "positionTitle":  "Frontend Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Khuloud_Shawky_Ibrahim.pdf"
+    },
+    {
+        "id":  "moheb-nagy",
+        "fullName":  "Moheb Nagy",
+        "positionTitle":  "Cyber Security Red Team",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/moheb-nagy.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Moheb_Nagy.pdf"
+    },
+    {
+        "id":  "karim-mohamed",
+        "fullName":  "Karim Mohamed",
+        "positionTitle":  "Cyber Security Red Team",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/karim-mohamed.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Karim_Mohamed.pdf"
+    },
+    {
+        "id":  "mahmoud-ali",
+        "fullName":  "Mahmoud Ali",
+        "positionTitle":  "Cyber Security Red Team",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/mahmoud-ali.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Mahmoud_Ali.pdf"
+    },
+    {
+        "id":  "menna-allah-amire",
+        "fullName":  "Menna Allah Amire",
+        "positionTitle":  "Cyber Security Red Team",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/menna-allah-amire.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Menna_Allah_Amire.pdf"
+    },
+    {
+        "id":  "omar-waleed",
+        "fullName":  "Omar Waleed",
+        "positionTitle":  "Cyber Security Red Team",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/omar-waleed.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Omar_Waleed.pdf"
+    },
+    {
+        "id":  "marina-tamer",
+        "fullName":  "Marina Tamer",
+        "positionTitle":  "Cyber Security Red Team",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/marina-tamer.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Marina_Tamer.pdf"
+    },
+    {
+        "id":  "mohamed-mahmoud",
+        "fullName":  "Mohamed Mahmoud",
+        "positionTitle":  "Cyber Security Red Team",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/mohamed-mahmoud.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Mohamed_Mahmoud.pdf"
+    },
+    {
+        "id":  "haneen-ahmed",
+        "fullName":  "Haneen Ahmed",
+        "positionTitle":  "Cyber Security Red Team",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/haneen-ahmed.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Haneen_Ahmed.pdf"
+    },
+    {
+        "id":  "mahmuod-mohamed",
+        "fullName":  "Mahmuod Mohamed",
+        "positionTitle":  "Cyber Security Red Team",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/mahmuod-mohamed.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Mahmuod_Mohamed.pdf"
+    },
+    {
+        "id":  "yasmin-nasser",
+        "fullName":  "Yasmin Nasser",
+        "positionTitle":  "Cyber Security Blue Team",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Yasmin_Nasser.pdf"
+    },
+    {
+        "id":  "alfarouq-ibrahim",
+        "fullName":  "Alfarouq Ibrahim",
+        "positionTitle":  "Cyber Security Red Team",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/alfarouq-ibrahim.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Alfarouq_Ibrahim.pdf"
+    },
+    {
+        "id":  "aya-hassan-ali",
+        "fullName":  "Aya Hassan Ali",
+        "positionTitle":  "Cyber Security Red Team",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Aya_Hassan_Ali.pdf"
+    },
+    {
+        "id":  "sara-elsayed-mohamed",
+        "fullName":  "Sara Elsayed Mohamed",
+        "positionTitle":  "UI/UX Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/sara-elsayed-mohamed.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Sara_Elsayed_Mohamed.pdf"
+    },
+    {
+        "id":  "essra-attia-ali-attia",
+        "fullName":  "Essra Attia Ali Attia",
+        "positionTitle":  "UI/UX Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/essra-attia-ali-attia.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Essra_Attia_Ali_Attia.pdf"
+    },
+    {
+        "id":  "mai-elsayed-hafez-amen",
+        "fullName":  "Mai Elsayed Hafez Amen",
+        "positionTitle":  "UI/UX Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Mai_Elsayed_Hafez_Amen.pdf"
+    },
+    {
+        "id":  "abdelrahman-hany-hassan",
+        "fullName":  "Abdelrahman Hany Hassan",
+        "positionTitle":  "UI/UX Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Abdelrahman_Hany_Hassan.pdf"
+    },
+    {
+        "id":  "judy-ahmed-mohamed",
+        "fullName":  "Judy Ahmed Mohamed",
+        "positionTitle":  "UI/UX Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Judy_Ahmed_Mohamed.pdf"
+    },
+    {
+        "id":  "abdallah-alaa-abdelmohsen",
+        "fullName":  "Abdallah Alaa Abdelmohsen",
+        "positionTitle":  "UI/UX Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Abdallah_Alaa_Abdelmohsen.pdf"
+    },
+    {
+        "id":  "nada-mostafa",
+        "fullName":  "Nada Mostafa",
+        "positionTitle":  "Backend Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/nada-mostafa.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Nada_Mostafa.pdf"
+    },
+    {
+        "id":  "amr-atef-imam",
+        "fullName":  "Amr Atef Imam",
+        "positionTitle":  "Backend Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Amr_Atef_Imam.pdf"
+    },
+    {
+        "id":  "zead-abdelkader",
+        "fullName":  "Zead Abdelkader",
+        "positionTitle":  "Backend Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Zead_Abdelkader.pdf"
+    },
+    {
+        "id":  "mohamed-ahmed",
+        "fullName":  "Mohamed Ahmed",
+        "positionTitle":  "Backend Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Mohamed_Ahmed.pdf"
+    },
+    {
+        "id":  "omar-muhammad-abbas",
+        "fullName":  "Omar Muhammad Abbas",
+        "positionTitle":  "Backend Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Omar_Muhammad_Abbas.pdf"
+    },
+    {
+        "id":  "salma-kelany",
+        "fullName":  "Salma kelany",
+        "positionTitle":  "Vice president",
+        "group":  "high-board",
+        "imageUrl":  "/club-media/members/salma-kelany.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Salma_kelany.pdf"
+    },
+    {
+        "id":  "ahmed-eyada",
+        "fullName":  "Ahmed Eyada",
+        "positionTitle":  "Supervisor",
+        "group":  "high-board",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Ahmed_Eyada.pdf"
+    },
+    {
+        "id":  "haidy-mohamed-salah",
+        "fullName":  "Haidy mohamed salah",
+        "positionTitle":  "Media Supervisor",
+        "group":  "high-board",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Haidy_mohamed_salah.pdf"
+    },
+    {
+        "id":  "salwa-alaa-eldin-hegazy",
+        "fullName":  "Salwa Alaa Eldin Hegazy",
+        "positionTitle":  "Supervisor",
+        "group":  "board",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Salwa_Alaa_Eldin_Hegazy.pdf"
+    },
+    {
+        "id":  "soha-saeed",
+        "fullName":  "Soha Saeed",
+        "positionTitle":  "PR Vice Head",
+        "group":  "board",
+        "imageUrl":  "/club-media/members/soha-saeed.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Soha_Saeed.pdf"
+    },
+    {
+        "id":  "mohamed-abdelazim",
+        "fullName":  "Mohamed Abdelazim",
+        "positionTitle":  "Cyber Security Vice Head",
+        "group":  "board",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Mohamed_Abdelazim.pdf"
+    },
+    {
+        "id":  "zahra-khaled",
+        "fullName":  "Zahra Khaled",
+        "positionTitle":  "PM Head \u0026 HR Mentor",
+        "group":  "board",
+        "imageUrl":  "/club-media/members/zahra-khaled.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Zahra_Khaled.pdf"
+    },
+    {
+        "id":  "roaa-hafez",
+        "fullName":  "Roaa Hafez",
+        "positionTitle":  "UI/UX Vice Head",
+        "group":  "board",
+        "imageUrl":  "/club-media/members/roaa-hafez.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Roaa_Hafez.pdf"
+    },
+    {
+        "id":  "youssif-adel",
+        "fullName":  "Youssif Adel",
+        "positionTitle":  "Frontend Head",
+        "group":  "board",
+        "imageUrl":  "/club-media/members/youssif-adel.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Youssif_Adel.pdf"
+    },
+    {
+        "id":  "atef-mohammed",
+        "fullName":  "Atef Mohammed",
+        "positionTitle":  "PR Head",
+        "group":  "board",
+        "imageUrl":  "/club-media/members/atef-mohammed.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Atef_Mohammed.pdf"
+    },
+    {
+        "id":  "manar-nasser",
+        "fullName":  "Manar Nasser",
+        "positionTitle":  "Cyber Security Head",
+        "group":  "board",
+        "imageUrl":  "/club-media/members/manar-nasser.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Manar_Nasser.pdf"
+    },
+    {
+        "id":  "mohamad-waleed",
+        "fullName":  "Mohamad Waleed",
+        "positionTitle":  "UI/UX Head",
+        "group":  "board",
+        "imageUrl":  "/club-media/members/mohamad-waleed.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Mohamad_Waleed.pdf"
+    },
+    {
+        "id":  "kareem-magdy",
+        "fullName":  "Kareem Magdy",
+        "positionTitle":  "Backend Vice Head",
+        "group":  "board",
+        "imageUrl":  "/club-media/members/kareem-magdy.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Kareem_Magdy.pdf"
+    },
+    {
+        "id":  "ahmed-hariedy",
+        "fullName":  "Ahmed Hariedy",
+        "positionTitle":  "Backend Head",
+        "group":  "board",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Ahmed_Hariedy.pdf"
+    },
+    {
+        "id":  "ahmed-hatem",
+        "fullName":  "Ahmed Hatem",
+        "positionTitle":  "Operations Head",
+        "group":  "board",
+        "imageUrl":  "/club-media/members/ahmed-hatem.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Ahmed_Hatem.pdf"
+    },
+    {
+        "id":  "yousef-salah-ahmed",
+        "fullName":  "Yousef Salah Ahmed",
+        "positionTitle":  "PM Vice Head",
+        "group":  "board",
+        "imageUrl":  "/club-media/members/yousef-salah-ahmed.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Yousef_Salah_Ahmed.pdf"
+    },
+    {
+        "id":  "eman-ramadan",
+        "fullName":  "Eman Ramadan",
+        "positionTitle":  "Media Vice Head",
+        "group":  "board",
+        "imageUrl":  "/club-media/members/eman-ramadan.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Eman_Ramadan.pdf"
+    },
+    {
+        "id":  "mohamed-mahmoud-2",
+        "fullName":  "Mohamed Mahmoud",
+        "positionTitle":  "Technical Head",
+        "group":  "board",
+        "imageUrl":  "/club-media/members/mohamed-mahmoud-2.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Mohamed_Mahmoud_2.pdf"
+    },
+    {
+        "id":  "jana-alaa",
+        "fullName":  "Jana alaa",
+        "positionTitle":  "Media \u0026 Marketing Head",
+        "group":  "board",
+        "imageUrl":  "/club-media/members/jana-alaa.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Jana_alaa.pdf"
+    },
+    {
+        "id":  "abdelrahman-gamal",
+        "fullName":  "Abdelrahman Gamal",
+        "positionTitle":  "AI Head",
+        "group":  "board",
+        "imageUrl":  "/club-media/members/abdelrahman-gamal.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Abdelrahman_Gamal.pdf"
+    },
+    {
+        "id":  "youssef-el-demerdash",
+        "fullName":  "Youssef El Demerdash",
+        "positionTitle":  "AI Vice Head",
+        "group":  "board",
+        "imageUrl":  "/club-media/members/youssef-el-demerdash.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Youssef_El_Demerdash.pdf"
+    },
+    {
+        "id":  "mahmoud-mohamed-ali",
+        "fullName":  "Mahmoud Mohamed Ali",
+        "positionTitle":  "Media Specialist",
+        "group":  "board",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Mahmoud_Mohamed_Ali.pdf"
+    },
+    {
+        "id":  "omnia-mahmoud-mohamed-abdelwahab",
+        "fullName":  "Omnia Mahmoud Mohamed Abdelwahab",
+        "positionTitle":  "AI Core Team Member",
+        "group":  "instructor",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_omnia_mahmoud_mohamed_abdelwahab.pdf"
+    },
+    {
+        "id":  "basmala-ahmed",
+        "fullName":  "Basmala Ahmed",
+        "positionTitle":  "AI Core Team Member",
+        "group":  "instructor",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Basmala_Ahmed.pdf"
+    },
+    {
+        "id":  "mariam-hany-fouad",
+        "fullName":  "Mariam Hany Fouad",
+        "positionTitle":  "AI Core Team Member",
+        "group":  "instructor",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Mariam_Hany_Fouad.pdf"
+    },
+    {
+        "id":  "zeyad-abdalkader-mohamed",
+        "fullName":  "Zeyad Abdalkader Mohamed",
+        "positionTitle":  "AI Core Team Member",
+        "group":  "instructor",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Zeyad_Abdalkader_Mohamed.pdf"
+    },
+    {
+        "id":  "antwan-gamil-fouad",
+        "fullName":  "Antwan Gamil Fouad",
+        "positionTitle":  "AI Core Team Member",
+        "group":  "instructor",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Antwan_Gamil_Fouad.pdf"
+    },
+    {
+        "id":  "yasmin-salah",
+        "fullName":  "Yasmin Salah",
+        "positionTitle":  "AI Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Yasmin_Salah.pdf"
+    },
+    {
+        "id":  "menna-allah-abdelmoghney",
+        "fullName":  "Menna Allah Abdelmoghney",
+        "positionTitle":  "AI Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Menna_Allah_Abdelmoghney.pdf"
+    },
+    {
+        "id":  "manar-abdelbaky",
+        "fullName":  "Manar Abdelbaky",
+        "positionTitle":  "AI Team Member",
+        "group":  "member",
+        "imageUrl":  "/club-media/members/manar-abdelbaky.jpg",
+        "certificateUrl":  "/club-certificates/Certificate_Manar_Abdelbaky.pdf"
+    },
+    {
+        "id":  "tasneem-labib",
+        "fullName":  "Tasneem Labib",
+        "positionTitle":  "AI Team Member",
+        "group":  "member",
+        "imageUrl":  null,
+        "certificateUrl":  "/club-certificates/Certificate_Tasneem_Labib.pdf"
+    },
+    {
+        "id":  "ali-arabi-ali",
+        "fullName":  "Ali Arabi Ali",
+        "positionTitle":  "President",
+        "group":  "high-board",
+        "imageUrl":  "/club-media/members/ali-arabi-ali.jpg",
+        "certificateUrl":  null
+    }
+]

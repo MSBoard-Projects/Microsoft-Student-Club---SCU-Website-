@@ -9,6 +9,7 @@ import ErrorMessage from '../components/ErrorMessage';
 import FormInput from '../components/FormInput';
 import FormSelect from '../components/FormSelect';
 import ImageUpload from '../components/ImageUpload';
+import { CollectionToolbar, CollectionPagination, COLLECTION_PAGE_SIZE } from '../components/CollectionControls';
 
 /**
  * Member Management Page (Admin CRUD interface)
@@ -16,7 +17,7 @@ import ImageUpload from '../components/ImageUpload';
  */
 const MemberManagement = () => {
   const [members, setMembers] = useState([]);
-  const [memberTypes, setMemberTypes] = useState([
+  const [memberTypes] = useState([
     { value: 1, label: 'High Board' },
     { value: 2, label: 'Board' },
     { value: 3, label: 'Golden Member' }
@@ -24,6 +25,8 @@ const MemberManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
   
   // Modal state
   const [showModal, setShowModal] = useState(false);
@@ -61,6 +64,7 @@ const MemberManagement = () => {
     try {
       const data = await membersApi.getAll();
       setMembers(data);
+      setPage(1);
     } catch (err) {
       console.error('Failed to fetch members:', err);
       setError('Failed to load members. Please try again.');
@@ -70,9 +74,17 @@ const MemberManagement = () => {
   };
 
   // Filter members by type
-  const filteredMembers = filterType === 'all' 
-    ? members 
-    : members.filter(m => m.memberTypeId === parseInt(filterType));
+  const query = search.trim().toLowerCase();
+  const filteredMembers = members.filter(member =>
+    (filterType === 'all' || member.memberTypeId === Number(filterType)) &&
+    [member.fullName, member.positionTitle, member.email].some(value => value?.toLowerCase().includes(query))
+  );
+  const visibleMembers = filteredMembers.slice((page - 1) * COLLECTION_PAGE_SIZE, page * COLLECTION_PAGE_SIZE);
+  const clearFilters = () => {
+    setSearch('');
+    setFilterType('all');
+    setPage(1);
+  };
 
   // Open create modal
   const handleCreate = () => {
@@ -226,12 +238,11 @@ const MemberManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="collection-page">
+      <div>
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-text">Member Management</h1>
-          <p className="text-gray-600 mt-2">Manage team members, positions, and information</p>
+        <div className="collection-heading">
+          <h1>Member Management</h1>
         </div>
 
         {/* Error Message */}
@@ -242,38 +253,26 @@ const MemberManagement = () => {
         )}
 
         {/* Actions Bar */}
-        <div className="mb-6 flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <label className="text-sm font-medium text-text">Filter by Type:</label>
-            <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
-            >
-              <option value="all">All Members</option>
-              {memberTypes.map(type => (
-                <option key={type.value} value={type.value}>{type.label}</option>
-              ))}
-            </select>
-          </div>
-          
-          <Button onClick={handleCreate} variant="primary">
-            + Add Member
-          </Button>
-        </div>
+        <CollectionToolbar
+          label="members" search={search} onSearch={value => { setSearch(value); setPage(1); }}
+          filter={filterType} onFilter={value => { setFilterType(value); setPage(1); }}
+          options={[{ value: 'all', label: 'All Members' }, ...memberTypes]}
+          onRefresh={fetchMembers} loading={loading} onCreate={handleCreate} createLabel="Add Member"
+        />
 
         {/* Members List */}
         {loading ? (
           <div className="flex justify-center py-12">
             <LoadingSpinner size="lg" text="Loading members..." />
           </div>
-        ) : filteredMembers.length === 0 ? (
-          <Card>
-            <p className="text-center text-gray-500 py-8">No members found.</p>
-          </Card>
+        ) : error && members.length === 0 ? null : filteredMembers.length === 0 ? (
+          <div className="collection-empty">
+            <h2>{members.length === 0 ? 'No members yet' : 'No matching members'}</h2>
+            {(search || filterType !== 'all') && <button type="button" onClick={clearFilters}>Clear filters</button>}
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredMembers.map(member => (
+          <div className="collection-grid">
+            {visibleMembers.map(member => (
               <Card key={member.id}>
                 {/* Member Image */}
                 {member.imageUrl && (
@@ -334,6 +333,10 @@ const MemberManagement = () => {
               </Card>
             ))}
           </div>
+        )}
+
+        {!loading && filteredMembers.length > 0 && (
+          <CollectionPagination label="members" page={page} total={filteredMembers.length} onPage={setPage} />
         )}
 
         {/* Create/Edit Modal */}

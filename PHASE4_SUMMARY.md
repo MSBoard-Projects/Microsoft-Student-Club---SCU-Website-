@@ -1,4 +1,60 @@
-# Phase 4 Completion Summary: Admin CRUD + Public Page Integration
+# Phase 4: Admin UI Continuation
+
+## Current Status (2026-09-12)
+
+Delivered the frontend-only continuation for site content and administrator management. This is not completion of live CRUD, storage, public data integration, or deployment. Excel upload, QR attendance, points, certificates, and API wiring remain explicitly deferred by the user. Existing backend code and service endpoints were not changed.
+
+### Implemented
+
+- Both management screens now reuse the responsive collection toolbar and six-item pagination. Content is searchable by key/text; administrators by email/role with a role filter. Long text and email addresses wrap within the list layout.
+- Initial request errors no longer masquerade as empty collections. Refresh retains cached records on failure and resets pagination after a successful reload.
+- Save and delete errors appear inside their respective dialogs. Failed saves retain entered values. Busy dialogs prevent close-button, Escape, native-cancel, and backdrop dismissal; fields and action buttons are disabled during requests.
+- Admin forms validate the existing 12-character password policy, including uppercase, lowercase, digits, and a symbol. Emails are trimmed before submission, unchanged passwords are omitted from updates, and password state is cleared when the editor closes.
+- Account self-deletion and deletion/demotion of the last SuperAdmin are guarded in the UI using the full loaded collection, not filtered results. These checks supplement server authorization; they cannot guarantee correctness against concurrent database changes.
+- ContentEditor access is denied before account-list fetching. Server validation arrays/dictionaries are shown inside the account editor. Existing content keys remain immutable during editing.
+
+### Verification
+
+| Check | Result |
+| --- | --- |
+| Complete frontend suite | 66 tests passed across 12 suites |
+| New coverage | 6 content tests, 13 account tests, 1 shared busy-dialog test |
+| Production compilation | Passed; output directed to `%TEMP%\msc-phase4-build` |
+| Existing build warnings | 3 Footer placeholder-link warnings; outdated browser metadata and Node deprecation notices |
+| Editor diagnostics | No errors in changed components and management pages |
+| Browser DOM/layout checks | Both lists had no horizontal overflow at 390 x 844 and 1440 x 1000, including long fixture text/emails |
+| Browser editor checks | Mobile dialogs fit; intercepted save failures were visible inside the dialogs; content draft was retained |
+| Browser permission checks | Own deletion and last-admin role controls disabled; ContentEditor saw Access Denied and no admin-user navigation link |
+| Visual checks | Mobile admin-editor screenshot inspected; desktop capture was clipped by the integrated browser panel |
+| Full pointer/keyboard acceptance | Still incomplete: backgrounded browser tabs timed out waiting for trusted interactions |
+| Real authentication, writes, database, uploads | Not exercised; deferred |
+
+Browser checks used explicitly labelled, temporary API fixtures and programmatically dispatched DOM events, not real user clicks. Update attempts were intercepted with a 503 response, so no real records were written. All fixture routes and stored test-session values were removed afterward; the browser was returned to the real homepage. These checks are not a live backend E2E sign-off.
+
+### Local Preview
+
+The existing `Frontend UI preview` task was stopped and restarted after verifying the server process belonged to this workspace. Use **http://127.0.0.1:3000/**. In this session the integrated browser's `localhost` page displayed unrelated Campus Club content; the numeric loopback address was verified to serve this React application.
+
+Real login and data still require the deferred API/database setup. Without it, public data requests display errors; no demo account or authentication bypass was added.
+
+Run tests from the repository root:
+
+```powershell
+npm --prefix msc-webapp test -- --watchAll=false --runInBand
+```
+
+Run the production build without overwriting tracked build artifacts:
+
+```powershell
+& { $previousBuildPath = $env:BUILD_PATH; try { $env:BUILD_PATH = Join-Path $env:TEMP 'msc-phase4-build'; npm --prefix msc-webapp run build } finally { $env:BUILD_PATH = $previousBuildPath } }
+```
+
+## Historical Snapshot
+
+The original report below is retained for context only. Its claims of fully functional integrations and production readiness, bundle sizes, and phase numbering are superseded by the current status above and PHASE3_SUMMARY.md's roadmap clarification.
+
+<details>
+<summary>Original Phase 4 report</summary>
 
 ## Overview
 Phase 4 has been successfully completed! All admin CRUD interfaces are fully functional with Azure Blob Storage integration, and all public pages are now connected to the API with real-time data fetching.
@@ -449,3 +505,5 @@ All planned features for Phase 4 have been successfully implemented:
 **The MSC-SCU website now has a fully functional admin panel and public-facing pages that dynamically load content from the API!**
 
 Ready to proceed with Phase 5 (UI/UX Polish) or Phase 6 (Testing) upon your approval.
+
+</details>

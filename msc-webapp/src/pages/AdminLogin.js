@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+
+const adminPaths = ['/admin', '/admin/dashboard', '/admin/members', '/admin/events', '/admin/achievements', '/admin/statistics', '/admin/content', '/admin/users'];
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -10,34 +12,34 @@ const AdminLogin = () => {
   
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const requested = location.state?.from;
+  const returnTo = adminPaths.includes(requested?.pathname)
+    ? requested.pathname +
+      (typeof requested.search === 'string' && requested.search.startsWith('?') ? requested.search : '') +
+      (typeof requested.hash === 'string' && requested.hash.startsWith('#') ? requested.hash : '')
+    : '/admin/dashboard';
 
-  // TEMPORARY: Auto-redirect to dashboard if already authenticated
   useEffect(() => {
     if (isAuthenticated()) {
-      console.log('TEMPORARY MODE: User already authenticated, redirecting to dashboard...');
-      navigate('/admin/dashboard');
+      navigate(returnTo, { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, returnTo]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-    console.log('TEMPORARY MODE: Attempting auto-login...'); // Log credentials
 
     try {
       const result = await login(email, password);
-      console.log('Login result received:', result); // Log result from AuthContext
 
       if (result.success) {
-        console.log('Login successful, navigating to dashboard...');
-        navigate('/admin/dashboard');
+        navigate(returnTo, { replace: true });
       } else {
-        console.error('Login failed with error:', result.error);
         setError(result.error || 'Login failed. Please check your credentials.');
       }
     } catch (err) {
-      console.error('An unexpected error occurred in handleSubmit:', err);
       setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -49,18 +51,18 @@ const AdminLogin = () => {
       <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-lg shadow-lg">
         {/* Header */}
         <div>
-          <h2 className="text-center text-3xl font-bold text-navy">
+          <h1 className="text-center text-3xl font-bold text-navy">
             Admin Login
-          </h2>
+          </h1>
           <p className="mt-2 text-center text-sm text-text">
             Microsoft Student Club - SCU
           </p>
         </div>
 
         {/* Login Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit} aria-busy={loading}>
           {error && (
-            <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <div role="alert" className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded">
               {error}
             </div>
           )}

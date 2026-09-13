@@ -1,0 +1,86 @@
+[
+    {
+        "src":  "/club-media/orientation-season-2/image-01-1280.jpg",
+        "srcSet":  "/club-media/orientation-season-2/image-01-640.jpg 640w, /club-media/orientation-season-2/image-01-1280.jpg 1280w",
+        "width":  1280,
+        "height":  960
+    },
+    {
+        "src":  "/club-media/orientation-season-2/image-02-1280.jpg",
+        "srcSet":  "/club-media/orientation-season-2/image-02-640.jpg 640w, /club-media/orientation-season-2/image-02-1280.jpg 1280w",
+        "width":  1280,
+        "height":  1707
+    },
+    {
+        "src":  "/club-media/orientation-season-2/image-03-1280.jpg",
+        "srcSet":  "/club-media/orientation-season-2/image-03-640.jpg 640w, /club-media/orientation-season-2/image-03-1280.jpg 1280w",
+        "width":  1280,
+        "height":  1707
+    },
+    {
+        "src":  "/club-media/orientation-season-2/image-04-1280.jpg",
+        "srcSet":  "/club-media/orientation-season-2/image-04-640.jpg 640w, /club-media/orientation-season-2/image-04-1280.jpg 1280w",
+        "width":  1280,
+        "height":  1707
+    },
+    {
+        "src":  "/club-media/orientation-season-2/image-05-1280.jpg",
+        "srcSet":  "/club-media/orientation-season-2/image-05-640.jpg 640w, /club-media/orientation-season-2/image-05-1280.jpg 1280w",
+        "width":  1280,
+        "height":  1707
+    },
+    {
+        "src":  "/club-media/orientation-season-2/image-06-1280.jpg",
+        "srcSet":  "/club-media/orientation-season-2/image-06-640.jpg 640w, /club-media/orientation-season-2/image-06-1280.jpg 1280w",
+        "width":  1280,
+        "height":  1707
+    },
+    {
+        "src":  "/club-media/orientation-season-2/image-07-1280.jpg",
+        "srcSet":  "/club-media/orientation-season-2/image-07-640.jpg 640w, /club-media/orientation-season-2/image-07-1280.jpg 1280w",
+        "width":  1280,
+        "height":  1707
+    },
+    {
+        "src":  "/club-media/orientation-season-2/image-08-1280.jpg",
+        "srcSet":  "/club-media/orientation-season-2/image-08-640.jpg 640w, /club-media/orientation-season-2/image-08-1280.jpg 1280w",
+        "width":  1280,
+        "height":  960
+    },
+    {
+        "src":  "/club-media/orientation-season-2/image-09-1280.jpg",
+        "srcSet":  "/club-media/orientation-season-2/image-09-640.jpg 640w, /club-media/orientation-season-2/image-09-1280.jpg 1280w",
+        "width":  1280,
+        "height":  960
+    },
+    {
+        "src":  "/club-media/orientation-season-2/image-10-1280.jpg",
+        "srcSet":  "/club-media/orientation-season-2/image-10-640.jpg 640w, /club-media/orientation-season-2/image-10-1280.jpg 1280w",
+        "width":  1280,
+        "height":  1707
+    },
+    {
+        "src":  "/club-media/orientation-season-2/image-11-904.jpg",
+        "srcSet":  "/club-media/orientation-season-2/image-11-640.jpg 640w, /club-media/orientation-season-2/image-11-904.jpg 904w",
+        "width":  904,
+        "height":  652
+    },
+    {
+        "src":  "/club-media/orientation-season-2/image-12-1280.jpg",
+        "srcSet":  "/club-media/orientation-season-2/image-12-640.jpg 640w, /club-media/orientation-season-2/image-12-1280.jpg 1280w",
+        "width":  1280,
+        "height":  960
+    },
+    {
+        "src":  "/club-media/orientation-season-2/image-13-960.jpg",
+        "srcSet":  "/club-media/orientation-season-2/image-13-640.jpg 640w, /club-media/orientation-season-2/image-13-960.jpg 960w",
+        "width":  960,
+        "height":  1280
+    },
+    {
+        "src":  "/club-media/orientation-season-2/image-14-1280.jpg",
+        "srcSet":  "/club-media/orientation-season-2/image-14-640.jpg 640w, /club-media/orientation-season-2/image-14-1280.jpg 1280w",
+        "width":  1280,
+        "height":  960
+    }
+]

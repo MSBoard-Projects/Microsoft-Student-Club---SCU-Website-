@@ -1,85 +1,125 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-// import { authApi } from '../services/api'; // TEMPORARY: Commented out for testing
+import React, { createContext, useState, useContext, useEffect, useRef } from 'react';
+import { authApi } from '../services/api';
 
 // Create Auth Context
 const AuthContext = createContext(null);
+
+const clearStoredSession = () => {
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('user');
+};
+
+const validUser = (user) => user &&
+  ['SuperAdmin', 'ContentEditor'].includes(user.role) &&
+  Number.isFinite(Date.parse(user.expiresAt)) && Date.parse(user.expiresAt) > Date.now();
 
 // Auth Provider Component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
+  const operation = useRef(0);
 
-  // Initialize auth state from localStorage on mount
   useEffect(() => {
-    // TEMPORARY: Auto-login as SuperAdmin for testing
-    const tempUser = {
-      email: 'admin@msc-scu.com',
-      role: 'SuperAdmin',
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours from now
+    let active = true;
+    const clearSession = () => {
+      operation.current += 1;
+      clearStoredSession();
+      setUser(null);
+      setToken(null);
     };
-    const tempToken = 'TEMPORARY_ADMIN_TOKEN_FOR_TESTING';
-    
-    setUser(tempUser);
-    setToken(tempToken);
-    localStorage.setItem('authToken', tempToken);
-    localStorage.setItem('user', JSON.stringify(tempUser));
-    
-    setLoading(false);
+    const restore = async () => {
+      const storedToken = localStorage.getItem('authToken');
+      if (!storedToken) {
+        clearSession();
+        setLoading(false);
+        return;
+      }
+      try {
+        const restoredUser = await authApi.getSession();
+        if (!validUser(restoredUser)) throw new Error('Invalid session');
+        if (active && localStorage.getItem('authToken') === storedToken) {
+          setUser(restoredUser);
+          setToken(storedToken);
+          localStorage.setItem('user', JSON.stringify(restoredUser));
+        }
+      } catch {
+        if (active && localStorage.getItem('authToken') === storedToken) clearSession();
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    const syncStorage = (event) => {
+      if (event.key === 'authToken' || event.key === null) {
+        setUser(null);
+        setToken(null);
+        setLoading(true);
+        restore();
+      }
+    };
+    window.addEventListener('auth-expired', clearSession);
+    window.addEventListener('storage', syncStorage);
+    restore();
+    return () => {
+      active = false;
+      window.removeEventListener('auth-expired', clearSession);
+      window.removeEventListener('storage', syncStorage);
+    };
   }, []);
 
-  // Login function - TEMPORARY: Bypass actual API call
+  useEffect(() => {
+    if (!user) return undefined;
+    const timeout = setTimeout(() => {
+      window.dispatchEvent(new Event('auth-expired'));
+    }, Math.min(Math.max(0, Date.parse(user.expiresAt) - Date.now()), 2147483647));
+    return () => clearTimeout(timeout);
+  }, [user]);
+
   const login = async (email, password) => {
-    // TEMPORARY: Auto-approve any login attempt
-    console.log('TEMPORARY MODE: Login bypassed, auto-approving as SuperAdmin');
-    
-    const userData = {
-      email: 'admin@msc-scu.com',
-      role: 'SuperAdmin',
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-    };
-    const authToken = 'TEMPORARY_ADMIN_TOKEN_FOR_TESTING';
-
-    setToken(authToken);
-    setUser(userData);
-    localStorage.setItem('authToken', authToken);
-    localStorage.setItem('user', JSON.stringify(userData));
-
-    return { success: true, user: userData };
+    const request = ++operation.current;
+    try {
+      const { token: authToken, ...userData } = await authApi.login(email.trim(), password);
+      if (!authToken || !validUser(userData)) throw new Error('Invalid login response');
+      if (request !== operation.current) return { success: false, error: 'Login cancelled.' };
+      localStorage.setItem('authToken', authToken);
+      localStorage.setItem('user', JSON.stringify(userData));
+      setToken(authToken);
+      setUser(userData);
+      return { success: true, user: userData };
+    } catch (error) {
+      if (request === operation.current) {
+        clearStoredSession();
+        setToken(null);
+        setUser(null);
+      }
+      return { success: false, error: error.response?.data?.message || 'Unable to sign in. Please try again.' };
+    }
   };
 
-  // Logout function
-  const logout = () => {
-    // Clear state
+  const logout = async () => {
+    const previousToken = token;
+    operation.current += 1;
     setToken(null);
     setUser(null);
-
-    // Clear localStorage
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
+    clearStoredSession();
+    if (previousToken) {
+      try {
+        await authApi.logout(previousToken);
+      } catch {
+        return { success: false, error: 'Local session cleared; server logout could not be confirmed.' };
+      }
+    }
+    return { success: true };
   };
 
   // Check if user is authenticated
   const isAuthenticated = () => {
-    if (!token || !user) return false;
-
-    // Check if token is expired
-    const expiresAt = new Date(user.expiresAt);
-    const now = new Date();
-
-    if (now >= expiresAt) {
-      // Token expired, logout user
-      logout();
-      return false;
-    }
-
-    return true;
+    return Boolean(token && validUser(user));
   };
 
   // Check if user has specific role
   const hasRole = (role) => {
-    if (!user) return false;
-    return user.role === role;
+    return isAuthenticated() && user.role === role;
   };
 
   // Check if user is SuperAdmin

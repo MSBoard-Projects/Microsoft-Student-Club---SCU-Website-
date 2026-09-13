@@ -60,4 +60,6 @@ Desktop.ini
 *.mdf
 *.ldf
 *.ndf
-/MSC.WebAPI
+/MSC.WebAPI/appsettings*.json
+/MSC.WebAPI/*.ps1
+/MSC.WebAPI/msc-webapp/

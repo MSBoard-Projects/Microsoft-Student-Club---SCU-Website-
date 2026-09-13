@@ -110,6 +110,9 @@ namespace MSC.WebAPI.Controllers
         [Authorize(Roles = "SuperAdmin,ContentEditor")]
         public async Task<ActionResult<Event>> CreateEvent(Event eventItem)
         {
+            if (eventItem.Id != 0) return BadRequest(new { message = "New events must not specify an ID" });
+            if (eventItem.Slug != null && await _context.Events.AnyAsync(item => item.Slug == eventItem.Slug))
+                return Conflict(new { message = "This event link already exists" });
             try
             {
                 if (!ModelState.IsValid)
@@ -136,11 +139,14 @@ namespace MSC.WebAPI.Controllers
         [Authorize(Roles = "SuperAdmin,ContentEditor")]
         public async Task<IActionResult> UpdateEvent(int id, Event eventItem)
         {
-            if (id != eventItem.Id)
+            if (eventItem.Id != 0 && id != eventItem.Id)
             {
                 return BadRequest(new { message = "ID mismatch" });
             }
 
+            eventItem.Id = id;
+            if (eventItem.Slug != null && await _context.Events.AnyAsync(item => item.Id != id && item.Slug == eventItem.Slug))
+                return Conflict(new { message = "This event link already exists" });
             if (!ModelState.IsValid)
             {
                 return BadRequest(new { errors = ModelState });

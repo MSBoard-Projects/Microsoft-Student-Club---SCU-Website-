@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Frontend UI preview",
+			"type": "shell",
+			"command": "$env:PORT='3000'; $env:BROWSER='none'; $env:REACT_APP_API_URL='/api'; npm --prefix msc-webapp start",
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

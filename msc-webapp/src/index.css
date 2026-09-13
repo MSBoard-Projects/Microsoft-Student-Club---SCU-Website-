@@ -3,6 +3,21 @@
 @tailwind utilities;
 
 /* Custom global styles */
+.club-dialog {
+  width: calc(100% - 32px);
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.club-dialog::backdrop {
+  background: rgba(22, 32, 46, 0.6);
+  backdrop-filter: blur(3px);
+}
+
 body {
   margin: 0;
   font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;

@@ -2,6 +2,200 @@
 
 This is the React frontend for the Microsoft Student Club - Suez Canal University website.
 
+## Glass Frontend
+
+The public home, events, people and achievements experiences use strict TypeScript, React 19, Tailwind utilities, scoped CSS design tokens, and Framer Motion. The admin workspace keeps its existing styling. Both local preview and a validated API-backed content mode are supported. Persistence code, authenticated administration, tests and a database migration are prepared; no migration has been applied to a live database and no production deployment was performed.
+
+### Architecture
+
+```text
+App
+	PublicThemeProvider              persisted night / day / forest choice
+		ShowcaseProvider               local preview or shared API snapshot
+		SiteFrame                      scoped theme tokens; excludes admin paths
+			PublicHeader                 desktop/mobile navigation and theme controls
+			ClubLanding
+				HeroSection                headline, parallax photo, logo, photo selector
+				StatisticsBanner           four viewport-triggered counters
+				UpcomingEvent              precision-aware schedule and countdown
+				EventGrid -> EventDetails  summaries, full description, date and gallery
+				HighBoardSection           four imported High Board profiles
+			EventCollection              searchable and filterable /events route
+			EventPage                    shareable /events/:id with shared gallery
+			MembersPage / LeadershipPage separate public directories and PDF links
+			Achievements                 curated student achievements
+			PublicFooter
+```
+
+- [src/content/club.ts](src/content/club.ts): hero assets and statistics, composed with the event catalogue.
+- [src/content/eventsData.ts](src/content/eventsData.ts): the three user-confirmed events, schedules and image URLs.
+- [src/content/membersData.json](src/content/membersData.json): generated public roster; set each member's `imageUrl` here.
+- [src/content/achievements.ts](src/content/achievements.ts): typed achievement records, intentionally empty until published.
+- [src/components/public/types.ts](src/components/public/types.ts): `ClubAssets`, `ClubStatistics`, `ClubEvent`, and theme contracts.
+- [src/components/public/public.css](src/components/public/public.css): shared tokens, glass surfaces, typography, and responsive layouts. Tailwind handles local utilities; CSS handles reusable themed components.
+- [src/components/public/OptimizedImage.tsx](src/components/public/OptimizedImage.tsx): lazy/eager loading, glass skeleton, cached-image handling, responsive `srcSet`/`sizes`, stable geometry, accessible fallback, optional edge mask, and reduced-motion-aware hover. `GlassImage` remains a compatible alias.
+
+### Supply Images
+
+The initial selection is served from [public/club-media](public/club-media), using photos from the repository's `Images Microsoft website` collection. Original albums are untouched. Put additional optimized images in this public folder and use `/club-media/filename.jpg`, or provide a hosted HTTPS image URL.
+
+Set `assets.logo`, `assets.hero`, `assets.heroAlt`, and optionally `assets.heroGallery`. A nonempty `heroGallery` supplies the hero photo selector and takes precedence over `hero`; omit it to use a single hero image. Each gallery entry has `src`, `alt`, and `label`. Keep `alt` factual and descriptive.
+
+```tsx
+import GlassImage from './components/public/GlassImage';
+
+<GlassImage
+	src="/club-media/microsoft-egypt.jpg"
+	alt="Microsoft Student Club members at Microsoft Egypt"
+	aspectRatio="4 / 3"
+	fit="cover"
+	position="center 35%"
+	softEdges
+/>
+```
+
+Use `fit="contain"` for uncropped logos, `priority` for above-the-fold images, `framed={false}` for images inside an already-framed card, and `srcSet` plus `sizes` when multiple resolutions are available. Replacing a failed URL immediately restores image rendering. Use `null` for an intentional placeholder.
+
+The image component does not compress source files or generate smaller renditions. Supply optimized image files or hosted renditions through `srcSet` to reduce mobile download size; CSS sizing alone cannot reduce bytes. A default 4:3 ratio reserves space, and component-specific classes or `aspectRatio` can override it. The loading skeleton clears on load/error and resets when the source changes.
+
+Season 2 now uses the user-confirmed Orientation 2 album: 14 photographs with 640px/1280px JPEG renditions (smaller originals are not enlarged), totaling approximately 4.22 MB across all renditions. [src/content/season2Media.json](src/content/season2Media.json) maps each published image to its responsive sources. `OptimizedImage` selects these automatically; small gallery thumbnails load lazily. Regenerate assets from the repository root with `& .\msc-webapp\scripts\Optimize-EventImages.ps1`. This Windows/.NET script respects EXIF orientation and leaves originals untouched.
+
+### Supply Statistics
+
+Edit `clubContent.statistics`, or pass a `ClubStatistics` object to `StatisticsBanner` or the `statistics` prop of `ClubLanding`.
+
+```tsx
+import StatisticsBanner from './components/public/StatisticsBanner';
+import type { ClubStatistics } from './components/public/types';
+
+const previewStatistics: ClubStatistics = {
+	registeredAttendees: 2450,
+	eventLocations: 8,
+	beneficiaries: 12000,
+	eventsConducted: 36,
+};
+
+<StatisticsBanner statistics={previewStatistics} />
+```
+
+These example numbers are demonstration values, not club claims. The confirmed local catalogue uses **8,000 registered attendees and 8,000 beneficiaries**, separately confirmed by the user. Locations remain `null`; member counts are not attendance counts. The local completed-event counter is derived from the two documented past events, not an assertion about the club's entire history. In API mode statistics are editable persisted totals, loaded on navigation and refreshed after administration writes; there is no background polling. Zero is a valid total, not an unknown value. Negative, non-finite, and unsafe values display as unpublished. Counters start at zero when entering the viewport, compact values from 10,000 upward, expose exact totals to screen readers, and stop animations on unmount or prop changes. Reduced-motion users get the final number immediately.
+
+### Supply Events
+
+Edit [src/content/eventsData.ts](src/content/eventsData.ts). Each `ClubEvent` includes `id`, `title`, `category`, `summary`, `description`, `imageUrl`, `gallery`, `startsAt`, optional `endsAt`, `location`, and `status`. Use stable unique IDs and `upcoming`, `past`, or `unannounced` status. URLs are `/events/orientation-season-2`, `/events/canal-startup-sprint`, and `/events/orientation-season-3`.
+
+- `summary` is the short card description; `description` is the full text in the detail dialog.
+- `startsAt: '2026-10-20T18:00:00+03:00'` represents a scheduled time. Include an offset for timed events. Display uses `Africa/Cairo`.
+- `startsAt: '2026-10-20'` shows a date without inventing a time; `null` displays "Date not published".
+- `startsAt: '2026-10'` shows "October 2026", not October 1. `startsAt: '2026-07', endsAt: '2026-08'` displays the supplied July-August range.
+- `location: null` displays "Location not published". No dates or locations were inferred from photo filenames.
+- `gallery` is an array of image URL strings, shared between quick view and the full event page. It supports thumbnails, previous/next wrapping and a photo counter. The dialog supports native focus containment, Escape, close button, backdrop dismissal, scroll locking, and focus restoration.
+
+The three event records use the latest club-confirmed information: **Season 2 on December 1, 2025** (corrected from the initial 2024 date, with the album explicitly confirmed); Canal Startup Sprint in July-August 2026; and **Season 3 on October 19, 2026, 3 PM-7 PM at Creativa Innovation Hub Ismailia**, represented with the Cairo `+03:00` offset applicable on that date. Season 2 has its full optimized gallery. Sprint/Season 3 photo links remain unassigned until supplied. Existing community hero images remain in place.
+
+The homepage selects the earliest dated `upcoming` event from the same catalogue. Its live countdown now targets `2026-10-19T15:00:00+03:00`; the event details also show the confirmed 7 PM finish. Countdown inputs must be complete ISO timestamps including `Z` or an offset. Month-only and date-only values still display an exact-time-pending message. At zero the timer stops and shows that the scheduled start has been reached; it does not automatically claim the event is over.
+
+For production deep links, configure your static host to serve the SPA entry document for frontend routes such as `/events/:id`. Keep normal file handling for `/club-media/*` and `/club-certificates/*`; a missing PDF should not return the SPA document.
+
+`eventSource: 'local'` remains the default preview mode. Set `REACT_APP_CONTENT_SOURCE=api` at frontend build/start time to load all four public collections from `GET /api/showcase`. [src/context/ShowcaseContext.tsx](src/context/ShowcaseContext.tsx) validates the response and exposes loading/retry states. Failed requests and empty API catalogues never fall back to the local catalogue. Local files remain the initial import source, not a shadow copy of live database changes. Hero branding remains file-configured.
+
+### Members And Certificates
+
+The supplied workbook produced 102 profiles: 74 Members, 5 Instructors (the source spelling is `Instructure`), 19 Board and 4 High Board. `Role` supplies the displayed position title; `Position` determines the group. The President's blank `Position` for Ali Arabi Ali is explicitly mapped to High Board following user confirmation. All four High Board profiles appear on the homepage, with the President first.
+
+- `/members`: Members and Instructors segments, name/role search, role filter and 12-profile pagination.
+- `/leadership`: separate High Board and Board sections with search and role filtering.
+- `/team`: compatibility redirect to `/members`.
+- 101 certificates are served from [public/club-certificates](public/club-certificates), with view/download links. Ali Arabi Ali has no supplied PDF, so no link is rendered for that profile.
+- 58 roster-approved portraits (41 Members, 15 Board, 2 High Board), including Ali Arabi Ali, are served from [public/club-media/members](public/club-media/members). The JPEGs total 3.44 MB, have a maximum dimension of 720px, respect EXIF orientation, and omit original image metadata. Square frames use `contain` so portrait heads and PDF-derived photos are not cropped on mobile. The original files are unchanged. Ali Arabi Ali's certificate is still unavailable.
+- 43 profiles have no confidently assigned local portrait; they retain initials. One additional profile, Mai Elsayed Hafez Amen, was explicitly skipped because the supplied WebP cannot be decoded by the installed Windows codec. The user chose to skip unsupported images rather than install another converter.
+
+Re-import after updating the workbook or certificate files, from the repository root:
+
+```powershell
+& .\msc-webapp\scripts\Import-Members.ps1 -InspectOnly
+& .\msc-webapp\scripts\Import-Members.ps1
+```
+
+[scripts/Import-Members.ps1](scripts/Import-Members.ps1) reads the XLSX using standard ZIP/XML APIs without extra dependencies. It publishes only IDs, names, role titles, normalized groups, image URLs and certificate URLs. Email, subject, LinkedIn captions/links and the workbook itself are not copied into the site. It uses the explicit `Certificate_PDF_File` field, rejects duplicate identifiers/unknown groups/invalid filenames, warns about absent PDFs, and preserves existing portrait URLs by ID on re-import. The original workbook and PDFs are never modified. It does not delete older copied PDFs; remove retired files from the public folder explicitly when unpublishing a certificate. Published certificates are publicly accessible, not protected documents.
+
+### Roster-Only Portrait Import
+
+The certificate workbook remains the sole membership allowlist. Photo response workbooks under `Microsoft Data` are only identity evidence, never a source of additional profiles. [scripts/member-photo-matches.json](scripts/member-photo-matches.json) contains 59 explicitly reviewed assignments, not fuzzy name guesses. Most response matches use exact private email equality; five reviewed name-only matches and the explicitly named President portrait are marked separately. Neither emails, phone numbers, national IDs, response workbooks nor remote upload links are published.
+
+```powershell
+& .\msc-webapp\scripts\Import-MemberPhotos.ps1 -InspectOnly
+& .\msc-webapp\scripts\Import-MemberPhotos.ps1 -PrepareOnly
+& .\msc-webapp\scripts\Import-MemberPhotos.ps1
+```
+
+The Windows PowerShell importer uses built-in ZIP/XML, System.Drawing, WPF and Windows PDF APIs. Inspection validates the current roster and requires exactly one local file per assignment. Preparation writes only to a temporary staging directory. Publication updates only `imageUrl`, writes [scripts/member-photo-report.json](scripts/member-photo-report.json), and manages generated JPEGs in its dedicated public folder. Old generated portraits outside the current successful selection are removed from that folder; originals are never deleted. Unsupported codecs are reported and skipped, while disk failures stop the import. Ensure free disk space before running. Repeated imports preserve member data and leave 101 certificate links unchanged. No API calls, live database writes or migrations are involved.
+
+The report lists every profile as `matched`, `unassigned`, or `conversion-skipped`. Do not automatically assign the remaining files by first name. In particular, these require confirmation:
+
+| Roster profile or source label | Reason left unassigned |
+| --- | --- |
+| Aya Mohamed | Multiple similarly named response owners and portrait files |
+| Mahmoud Mohamed Ali | Several Mahmoud Mohamed identities; ambiguous file label |
+| Salma Mohammad | Similarly named response has a different role and email |
+| DKWN, Denji, jujjj, Kim Jasmine | Upload labels do not establish a roster identity |
+| Ahmed Hariedy / ahmed hassan upload | Name alias needs confirmation |
+| Mohamed Abdelazim | No directly named portrait; do not substitute Mohamed Abdelmaksoud |
+
+Jana Alaa has two existing roster IDs with different roles, linked by the supplied workbooks. Both existing profiles are preserved; this import does not merge or add profiles. People present only in the response files remain excluded. After live API activation, changing these local seed URLs does not overwrite existing database rows: the initial catalogue import is additive. Use authenticated administration to update existing live portraits after separately approving activation.
+
+### Student Achievements
+
+For local preview, add real entries to [src/content/achievements.ts](src/content/achievements.ts) using the `StudentAchievement` contract: `id`, `title`, `studentNames`, `achievedAt`, `summary`, `imageUrl`, `evidenceUrl`. After API activation, create/update/delete them in `/admin/achievements`. Use a date-only or month-only date when an exact time is irrelevant. Evidence links must use HTTPS. `/achievements` remains honestly empty until real achievements are entered; no awards or accomplishments were invented.
+
+### Persistence Activation
+
+The user approved preparing code, tests and migrations **without applying changes to a live database**. The current preview therefore stays local. Administration forms require the configured API, an authenticated session and the updated database schema; preview mode does not simulate successful saving.
+
+Prepared endpoints:
+
+| Endpoint | Access | Purpose |
+| --- | --- | --- |
+| `GET /api/showcase` | Public | Events, members, achievements and statistics from EF |
+| `GET /api/showcase/member-types` | Public | Database-backed member category options |
+| `POST/PUT/DELETE /api/events` | SuperAdmin or ContentEditor | Existing event CRUD, now with slug, precise schedule, location and gallery |
+| `POST/PUT/DELETE /api/members` | SuperAdmin or ContentEditor | Existing member CRUD with safe request DTO, optional photos and certificates |
+| `GET/POST/PUT/DELETE /api/achievements` | Reads public; writes authenticated | Student achievement CRUD |
+| `GET/PUT /api/showcase/statistics` | Read public; write authenticated | Nullable nonnegative statistics, singleton ID 1 |
+| `POST /api/showcase/import` | SuperAdmin only | Add missing initial events/members and initial statistics |
+
+CRUD update/delete URLs include the numeric record ID. Events retain an optional stable public `slug`; members retain an optional `publicId`. Updates are full replacements, so clients must preserve fields they do not edit. The shared [src/pages/ContentManagement.js](src/pages/ContentManagement.js) editor does this, preserves legacy date-only schedules, and supplies route IDs in update bodies. Existing admin paths `/admin/events` and `/admin/members` use this editor; `/admin/achievements` and `/admin/statistics` are new. Authentication and role restrictions remain enforced by the API, including import rejection for ContentEditor.
+
+Activation checklist, to execute only after separately approving a target database:
+
+1. Back up the target and review its migration history, including the earlier Identity migration. Keep connection strings and JWT keys in local secret storage or deployment configuration, never in frontend variables or chat.
+2. Review [../MSC.WebAPI/Migrations/20260913075052_PublicShowcaseContent.cs](../MSC.WebAPI/Migrations/20260913075052_PublicShowcaseContent.cs). It adds event metadata/gallery, member public IDs, achievement/statistic tables and Member/Instructor types. It retains existing members/events and allows missing images. Check that MemberTypes IDs 4 and 5 are available or reconcile existing categories before applying. Unique slug/public-ID indexes must remain valid. Rolling this migration back removes the new content columns/tables and can lose their data.
+3. Apply the reviewed migration to the approved database using your controlled deployment process. No `database update`, production seeding or cloud deployment has been run in this phase.
+4. Start the configured API and ensure the frontend origin is allowed. Set `REACT_APP_API_URL` to its public API base URL and `REACT_APP_CONTENT_SOURCE=api`, then restart/rebuild the frontend; these are build-time settings.
+5. Sign in as SuperAdmin. Select **Import initial catalogue**, inspect the confirmation and explicitly confirm once. This imports the current 3 events and 102 profiles with references to the published assets, and initializes the confirmed statistics only if absent. It does not upload/copy files to the API: deploy `public/club-media` and `public/club-certificates` with the frontend, or replace relative URLs with approved HTTPS asset URLs.
+6. Import matches by event slug/member public ID, not name. Existing matched records/statistics are untouched on repeated imports. Review legacy rows without public IDs to avoid duplicate people when importing; these cannot be safely merged just by name. Later edits belong in the admin UI, not in local seed files. Removing a database record does not delete its public asset file.
+7. Confirm an authenticated save, public read-back, direct event link and certificate download in the target environment before publishing. This live-environment acceptance step remains unperformed.
+
+The import is explicit and not executed on API startup. EF saves import changes atomically. Gallery URLs and student-name collections are stored as JSON in `nvarchar(max)`; item-count validation is separate from SQL string length. Date precision, URL schemes, lengths, role/category IDs and nonnegative totals are validated server-side. Monthly schedules remain monthly; the legacy `EventDate` is retained only for compatibility/sorting.
+
+### Themes And Motion
+
+Night uses charcoal glass with lime, cyan, and coral accents; Day uses white surfaces and Microsoft blue; Forest provides a green alternative. Icon controls have accessible names and tooltips. Selection persists under `club-theme` in localStorage. The hero, stats, and event reveals honor `prefers-reduced-motion`; the hero does not auto-advance photos.
+
+### Verification
+
+Portrait import verification on 2026-09-13: 110 frontend tests across 16 suites and strict TypeScript passed; the 7 member-directory tests were rerun successfully after the final uncropped-frame adjustment. Repeating the import preserved all member values. Browser checks decoded all 58 JPEGs, checked nonblank pixels and 100-720px dimensions, traversed all seven member pages and leadership, verified the skipped-image initials and a real certificate PDF response, and checked square uncropped frames without horizontal overflow at 320/390/768/1440px. Desktop homepage and mobile portrait screenshots were reviewed. This change did not rerun backend tests or a production build. Disk exhaustion was resolved by clearing generated CRA cache and this session's temporary portrait files; the current preview runs with webpack disk caching disabled. Source files and original media were not deleted. Free space remains low and should be increased before a production build or the normal cached preview task.
+
+```powershell
+npm run typecheck
+npm test -- --watchAll=false --runInBand
+npm run build
+```
+
+Validation on 2026-09-13 includes strict TypeScript, production compilation, public API-mode/error tests, admin save/retry/import/pagination tests, exact roster/PDF checks and SQL-backed controller tests. Backend tests use disposable in-memory SQLite through WebApplicationFactory; an additional SQL Server model test checks JSON column sizes without opening a connection. `dotnet ef migrations has-pending-model-changes --project MSC.WebAPI --startup-project MSC.WebAPI` reports no pending model changes through the offline design-time factory.
+
+Playwright/Edge checked public themes, real 14-photo gallery navigation, mobile selection of the 640px rendition, countdown visibility, confirmed date/time range, direct links, native dialog focus, people filters, real PDF delivery and responsive layouts at 320-1920px. A separate isolated admin browser context exercised seven intercepted writes: validation error/retry, schedule/gallery preservation, certificates, achievement creation/deletion, statistics and explicit import. These UI requests did not reach any backend database. Real persistence is verified separately by API/SQLite tests; live SQL Server, a live deployment and an end-to-end live browser-to-database flow remain unverified. Generic CRA browser-data deprecation notices remain. Production output was redirected to `%TEMP%/msc-persistence-build` instead of overwriting tracked builds.
+
 ## Project Structure
 
 ```
@@ -9,13 +203,12 @@ msc-webapp/
 ├── public/                 # Static assets
 ├── src/
 │   ├── components/         # Reusable UI components
-│   │   ├── Navbar.js       # Navigation bar
-│   │   ├── Footer.js       # Footer component
+│   │   ├── public/         # Typed public design system and event views
 │   │   └── PrivateRoute.js # Protected route wrapper
 │   ├── pages/              # Page-level components
-│   │   ├── Landing.js      # Home page
-│   │   ├── Team.js         # Team members page
-│   │   ├── Events.js       # Events page
+│   │   ├── ClubLanding.tsx # Glass hero, statistics, events, and club story
+│   │   ├── MemberDirectory.tsx # Members and leadership pages
+│   │   ├── Achievements.tsx # Student achievements
 │   │   ├── AdminLogin.js   # Admin login page
 │   │   └── AdminDashboard.js # Admin dashboard
 │   ├── services/           # API service layer
@@ -36,10 +229,12 @@ msc-webapp/
 
 ## Tech Stack
 
-- **React 18**: UI library
+- **React 19**: UI library
+- **TypeScript (strict)**: Public components and content contracts
 - **React Router DOM**: Client-side routing
 - **Axios**: HTTP client for API calls
 - **Tailwind CSS**: Utility-first CSS framework
+- **Framer Motion**: Viewport reveals, counters, hover and parallax motion
 - **Context API**: Global state management
 
 ## Brand Colors (from Tailwind config)
@@ -56,9 +251,13 @@ msc-webapp/
 ## Routes
 
 ### Public Routes
-- `/` - Landing page (hero, vision/mission, featured events, team preview)
-- `/team` - Full team members page (High Board, Board, Golden Members)
+- `/` - Landing page (hero gallery, statistics, event previews, club story)
+- `/members` - Members and Instructors directory with certificates
+- `/leadership` - High Board and Board directory
+- `/team` - Redirect to `/members`
 - `/events` - All events page with filtering
+- `/events/:id` - Shareable event detail page
+- `/achievements` - Curated student achievements
 - `/admin/login` - Admin login page
 
 ### Protected Routes (require authentication)

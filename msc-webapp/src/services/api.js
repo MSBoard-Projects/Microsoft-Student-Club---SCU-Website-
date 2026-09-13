@@ -2,6 +2,15 @@ import apiClient from './apiClient';
 
 // Authentication API endpoints
 export const authApi = {
+  getSession: async () => {
+    const response = await apiClient.get('/auth/session');
+    return response.data;
+  },
+  logout: async (token) => {
+    await apiClient.post('/auth/logout', null, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  },
   // Login user
   login: async (email, password) => {
     const response = await apiClient.post('/auth/login', { email, password });
@@ -37,7 +46,7 @@ export const membersApi = {
   
   // Update member (Admin only)
   update: async (id, memberData) => {
-    const response = await apiClient.put(`/members/${id}`, memberData);
+    const response = await apiClient.put(`/members/${id}`, { ...memberData, id });
     return response.data;
   },
   
@@ -76,7 +85,7 @@ export const eventsApi = {
   
   // Update event (Admin only)
   update: async (id, eventData) => {
-    const response = await apiClient.put(`/events/${id}`, eventData);
+    const response = await apiClient.put(`/events/${id}`, { ...eventData, id });
     return response.data;
   },
   
@@ -88,6 +97,21 @@ export const eventsApi = {
 };
 
 // Site Content API endpoints
+export const showcaseApi = {
+  get: async () => (await apiClient.get('/showcase')).data,
+  getMemberTypes: async () => (await apiClient.get('/showcase/member-types')).data,
+  getStatistics: async () => (await apiClient.get('/showcase/statistics')).data,
+  saveStatistics: async data => (await apiClient.put('/showcase/statistics', { ...data, id: 1 })).data,
+  importContent: async data => (await apiClient.post('/showcase/import', data)).data,
+};
+
+export const achievementsApi = {
+  getAll: async () => (await apiClient.get('/achievements')).data,
+  create: async data => (await apiClient.post('/achievements', data)).data,
+  update: async (id, data) => (await apiClient.put(`/achievements/${id}`, { ...data, id })).data,
+  delete: async id => { await apiClient.delete(`/achievements/${id}`); },
+};
+
 export const siteContentApi = {
   // Get all site content
   getAll: async () => {
