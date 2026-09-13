@@ -14,9 +14,10 @@ test('public member import includes only publication fields and every linked PDF
   expect(members).toHaveLength(102);
   expect(new Set(members.map(member => member.id)).size).toBe(102);
   expect(members.filter(member => member.group === 'member')).toHaveLength(74);
-  expect(members.filter(member => member.group === 'board')).toHaveLength(19);
+  expect(members.filter(member => member.group === 'board')).toHaveLength(16);
   expect(members.filter(member => member.group === 'instructor')).toHaveLength(5);
-  expect(highBoard).toHaveLength(4);
+  expect(highBoard).toHaveLength(7);
+  for (const id of ['salwa-alaa-eldin-hegazy', 'ahmed-hatem', 'mohamed-mahmoud-2']) expect(highBoard.some(member => member.id === id)).toBe(true);
   expect(members.filter(member => member.certificateUrl)).toHaveLength(101);
   members.forEach(member => {
     expect(Object.keys(member).filter(key => key !== 'bio').sort()).toEqual(['certificateUrl', 'fullName', 'group', 'id', 'imageUrl', 'positionTitle']);
@@ -84,8 +85,8 @@ test('member directory paginates, searches and separates instructors from member
 test('leadership groups High Board and Board and omits unavailable certificate links', () => {
   render(<LeadershipPage />);
   const top = screen.getByRole('region', { name: 'High Board' });
-  expect(within(top).getAllByRole('article')).toHaveLength(4);
-  expect(within(screen.getByRole('region', { name: 'Board' })).getAllByRole('article')).toHaveLength(19);
+  expect(within(top).getAllByRole('article')).toHaveLength(7);
+  expect(within(screen.getByRole('region', { name: 'Board' })).getAllByRole('article')).toHaveLength(16);
   expect(screen.getByRole('heading', { name: 'Ali Arabi Ali' })).toBeInTheDocument();
   expect(screen.queryByRole('link', { name: 'View certificate: Ali Arabi Ali' })).not.toBeInTheDocument();
   fireEvent.change(screen.getByRole('textbox', { name: 'Search people' }), { target: { value: 'Ali Arabi Ali' } });
@@ -94,7 +95,7 @@ test('leadership groups High Board and Board and omits unavailable certificate l
 
 test('homepage introduces all High Board members and links to the full leadership', () => {
   render(<HighBoardSection />);
-  expect(screen.getAllByRole('article')).toHaveLength(4);
+  expect(screen.getAllByRole('article')).toHaveLength(7);
   expect(screen.getByRole('link', { name: 'Our leadership' })).toHaveAttribute('href', '/leadership');
 });
 

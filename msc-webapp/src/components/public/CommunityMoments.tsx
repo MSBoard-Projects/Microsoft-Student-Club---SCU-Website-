@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useInView, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FiArrowUpRight, FiPause, FiPlay } from 'react-icons/fi';
@@ -11,20 +11,26 @@ export default function CommunityMoments({ events, onSelect }: { events: readonl
   const inView = useInView(sectionRef, { margin: '100px' });
   const reducedMotion = useReducedMotion();
   const [paused, setPaused] = useState(false);
-  const photos = events.flatMap(event => [...new Set(event.gallery.length ? event.gallery : event.imageUrl ? [event.imageUrl] : [])]
+  const [slowed, setSlowed] = useState(false);
+  const updateSpeed = (slow: boolean) => sectionRef.current?.querySelectorAll('.club-moments-track').forEach(track => {
+    track.getAnimations?.().forEach(animation => animation.updatePlaybackRate(slow ? 0.35 : 1));
+  });
+  useEffect(() => { updateSpeed(slowed); }, [slowed, inView, paused, reducedMotion]);
+  const collections = events.map(event => [...new Set(event.gallery.length ? event.gallery : event.imageUrl ? [event.imageUrl] : [])]
     .filter(Boolean).map((src, index) => ({ src, event, label: `${event.title}, photo ${index + 1}` })));
+  const photos = Array.from({ length: Math.max(0, ...collections.map(collection => collection.length)) }, (_, index) => collections.flatMap(collection => collection[index] ? [collection[index]] : [])).flat();
   if (!photos.length) return null;
   const rows = [photos.filter((_, index) => index % 2 === 0), photos.filter((_, index) => index % 2 === 1)];
   if (!rows[1].length) rows[1] = rows[0];
-  return <section ref={sectionRef} className="club-section club-moments" aria-labelledby="community-moments-title" data-paused={paused || !inView || Boolean(reducedMotion)}>
+  return <section ref={sectionRef} className="club-section club-moments" aria-labelledby="community-moments-title" data-paused={paused || !inView || Boolean(reducedMotion)} data-speed={slowed ? 'slow' : 'normal'}>
     <div className="club-container club-section-heading"><div><span className="club-eyebrow">LIFE AT MICROSOFT STUDENT CLUB</span><h2 id="community-moments-title">Moments we share.</h2></div><div className="club-moments-actions">
       {!reducedMotion && <button type="button" onClick={() => setPaused(value => !value)} aria-label={paused ? 'Play photo animation' : 'Pause photo animation'} title={paused ? 'Play photo animation' : 'Pause photo animation'}><Icon glyph={paused ? FiPlay : FiPause} /></button>}
       <Link to="/gallery" className="club-text-link">All photos <Icon glyph={FiArrowUpRight} /></Link>
     </div></div>
-    <div className="club-moments-rows">{rows.map((row, rowIndex) => {
+    <div className="club-moments-rows" onMouseEnter={() => setSlowed(true)} onMouseLeave={() => setSlowed(false)}>{rows.map((row, rowIndex) => {
       const tiles = Array.from({ length: Math.max(8, row.length) }, (_, index) => row[index % row.length]);
-      return <div className="club-moments-window" key={rowIndex} onFocus={event => event.target.scrollIntoView?.({ block: 'nearest', inline: 'nearest' })} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) event.currentTarget.scrollLeft = 0; }}>
-        <div className={`club-moments-track ${rowIndex === 1 ? 'club-moments-reverse' : ''}`}>
+      return <div className="club-moments-window" key={rowIndex} onFocus={event => event.target.scrollIntoView?.({ block: 'nearest', inline: 'nearest' })} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) { event.currentTarget.scrollLeft = 0; requestAnimationFrame(() => updateSpeed(slowed)); } }}>
+        <div className={`club-moments-track ${rowIndex === 1 ? 'club-moments-reverse' : ''}`} style={{ animationDuration: `${tiles.length * (rowIndex === 1 ? 6.4 : 5.8)}s` }}>
           <div className="club-moments-group">{tiles.map((photo, index) => <button type="button" className="club-moment" key={`${photo.src}-${index}`} aria-label={`View album: ${photo.label}`} onClick={() => onSelect(photo.event)}><GlassImage src={photo.src} alt={photo.label} sizes="300px" fit="contain" framed={false} /><span>{photo.event.title}<Icon glyph={FiArrowUpRight} /></span></button>)}</div>
           <div className="club-moments-group club-moments-copy" aria-hidden="true">{tiles.map((photo, index) => <button type="button" tabIndex={-1} className="club-moment" key={`${photo.src}-${index}`} onPointerDown={event => event.preventDefault()} onClick={() => onSelect(photo.event)}><GlassImage src={photo.src} alt="" sizes="300px" fit="contain" framed={false} /><span>{photo.event.title}<Icon glyph={FiArrowUpRight} /></span></button>)}</div>
         </div>

@@ -3,6 +3,9 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { FiImage } from 'react-icons/fi';
 import Icon from './Icon';
 import season2Media from '../../content/season2Media.json';
+import communityMedia from '../../content/communityMedia.json';
+
+const mediaRenditions = [...season2Media, ...communityMedia.flatMap(album => album.photos)];
 
 export interface OptimizedImageProps {
   src: string | null;
@@ -45,6 +48,6 @@ function ImageFrame({ src, alt, className = '', fit = 'cover', position = 'cente
 }
 
 export default function OptimizedImage(props: OptimizedImageProps) {
-  const rendition = season2Media.find(image => image.src === props.src);
+  const rendition = mediaRenditions.find(image => image.src === props.src);
   return <ImageFrame key={`${props.src}|${props.srcSet ?? ''}`} width={rendition?.width} height={rendition?.height} srcSet={rendition?.srcSet} {...props} />;
 }

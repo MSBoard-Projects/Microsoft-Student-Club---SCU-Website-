@@ -1,0 +1,479 @@
+[
+    {
+        "id":  "mahmoud-ali",
+        "name":  "Mahmoud Ali",
+        "memberId":  "mahmoud-ali",
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "Media Specialist"
+                       }
+                   ]
+    },
+    {
+        "id":  "eman-ramadan",
+        "name":  "Eman Ramadan",
+        "memberId":  "eman-ramadan",
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "heads",
+                           "role":  "Head Graphic Design"
+                       }
+                   ]
+    },
+    {
+        "id":  "zahraa-khaled",
+        "name":  "Zahraa Khaled",
+        "memberId":  null,
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "heads",
+                           "role":  "Head PM \u0026 Mentor HR"
+                       },
+                       {
+                           "month":  "2026-02",
+                           "category":  "heads",
+                           "role":  "Head PM \u0026 Mentor HR"
+                       }
+                   ]
+    },
+    {
+        "id":  "dina-amr-ismail",
+        "name":  "Dina amr ismail",
+        "memberId":  null,
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "HR Committee"
+                       }
+                   ]
+    },
+    {
+        "id":  "hager-abu-elmajd",
+        "name":  "Hager abu elmajd",
+        "memberId":  "hager-abu-elmajd",
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "Media Committee"
+                       }
+                   ]
+    },
+    {
+        "id":  "aya-mohamed",
+        "name":  "Aya Mohamed",
+        "memberId":  "aya-mohamed",
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "Media Committee"
+                       }
+                   ]
+    },
+    {
+        "id":  "mohamad-waleed",
+        "name":  "Mohamad Waleed",
+        "memberId":  "mohamad-waleed",
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "heads",
+                           "role":  "UIUX Head"
+                       }
+                   ]
+    },
+    {
+        "id":  "manar-nasser",
+        "name":  "Manar Nasser",
+        "memberId":  "manar-nasser",
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "heads",
+                           "role":  "Cyber Head"
+                       },
+                       {
+                           "month":  "2026-02",
+                           "category":  "heads",
+                           "role":  "Cybersecurity Head"
+                       }
+                   ]
+    },
+    {
+        "id":  "mohamed-ahmed",
+        "name":  "Mohamed Ahmed",
+        "memberId":  "mohamed-ahmed",
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "heads",
+                           "role":  "Cyber V.Head"
+                       },
+                       {
+                           "month":  "2026-02",
+                           "category":  "heads",
+                           "role":  "Cybersecurity V.Head"
+                       }
+                   ]
+    },
+    {
+        "id":  "ahmed-mohamed",
+        "name":  "Ahmed mohamed",
+        "memberId":  null,
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "PR Committee"
+                       },
+                       {
+                           "month":  "2026-02",
+                           "category":  "members",
+                           "role":  "Committee PR"
+                       }
+                   ]
+    },
+    {
+        "id":  "roaa-ali-ghareeb",
+        "name":  "Roaa ali ghareeb",
+        "memberId":  null,
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "PR Committee"
+                       },
+                       {
+                           "month":  "2026-02",
+                           "category":  "members",
+                           "role":  "Committee PR"
+                       }
+                   ]
+    },
+    {
+        "id":  "mostafa-bakry",
+        "name":  "Mostafa Bakry",
+        "memberId":  "mostafa-bakry",
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "HR Generalist"
+                       }
+                   ]
+    },
+    {
+        "id":  "tasneem-ali",
+        "name":  "Tasneem Ali",
+        "memberId":  "tasneem-ali",
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "HR Specialist"
+                       }
+                   ]
+    },
+    {
+        "id":  "menna-ibrahim",
+        "name":  "Menna Ibrahim",
+        "memberId":  "menna-ibrahim",
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "HR Committee"
+                       }
+                   ]
+    },
+    {
+        "id":  "esraa-attia",
+        "name":  "Esraa Attia",
+        "memberId":  null,
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "UI UX Committee"
+                       },
+                       {
+                           "month":  "2026-02",
+                           "category":  "members",
+                           "role":  "Committee UI/UX"
+                       }
+                   ]
+    },
+    {
+        "id":  "nada-mostafa",
+        "name":  "Nada Mostafa",
+        "memberId":  "nada-mostafa",
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "Back-End"
+                       }
+                   ]
+    },
+    {
+        "id":  "rawan-ahmed",
+        "name":  "Rawan Ahmed",
+        "memberId":  null,
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "Back-End"
+                       }
+                   ]
+    },
+    {
+        "id":  "omar-mohamed",
+        "name":  "Omar Mohamed",
+        "memberId":  null,
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "Front-End"
+                       }
+                   ]
+    },
+    {
+        "id":  "yassin-ahmed",
+        "name":  "Yassin ahmed",
+        "memberId":  null,
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "Front-End"
+                       }
+                   ]
+    },
+    {
+        "id":  "ziad-abdel-qader",
+        "name":  "Ziad Abdel Qader",
+        "memberId":  null,
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "instructors",
+                           "role":  "AI Committee (Instructor)"
+                       }
+                   ]
+    },
+    {
+        "id":  "marina-tamer",
+        "name":  "Marina Tamer",
+        "memberId":  "marina-tamer",
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "Cyber security"
+                       },
+                       {
+                           "month":  "2026-02",
+                           "category":  "members",
+                           "role":  "Committee Cyber Security"
+                       }
+                   ]
+    },
+    {
+        "id":  "yasmin-naser",
+        "name":  "Yasmin Naser",
+        "memberId":  null,
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "Cyber security"
+                       }
+                   ]
+    },
+    {
+        "id":  "manar-abdelbaky",
+        "name":  "Manar Abdelbaky",
+        "memberId":  "manar-abdelbaky",
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "AI Committee"
+                       }
+                   ]
+    },
+    {
+        "id":  "sara-elsayed",
+        "name":  "Sara Elsayed",
+        "memberId":  null,
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "members",
+                           "role":  "UI UX Committee"
+                       },
+                       {
+                           "month":  "2026-02",
+                           "category":  "members",
+                           "role":  "Committee UI/UX"
+                       }
+                   ]
+    },
+    {
+        "id":  "moheb-nagy",
+        "name":  "Moheb Nagy",
+        "memberId":  "moheb-nagy",
+        "awards":  [
+                       {
+                           "month":  "2026-04",
+                           "category":  "instructors",
+                           "role":  "Cyber security (Instructor)"
+                       },
+                       {
+                           "month":  "2026-02",
+                           "category":  "instructors",
+                           "role":  "Instructor Cyber Security"
+                       }
+                   ]
+    },
+    {
+        "id":  "atef-mohammed",
+        "name":  "Atef Mohammed",
+        "memberId":  "atef-mohammed",
+        "awards":  [
+                       {
+                           "month":  "2026-02",
+                           "category":  "heads",
+                           "role":  "Head of HR"
+                       }
+                   ]
+    },
+    {
+        "id":  "jana-medhat",
+        "name":  "Jana Medhat",
+        "memberId":  null,
+        "awards":  [
+                       {
+                           "month":  "2026-02",
+                           "category":  "heads",
+                           "role":  "Vice Head PM"
+                       }
+                   ]
+    },
+    {
+        "id":  "dana-mohamed",
+        "name":  "Dana Mohamed",
+        "memberId":  "dana-mohamed",
+        "awards":  [
+                       {
+                           "month":  "2026-02",
+                           "category":  "members",
+                           "role":  "Committee HR"
+                       }
+                   ]
+    },
+    {
+        "id":  "nawal-samir-ali",
+        "name":  "Nawal Samir Ali",
+        "memberId":  null,
+        "awards":  [
+                       {
+                           "month":  "2026-02",
+                           "category":  "members",
+                           "role":  "Committee HR"
+                       }
+                   ]
+    },
+    {
+        "id":  "reem-tamer",
+        "name":  "Reem Tamer",
+        "memberId":  "reem-tamer",
+        "awards":  [
+                       {
+                           "month":  "2026-02",
+                           "category":  "members",
+                           "role":  "Committee HR"
+                       }
+                   ]
+    },
+    {
+        "id":  "mariam-rafat",
+        "name":  "Mariam Rafat",
+        "memberId":  "mariam-rafat",
+        "awards":  [
+                       {
+                           "month":  "2026-02",
+                           "category":  "members",
+                           "role":  "Committee PR"
+                       }
+                   ]
+    },
+    {
+        "id":  "haneen-ahmad",
+        "name":  "Haneen Ahmad",
+        "memberId":  null,
+        "awards":  [
+                       {
+                           "month":  "2026-02",
+                           "category":  "instructors",
+                           "role":  "Instructor Cyber Security"
+                       }
+                   ]
+    },
+    {
+        "id":  "omar-waleed",
+        "name":  "Omar Waleed",
+        "memberId":  "omar-waleed",
+        "awards":  [
+                       {
+                           "month":  "2026-02",
+                           "category":  "members",
+                           "role":  "Committee Cyber Security"
+                       }
+                   ]
+    },
+    {
+        "id":  "mennat-allah",
+        "name":  "Mennat Allah",
+        "memberId":  null,
+        "awards":  [
+                       {
+                           "month":  "2026-02",
+                           "category":  "members",
+                           "role":  "Committee Cyber Security"
+                       }
+                   ]
+    },
+    {
+        "id":  "judy-ahmed",
+        "name":  "Judy Ahmed",
+        "memberId":  null,
+        "awards":  [
+                       {
+                           "month":  "2026-02",
+                           "category":  "members",
+                           "role":  "Committee UI/UX"
+                       }
+                   ]
+    },
+    {
+        "id":  "kareem-mohamed",
+        "name":  "Kareem Mohamed",
+        "memberId":  null,
+        "awards":  [
+                       {
+                           "month":  "2026-02",
+                           "category":  "instructors",
+                           "role":  "Instructor Cyber Security"
+                       }
+                   ]
+    }
+]

@@ -10,8 +10,10 @@ import PublicHeader from './PublicHeader';
 import CommunityMoments from './CommunityMoments';
 import { PublicThemeProvider } from './ThemeProvider';
 import { clubContent } from '../../content/club';
+import { communityAlbums, teamPhoto } from '../../content/communityAlbums';
 import { members, memberContactLinks } from '../../content/members';
 import { HighBoardSection, MemberSocialLinks } from '../../pages/MemberDirectory';
+import ClubLanding from '../../pages/ClubLanding';
 
 jest.mock('../../services/api', () => ({ showcaseApi: { get: jest.fn() }, leaderboardApi: { getAll: jest.fn() } }));
 
@@ -102,6 +104,9 @@ test('optimized images clear their skeleton on load or failure and reset for a n
 test('hero highlights can switch photographs and still work without supplied assets', () => {
   useReducedMotion.mockReturnValue(true);
   const { rerender } = render(<MemoryRouter><HeroSection assets={clubContent.assets} /></MemoryRouter>);
+  expect(screen.getByRole('button', { name: 'Show All Team' })).toHaveAttribute('aria-pressed', 'true');
+  expect(screen.getByRole('img', { name: 'The Microsoft Student Club team together at orientation' })).toHaveAttribute('src', teamPhoto);
+  expect(within(screen.getByRole('group', { name: 'Community highlights' })).getAllByRole('button')).toHaveLength(4);
   fireEvent.click(screen.getByRole('button', { name: 'Show Orientation' }));
   expect(screen.getByRole('button', { name: 'Show Orientation' })).toHaveAttribute('aria-pressed', 'true');
   expect(screen.getByRole('img', { name: 'Students gathering at the club orientation' })).toHaveAttribute('src', '/club-media/hero-orientation.jpg');
@@ -168,4 +173,30 @@ test('home leadership highlights the existing president without duplicating his 
   expect(screen.getAllByRole('heading', { name: 'Ali Arabi Ali' })).toHaveLength(1);
   expect(screen.getByRole('link', { name: 'View profile: Ali Arabi Ali' })).toHaveAttribute('href', '/members/ali-arabi-ali');
   expect(screen.getByRole('region', { name: 'Meet the High Board' }).querySelector('.club-officer-president')).toHaveTextContent('Ali Arabi Ali');
+});
+
+test('community photo rows interleave albums and slow down on hover without pausing', () => {
+  const { container } = render(<MemoryRouter><CommunityMoments events={communityAlbums} onSelect={jest.fn()} /></MemoryRouter>);
+  const updatePlaybackRate = jest.fn();
+  container.querySelectorAll('.club-moments-track').forEach(track => { track.getAnimations = () => [{ updatePlaybackRate }]; });
+  fireEvent.mouseEnter(container.querySelector('.club-moments-rows'));
+  expect(updatePlaybackRate).toHaveBeenCalledWith(0.35);
+  expect(screen.getByRole('region', { name: 'Moments we share.' })).toHaveAttribute('data-paused', 'false');
+  fireEvent.mouseLeave(container.querySelector('.club-moments-rows'));
+  expect(updatePlaybackRate).toHaveBeenCalledWith(1);
+  const labels = screen.getAllByRole('button', { name: /View album:/ }).slice(0, 6).map(button => button.getAttribute('aria-label').split(', photo')[0]);
+  expect(new Set(labels).size).toBe(6);
+});
+
+test('homepage includes the supplied story, student programs at both ends and recurring honours before sponsors', () => {
+  useReducedMotion.mockReturnValue(true);
+  const { container } = render(<MemoryRouter><ClubLanding /></MemoryRouter>);
+  expect(screen.getByRole('heading', { name: 'About Us' })).toBeInTheDocument();
+  expect(screen.getByText('Creating a dynamic student community where Microsoft technologies fuel innovation, leadership, and real-world impact, bridging the gap between academia and industry.')).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Mission' })).toBeInTheDocument();
+  expect(screen.getAllByRole('img', { name: 'Microsoft logo' })).toHaveLength(2);
+  expect(screen.getAllByRole('img', { name: 'GitHub logo' })).toHaveLength(2);
+  expect(within(screen.getByRole('region', { name: 'Sponsors & supporters' })).getAllByRole('img')).toHaveLength(22);
+  expect(container.querySelector('.club-hero').nextElementSibling).toHaveClass('club-program-band');
+  expect(container.querySelector('.club-supporters').previousElementSibling).toHaveClass('club-golden');
 });

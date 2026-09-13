@@ -7,6 +7,7 @@ import usePublishedCollection from '../hooks/usePublishedCollection';
 import { parseSponsors, sponsorTiers, type SponsorRecord, type SponsorTier } from '../content/sponsors';
 import OptimizedImage from '../components/public/OptimizedImage';
 import Icon from '../components/public/Icon';
+import { SupporterWall } from '../components/public/Supporters';
 
 const loadSponsors = () => sponsorsApi.getPublished();
 
@@ -31,11 +32,12 @@ export function EventSponsors({ eventId }: { eventId: string }) {
 }
 
 export default function Sponsors() {
-  const { data: { events } } = useShowcase();
+  const { data: { events }, source } = useShowcase();
   const { data, loading, error, retry } = usePublishedCollection(loadSponsors, parseSponsors);
   const [tier, setTier] = useState('all');
   const [event, setEvent] = useState('all');
   const filtered = data.filter(sponsor => (tier === 'all' || sponsor.tier === tier) && (event === 'all' || (event === 'club' && sponsor.eventKey === null) || sponsor.eventKey === event));
+  if (source === 'local') return <div><header className="club-page-heading club-container"><span className="club-eyebrow">MICROSOFT STUDENT CLUB / SCU</span><h1>Sponsors & Partners</h1></header><SupporterWall /></div>;
   return <div className="club-container club-directory"><header className="club-page-heading"><span className="club-eyebrow">MICROSOFT STUDENT CLUB / SCU</span><h1>Sponsors & Partners</h1><p>The organisations supporting our community.</p></header>
     <div className="club-event-toolbar"><label className="club-event-filter"><span className="sr-only">Sponsor tier</span><select aria-label="Sponsor tier" value={tier} onChange={change => setTier(change.target.value)}><option value="all">All tiers</option>{Object.entries(sponsorTiers).map(([key, label]) => <option value={key} key={key}>{label}</option>)}</select></label>
       <label className="club-event-filter"><span className="sr-only">Sponsor event</span><select aria-label="Sponsor event" value={event} onChange={change => setEvent(change.target.value)}><option value="all">All events & club partners</option><option value="club">Club partners</option>{events.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label></div>

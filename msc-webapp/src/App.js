@@ -18,6 +18,7 @@ import Landing from './pages/ClubLanding';
 import MembersPage, { LeadershipPage, MemberProfile } from './pages/MemberDirectory';
 import Achievements from './pages/Achievements';
 import Leaderboard from './pages/Leaderboard';
+import GoldenMembers from './pages/GoldenMembers';
 import RatingManagement from './pages/RatingManagement';
 import Sponsors from './pages/Sponsors';
 import Events, { EventPage, GalleryPage } from './components/public/EventCollection';
@@ -48,6 +49,7 @@ function App() {
               <Route path="/leadership" element={<LeadershipPage />} />
               <Route path="/achievements" element={<Achievements />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/golden-members" element={<GoldenMembers />} />
               <Route path="/sponsors" element={<Sponsors />} />
               <Route path="/events" element={<Events />} />
               <Route path="/events/:id" element={<EventPage />} />

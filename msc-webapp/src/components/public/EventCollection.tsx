@@ -9,6 +9,7 @@ import GlassImage from './GlassImage';
 import Icon from './Icon';
 import { useShowcase } from '../../context/ShowcaseContext';
 import { EventSponsors } from '../../pages/Sponsors';
+import { communityAlbums, isCommunityAlbum } from '../../content/communityAlbums';
 
 export function parseApiEvents(data: unknown): ClubEvent[] {
   if (!Array.isArray(data)) throw new Error('Invalid events response');
@@ -168,8 +169,8 @@ export function EventDetails({ event, onClose }: { event: ClubEvent; onClose: ()
       <div className="club-dialog-heading"><span className="club-eyebrow">{event.category}</span><button type="button" onClick={onClose} aria-label="Close event details" title="Close event details"><Icon glyph={FiX} /></button></div>
       <div className="club-dialog-body">
         <h2 id={titleId}>{event.title}</h2>
-        <EventBody event={event} />
-        <Link to={`/events/${encodeURIComponent(event.id)}`} className="club-text-link" onClick={onClose}>Open event page <Icon glyph={FiArrowUpRight} /></Link>
+        {isCommunityAlbum(event) ? <EventGallery key={event.id} event={event} /> : <EventBody event={event} />}
+        {!isCommunityAlbum(event) && <Link to={`/events/${encodeURIComponent(event.id)}`} className="club-text-link" onClick={onClose}>Open event page <Icon glyph={FiArrowUpRight} /></Link>}
       </div>
     </dialog>
   );
@@ -181,7 +182,7 @@ export function GalleryPage({ source }: { source?: EventSource }) {
   const query = useDeferredValue(search.trim().toLowerCase());
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<ClubEvent | null>(null);
-  const albums = events.map(event => ({ ...event, gallery: [...new Set(event.gallery.length ? event.gallery : event.imageUrl ? [event.imageUrl] : [])] }))
+  const albums = [...events, ...(source === undefined ? communityAlbums : [])].map(event => ({ ...event, gallery: [...new Set(event.gallery.length ? event.gallery : event.imageUrl ? [event.imageUrl] : [])] }))
     .filter(event => event.gallery.length > 0);
   const filtered = albums.filter(event => `${event.title} ${event.category} ${event.location ?? ''}`.toLowerCase().includes(query));
   const pageCount = Math.max(1, Math.ceil(filtered.length / 6));
@@ -194,7 +195,7 @@ export function GalleryPage({ source }: { source?: EventSource }) {
       <p className="club-result-count" aria-live="polite">{filtered.length} {filtered.length === 1 ? 'album' : 'albums'} / {filtered.reduce((total, event) => total + event.gallery.length, 0)} photos</p>
       {filtered.length ? <div className="club-album-grid">{filtered.slice((currentPage - 1) * 6, currentPage * 6).map(event => <article key={event.id} className="club-album">
         <button type="button" className="club-album-cover" aria-label={`Open album: ${event.title}`} onClick={() => setSelected(event)}><GlassImage src={event.gallery[0]} alt={event.title} fit="contain" framed={false} sizes="(max-width: 760px) 100vw, (max-width: 1050px) 50vw, 33vw" /><span>{event.gallery.length} {event.gallery.length === 1 ? 'photo' : 'photos'}<Icon glyph={FiArrowUpRight} /></span></button>
-        <h2><Link to={`/events/${encodeURIComponent(event.id)}`}>{event.title}</Link></h2><p>{formatEventSchedule(event)}</p>
+        <h2>{isCommunityAlbum(event) ? <button type="button" onClick={() => setSelected(event)}>{event.title}</button> : <Link to={`/events/${encodeURIComponent(event.id)}`}>{event.title}</Link>}</h2>{event.startsAt && <p>{formatEventSchedule(event)}</p>}
       </article>)}</div> : <p className="club-notice">{search ? 'No albums match your search.' : 'No photo albums published yet.'}</p>}
       {pageCount > 1 && <nav className="club-pagination" aria-label="Album pages"><button type="button" onClick={() => setPage(currentPage - 1)} disabled={currentPage === 1} aria-label="Previous page" title="Previous page"><Icon glyph={FiArrowLeft} /></button><span aria-live="polite">Page {currentPage} of {pageCount}</span><button type="button" onClick={() => setPage(currentPage + 1)} disabled={currentPage === pageCount} aria-label="Next page" title="Next page"><Icon glyph={FiArrowRight} /></button></nav>}
     </>}

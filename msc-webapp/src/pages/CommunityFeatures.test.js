@@ -1,9 +1,10 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Leaderboard, { GoldenMembersSection } from './Leaderboard';
 import RatingManagement from './RatingManagement';
 import Sponsors, { EventSponsors } from './Sponsors';
+import GoldenMembers, { RecurringGoldenSection, goldenRecipients, recurringRecipients } from './GoldenMembers';
 import { parseSponsors } from '../content/sponsors';
 import { goldenMembers, parseRatings, rankMembers } from '../content/ratings';
 import { useShowcase } from '../context/ShowcaseContext';
@@ -148,10 +149,12 @@ test('an event never claims sponsorship from an unrelated event or a general clu
   expect(() => parseSponsors([{ ...sponsor(1, 'gold'), isPublished: false }])).toThrow();
 });
 
-test('local sponsor preview is empty and does not invent organisations', () => {
+test('local sponsor page displays the user-supplied logos without invented tiers or descriptions', () => {
   useShowcase.mockReturnValue({ source: 'local', data: { events: [] } });
   renderPage(<Sponsors />);
-  expect(screen.getByText('Sponsors and community partners will appear here once published.')).toBeInTheDocument();
+  expect(screen.getAllByRole('img')).toHaveLength(22);
+  expect(screen.getByRole('img', { name: 'Microsoft logo' })).toBeInTheDocument();
+  expect(screen.getByRole('img', { name: 'GitHub logo' })).toBeInTheDocument();
   expect(sponsorsApi.getPublished).not.toHaveBeenCalled();
   expect(screen.queryByRole('article')).not.toBeInTheDocument();
 });
@@ -188,4 +191,30 @@ test('golden members distinguishes loading, errors and unpublished awards withou
   fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
   expect(await screen.findByText('Golden Members will be announced after a monthly rating is published.')).toBeInTheDocument();
   expect(screen.queryByRole('article')).not.toBeInTheDocument();
+});
+
+test('workbook recognition keeps all awards and the nine recurring people in their own categories', () => {
+  expect(goldenRecipients).toHaveLength(36);
+  expect(goldenRecipients.reduce((total, person) => total + person.awards.length, 0)).toBe(45);
+  expect(recurringRecipients).toHaveLength(9);
+  renderPage(<RecurringGoldenSection />);
+  expect(within(screen.getByRole('region', { name: 'Golden Heads' })).getAllByRole('article')).toHaveLength(3);
+  expect(within(screen.getByRole('region', { name: 'Golden Instructors' })).getAllByRole('article')).toHaveLength(1);
+  expect(within(screen.getByRole('region', { name: 'Golden Members' })).getAllByRole('article')).toHaveLength(5);
+  expect(screen.getByRole('link', { name: 'All golden honourees' })).toHaveAttribute('href', '/golden-members');
+});
+
+test('golden directory combines category, month, recurring and name filters without guessing profiles', () => {
+  renderPage(<GoldenMembers />);
+  expect(screen.getAllByRole('article')).toHaveLength(36);
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Recognised in both months' }));
+  expect(screen.getAllByRole('article')).toHaveLength(9);
+  fireEvent.click(screen.getByRole('button', { name: 'Golden Heads' }));
+  expect(screen.getAllByRole('article')).toHaveLength(3);
+  fireEvent.change(screen.getByRole('combobox', { name: 'Recognition month' }), { target: { value: '2026-02' } });
+  fireEvent.change(screen.getByRole('textbox', { name: 'Search golden honourees' }), { target: { value: '  ZAHRAA  ' } });
+  expect(screen.getAllByRole('article')).toHaveLength(1);
+  expect(screen.queryByRole('link', { name: 'Zahraa Khaled' })).not.toBeInTheDocument();
+  fireEvent.change(screen.getByRole('textbox', { name: 'Search golden honourees' }), { target: { value: 'not-a-name' } });
+  expect(screen.getByText('No honourees match these filters.')).toBeInTheDocument();
 });
