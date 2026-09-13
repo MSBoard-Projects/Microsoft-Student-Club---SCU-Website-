@@ -23,6 +23,20 @@
 .club-member-profile h2 { font-size: 20px; margin-top: 28px; }
 .club-profile-role { color: var(--club-muted); }
 .club-profile-bio { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.9; margin-bottom: 24px; }
+.club-ranking-toolbar { flex-wrap: wrap; }
+.club-ranking-toolbar > * { min-width: 0; }
+.club-ranking-period { padding: 24px 0; border-bottom: 1px solid var(--club-line); }
+.club-ranking-period h2 { font-size: 24px; }.club-ranking-period p { color: var(--club-muted); margin-top: 8px; }
+.club-ranking-list { list-style: none; padding: 0; }.club-ranking-list > li { border-bottom: 1px solid var(--club-line); padding: 12px 0; }
+.club-ranking-row { display: grid; grid-template-columns: 42px 48px minmax(0, 1fr) 70px; gap: 16px; align-items: center; color: inherit; text-decoration: none; padding: 8px 0; }
+.club-ranking-row:hover .club-ranking-person strong { text-decoration: underline; }
+.club-rank { display: flex; gap: 4px; align-items: center; font-variant-numeric: tabular-nums; }.club-rank svg { color: var(--club-accent); }
+.club-ranking-avatar { width: 48px; height: 48px; display: grid; place-items: center; background: var(--club-surface); overflow: hidden; }.club-ranking-avatar .glass-image { width: 100%; }
+.club-ranking-person { min-width: 0; overflow-wrap: anywhere; }.club-ranking-person strong, .club-ranking-person small { display: block; }.club-ranking-person small { color: var(--club-muted); margin-top: 4px; }
+.club-ranking-score { text-align: right; font-size: 24px; font-variant-numeric: tabular-nums; }.club-ranking-score small { display: block; font-size: 12px; color: var(--club-muted); }
+.club-rating-breakdown { padding: 8px 0; }.club-rating-breakdown summary { cursor: pointer; color: var(--club-muted); font-size: 13px; }.club-rating-breakdown dl { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }.club-rating-breakdown dt { font-size: 12px; color: var(--club-muted); }.club-rating-breakdown dd { margin: 8px 0; font-variant-numeric: tabular-nums; }
+.club-profile-ratings { border-top: 1px solid var(--club-line); margin-top: 32px; }.club-profile-ratings ul { list-style: none; padding: 0; }.club-profile-ratings li { display: flex; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--club-line); padding: 16px 0; }.club-profile-ratings p, .club-profile-ratings > a { margin-top: 16px; }
+@media (max-width: 640px) { .club-ranking-row { grid-template-columns: 28px 40px minmax(0, 1fr) 54px; gap: 10px; }.club-ranking-avatar { width: 40px; height: 40px; }.club-ranking-score { font-size: 20px; }.club-rank svg { display: none; }.club-rating-breakdown dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }.club-ranking-toolbar > * { width: 100%; } }
 @media (max-width: 640px) { .club-member-profile { grid-template-columns: minmax(0, 1fr); gap: 24px; }.club-profile-portrait { width: min(100%, 320px); }.club-member-profile h1 { font-size: 28px; } }
 .club-member-portrait { position: relative; aspect-ratio: 1; overflow: hidden; background: linear-gradient(135deg, #50e6ff15, transparent), repeating-linear-gradient(45deg, transparent 0 18px, #ffffff05 18px 19px); }
 .club-member-portrait .glass-image { width: 100%; height: 100%; }

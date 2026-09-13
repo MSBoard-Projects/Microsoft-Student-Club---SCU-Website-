@@ -17,6 +17,7 @@ import AdminLayout from './components/AdminLayout';
 import Landing from './pages/ClubLanding';
 import MembersPage, { LeadershipPage, MemberProfile } from './pages/MemberDirectory';
 import Achievements from './pages/Achievements';
+import Leaderboard from './pages/Leaderboard';
 import Events, { EventPage } from './components/public/EventCollection';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
@@ -44,6 +45,7 @@ function App() {
               <Route path="/members/:id" element={<MemberProfile />} />
               <Route path="/leadership" element={<LeadershipPage />} />
               <Route path="/achievements" element={<Achievements />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/events" element={<Events />} />
               <Route path="/events/:id" element={<EventPage />} />
               <Route path="/admin/login" element={<AdminLogin />} />

@@ -5,6 +5,7 @@ import { getHighBoard, type ClubMember, type MemberGroup } from '../content/memb
 import { useShowcase } from '../context/ShowcaseContext';
 import OptimizedImage from '../components/public/OptimizedImage';
 import Icon from '../components/public/Icon';
+import { MemberRatings } from './Leaderboard';
 
 const groupLabels: Record<MemberGroup, string> = { 'high-board': 'High Board', board: 'Board', member: 'Members', instructor: 'Instructors' };
 
@@ -79,6 +80,7 @@ export function MemberProfile() {
       <div className="club-profile-portrait">{member.imageUrl ? <OptimizedImage src={member.imageUrl} alt={member.fullName} fit="contain" aspectRatio="1" priority framed={false} /> : <span className="club-member-initials" aria-hidden="true">{member.fullName.split(/\s+/).slice(0, 2).map(part => part[0]).join('')}</span>}</div>
       <div><span className="club-eyebrow">{groupLabels[member.group]}</span><h1 id="member-profile-title"><bdi>{member.fullName}</bdi></h1><p className="club-profile-role">{member.positionTitle}</p><h2>About</h2><p className="club-profile-bio" dir="auto">{member.bio || 'No biography published yet.'}</p>
         {member.certificateUrl && <a className="club-text-link" href={member.certificateUrl} target="_blank" rel="noopener noreferrer"><Icon glyph={FiFileText} />View certificate</a>}
+        <MemberRatings memberId={member.id} />
       </div>
     </section>
   </div>;

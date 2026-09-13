@@ -112,6 +112,13 @@ export const achievementsApi = {
   delete: async id => { await apiClient.delete(`/achievements/${id}`); },
 };
 
+export const leaderboardApi = {
+  getAll: async () => (await apiClient.get('/leaderboard')).data,
+  template: async () => (await apiClient.get('/leaderboard/template', { responseType: 'blob' })).data,
+  preview: async data => (await apiClient.post('/leaderboard/preview', data, { headers: { 'Content-Type': undefined } })).data,
+  publish: async data => (await apiClient.post('/leaderboard', data)).data,
+};
+
 export const siteContentApi = {
   // Get all site content
   getAll: async () => {
