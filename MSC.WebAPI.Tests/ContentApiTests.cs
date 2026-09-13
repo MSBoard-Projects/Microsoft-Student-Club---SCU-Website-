@@ -54,6 +54,13 @@ public class ContentApiTests
         var memberId = (await memberCreated.Content.ReadFromJsonAsync<Member>())!.Id;
         member.PositionTitle = "Vice President";
         member.Bio = "A member-supplied biography.";
+        member.GithubUrl = "https://github.com/test-member";
+        member.LinkedInUrl = "https://www.linkedin.com/in/test-member";
+        member.FacebookUrl = "https://facebook.com/test-member";
+        member.InstagramUrl = "https://instagram.com/test-member";
+        member.WebsiteUrl = "https://example.com";
+        member.PublicEmail = "public@example.com";
+        member.PublicPhone = "+201012345678";
         Assert.Equal(HttpStatusCode.NoContent, (await client.PutAsJsonAsync($"/api/members/{memberId}", member)).StatusCode);
         client.DefaultRequestHeaders.Authorization = null;
         var snapshot = (await client.GetFromJsonAsync<JsonElement>("/api/showcase"));
@@ -62,6 +69,52 @@ public class ContentApiTests
         Assert.Equal("high-board", snapshot.GetProperty("members")[0].GetProperty("group").GetString());
         Assert.Equal("Vice President", snapshot.GetProperty("members")[0].GetProperty("positionTitle").GetString());
         Assert.Equal(member.Bio, snapshot.GetProperty("members")[0].GetProperty("bio").GetString());
+        var profile = snapshot.GetProperty("members")[0];
+        Assert.Equal(member.GithubUrl, profile.GetProperty("githubUrl").GetString());
+        Assert.Equal(member.LinkedInUrl, profile.GetProperty("linkedInUrl").GetString());
+        Assert.Equal(member.FacebookUrl, profile.GetProperty("facebookUrl").GetString());
+        Assert.Equal(member.InstagramUrl, profile.GetProperty("instagramUrl").GetString());
+        Assert.Equal(member.WebsiteUrl, profile.GetProperty("websiteUrl").GetString());
+        Assert.Equal(member.PublicEmail, profile.GetProperty("publicEmail").GetString());
+        Assert.Equal(member.PublicPhone, profile.GetProperty("publicPhone").GetString());
+        var persisted = (await client.GetFromJsonAsync<Member>($"/api/members/{memberId}"))!;
+        Assert.Equal(member.GithubUrl, persisted.GithubUrl);
+        Assert.Equal(member.PublicPhone, persisted.PublicPhone);
+    }
+
+    [Theory]
+    [InlineData("githubUrl", "javascript:alert(1)")]
+    [InlineData("linkedInUrl", "//example.com")]
+    [InlineData("facebookUrl", "http://example.com")]
+    [InlineData("instagramUrl", "https://user:pass@example.com")]
+    [InlineData("websiteUrl", "/relative")]
+    [InlineData("publicEmail", "test@example.com?bcc=other@example.com")]
+    [InlineData("publicPhone", "123;456")]
+    public async Task UnsafePublicContactsAreRejected(string field, string value)
+    {
+        using var factory = new AuthApiFactory();
+        using var client = factory.CreateClient(new() { BaseAddress = new Uri("https://localhost") });
+        await Authenticate(factory, client);
+        var input = new Dictionary<string, object> { ["fullName"] = "Test member", ["positionTitle"] = "Member", ["memberTypeId"] = 1, [field] = value };
+        Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsJsonAsync("/api/members", input)).StatusCode);
+    }
+
+    [Fact]
+    public async Task PublicContactsCanBeRemovedWithoutRemovingTheMember()
+    {
+        using var factory = new AuthApiFactory();
+        using var client = factory.CreateClient(new() { BaseAddress = new Uri("https://localhost") });
+        await Authenticate(factory, client);
+        var input = new MemberWriteRequest { FullName = "Test member", PositionTitle = "Member", MemberTypeId = 1, PublicEmail = "public@example.com", GithubUrl = "https://github.com/test" };
+        var response = await client.PostAsJsonAsync("/api/members", input);
+        response.EnsureSuccessStatusCode();
+        var memberId = (await response.Content.ReadFromJsonAsync<Member>())!.Id;
+        input.PublicEmail = null;
+        input.GithubUrl = null;
+        Assert.Equal(HttpStatusCode.NoContent, (await client.PutAsJsonAsync($"/api/members/{memberId}", input)).StatusCode);
+        var snapshot = await client.GetFromJsonAsync<JsonElement>("/api/showcase");
+        Assert.Equal(JsonValueKind.Null, snapshot.GetProperty("members")[0].GetProperty("publicEmail").ValueKind);
+        Assert.Equal(JsonValueKind.Null, snapshot.GetProperty("members")[0].GetProperty("githubUrl").ValueKind);
     }
 
     [Fact]
@@ -95,6 +148,8 @@ public class ContentApiTests
     [InlineData("/api/leaderboard", "POST")]
     [InlineData("/api/leaderboard/preview", "POST")]
     [InlineData("/api/leaderboard/template", "GET")]
+    [InlineData("/api/sponsors", "POST")]
+    [InlineData("/api/sponsors/manage", "GET")]
     public async Task AnonymousWritesAreRejected(string route, string method)
     {
         using var factory = new AuthApiFactory();
@@ -134,6 +189,36 @@ public class ContentApiTests
         form.Add(new StringContent("2026-09-01"), "startDate");
         form.Add(new StringContent("2026-09-07"), "endDate");
         return await client.PostAsync("/api/leaderboard/preview", form);
+    }
+
+    [Fact]
+    public async Task SponsorsStayPrivateUntilPublishedAndRetainEventAndTier()
+    {
+        using var factory = new AuthApiFactory();
+        using var client = factory.CreateClient(new() { BaseAddress = new Uri("https://localhost") });
+        await Authenticate(factory, client);
+        var createdEvent = await client.PostAsJsonAsync("/api/events", new Event { Title = "Sponsored event", Description = "Details", Slug = "sponsored-event" });
+        var eventId = (await createdEvent.Content.ReadFromJsonAsync<Event>())!.Id;
+        var input = new Controllers.SponsorWriteRequest { Name = "Test partner", Tier = "gold", EventId = eventId };
+        var created = await client.PostAsJsonAsync("/api/sponsors", input);
+        Assert.Equal(HttpStatusCode.Created, created.StatusCode);
+        var id = (await created.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetInt32();
+        Assert.Empty((await client.GetFromJsonAsync<JsonElement>("/api/sponsors")).EnumerateArray());
+        Assert.Single((await client.GetFromJsonAsync<JsonElement>("/api/sponsors/manage")).EnumerateArray());
+        input.IsPublished = true;
+        Assert.Equal(HttpStatusCode.BadRequest, (await client.PutAsJsonAsync($"/api/sponsors/{id}", input)).StatusCode);
+        input.LogoUrl = "/club-media/test-logo.png";
+        Assert.Equal(HttpStatusCode.NoContent, (await client.PutAsJsonAsync($"/api/sponsors/{id}", input)).StatusCode);
+        var sponsors = await client.GetFromJsonAsync<JsonElement>("/api/sponsors");
+        Assert.Equal("gold", sponsors[0].GetProperty("tier").GetString());
+        Assert.Equal("sponsored-event", sponsors[0].GetProperty("eventKey").GetString());
+        input.Tier = "unrecognised";
+        Assert.Equal(HttpStatusCode.BadRequest, (await client.PutAsJsonAsync($"/api/sponsors/{id}", input)).StatusCode);
+        input.Tier = "community";
+        input.WebsiteUrl = "javascript:alert(1)";
+        Assert.Equal(HttpStatusCode.BadRequest, (await client.PutAsJsonAsync($"/api/sponsors/{id}", input)).StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, (await client.DeleteAsync($"/api/sponsors/{id}")).StatusCode);
+        Assert.Empty((await client.GetFromJsonAsync<JsonElement>("/api/sponsors")).EnumerateArray());
     }
 
     [Fact]

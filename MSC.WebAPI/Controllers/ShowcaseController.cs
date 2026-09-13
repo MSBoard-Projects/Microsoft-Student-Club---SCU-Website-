@@ -26,6 +26,8 @@ public sealed class ShowcaseController(ApplicationDbContext database) : Controll
                 location = item.Location, status = item.IsUpcoming ? "upcoming" : "past" }),
             members = members.Select(member => new { id = member.PublicId ?? member.Id.ToString(), fullName = member.FullName,
                 positionTitle = member.PositionTitle, bio = member.Bio, imageUrl = member.ImageUrl, certificateUrl = member.CertificateUrl,
+                githubUrl = member.GithubUrl, linkedInUrl = member.LinkedInUrl, facebookUrl = member.FacebookUrl,
+                instagramUrl = member.InstagramUrl, websiteUrl = member.WebsiteUrl, publicEmail = member.PublicEmail, publicPhone = member.PublicPhone,
                 group = member.MemberType.TypeName switch { "High Board" => "high-board", "Board" => "board", "Instructor" => "instructor", _ => "member" } }),
             achievements = achievements.Select(item => new { id = item.Id.ToString(), title = item.Title, studentNames = item.StudentNames,
                 achievedAt = item.AchievedAt, summary = item.Summary, imageUrl = item.ImageUrl, evidenceUrl = item.EvidenceUrl }),

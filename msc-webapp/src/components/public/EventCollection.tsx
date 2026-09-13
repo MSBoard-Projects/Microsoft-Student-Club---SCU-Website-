@@ -8,6 +8,7 @@ import type { ClubEvent, EventSource } from './types';
 import GlassImage from './GlassImage';
 import Icon from './Icon';
 import { useShowcase } from '../../context/ShowcaseContext';
+import { EventSponsors } from '../../pages/Sponsors';
 
 export function parseApiEvents(data: unknown): ClubEvent[] {
   if (!Array.isArray(data)) throw new Error('Invalid events response');
@@ -135,6 +136,7 @@ export function EventPage({ source }: { source?: EventSource }) {
     {loading ? <p role="status" className="club-notice">Loading event...</p> : error ? <div role="alert" className="club-notice">{error}<button type="button" onClick={retry}>Try again</button></div> : event ? <article>
       <header className="club-page-heading"><span className="club-eyebrow">{event.category}</span><h1>{event.title}</h1><p>{event.summary}</p></header>
       <EventBody event={event} />
+      <EventSponsors eventId={event.id} />
     </article> : <div className="club-page-heading"><h1>Event not found</h1><p>This event may no longer be available.</p></div>}
   </div>;
 }
@@ -173,27 +175,72 @@ export function EventDetails({ event, onClose }: { event: ClubEvent; onClose: ()
   );
 }
 
+export function GalleryPage({ source }: { source?: EventSource }) {
+  const { events, loading, error, retry } = useEventCatalog(source);
+  const [search, setSearch] = useState('');
+  const query = useDeferredValue(search.trim().toLowerCase());
+  const [page, setPage] = useState(1);
+  const [selected, setSelected] = useState<ClubEvent | null>(null);
+  const albums = events.map(event => ({ ...event, gallery: [...new Set(event.gallery.length ? event.gallery : event.imageUrl ? [event.imageUrl] : [])] }))
+    .filter(event => event.gallery.length > 0);
+  const filtered = albums.filter(event => `${event.title} ${event.category} ${event.location ?? ''}`.toLowerCase().includes(query));
+  const pageCount = Math.max(1, Math.ceil(filtered.length / 6));
+  const currentPage = Math.min(page, pageCount);
+  const changeSearch = (value: string) => { setSearch(value); setPage(1); };
+  return <div className="club-container club-catalogue">
+    <header className="club-page-heading"><span className="club-eyebrow">MICROSOFT STUDENT CLUB / SCU</span><h1>Photo Gallery</h1><p>Shared experiences, captured by our community.</p></header>
+    <div className="club-event-toolbar"><div className="club-event-search"><Icon glyph={FiSearch} /><input type="text" aria-label="Search albums" placeholder="Find an album" value={search} onChange={event => changeSearch(event.target.value)} />{search && <button type="button" title="Clear search" aria-label="Clear search" onClick={() => changeSearch('')}><Icon glyph={FiX} /></button>}</div><Link to="/events" className="club-text-link">All events <Icon glyph={FiArrowUpRight} /></Link></div>
+    {loading ? <p className="club-notice" role="status">Loading albums...</p> : error ? <div className="club-notice" role="alert">{error}<button type="button" onClick={retry}>Try again</button></div> : <>
+      <p className="club-result-count" aria-live="polite">{filtered.length} {filtered.length === 1 ? 'album' : 'albums'} / {filtered.reduce((total, event) => total + event.gallery.length, 0)} photos</p>
+      {filtered.length ? <div className="club-album-grid">{filtered.slice((currentPage - 1) * 6, currentPage * 6).map(event => <article key={event.id} className="club-album">
+        <button type="button" className="club-album-cover" aria-label={`Open album: ${event.title}`} onClick={() => setSelected(event)}><GlassImage src={event.gallery[0]} alt={event.title} fit="contain" framed={false} sizes="(max-width: 760px) 100vw, (max-width: 1050px) 50vw, 33vw" /><span>{event.gallery.length} {event.gallery.length === 1 ? 'photo' : 'photos'}<Icon glyph={FiArrowUpRight} /></span></button>
+        <h2><Link to={`/events/${encodeURIComponent(event.id)}`}>{event.title}</Link></h2><p>{formatEventSchedule(event)}</p>
+      </article>)}</div> : <p className="club-notice">{search ? 'No albums match your search.' : 'No photo albums published yet.'}</p>}
+      {pageCount > 1 && <nav className="club-pagination" aria-label="Album pages"><button type="button" onClick={() => setPage(currentPage - 1)} disabled={currentPage === 1} aria-label="Previous page" title="Previous page"><Icon glyph={FiArrowLeft} /></button><span aria-live="polite">Page {currentPage} of {pageCount}</span><button type="button" onClick={() => setPage(currentPage + 1)} disabled={currentPage === pageCount} aria-label="Next page" title="Next page"><Icon glyph={FiArrowRight} /></button></nav>}
+    </>}
+    {selected && <EventDetails key={selected.id} event={selected} onClose={() => setSelected(null)} />}
+  </div>;
+}
+
 export default function EventCollection({ source }: { source?: EventSource }) {
   const { events, loading, error, retry } = useEventCatalog(source);
   const [search, setSearch] = useState('');
   const query = useDeferredValue(search.trim().toLowerCase());
   const [filter, setFilter] = useState('all');
+  const [year, setYear] = useState('all');
+  const [category, setCategory] = useState('all');
+  const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<ClubEvent | null>(null);
-  const filtered = events.filter(event => (filter === 'all' || event.status === filter) && `${event.title} ${event.description}`.toLowerCase().includes(query));
+  const eventYear = (event: ClubEvent) => event.startsAt && formatEventDate(event.startsAt) !== 'Date not published' ? event.startsAt.slice(0, 4) : 'undated';
+  const years = [...new Set(events.map(eventYear).filter(value => value !== 'undated'))].sort().reverse();
+  const categories = [...new Set(events.map(event => event.category))].sort();
+  const filtered = events.filter(event => (filter === 'all' || event.status === filter)
+    && (year === 'all' || eventYear(event) === year) && (category === 'all' || event.category === category)
+    && `${event.title} ${event.description} ${event.category} ${event.location ?? ''}`.toLowerCase().includes(query));
+  const pageCount = Math.max(1, Math.ceil(filtered.length / 6));
+  const currentPage = Math.min(page, pageCount);
+  const visible = filtered.slice((currentPage - 1) * 6, currentPage * 6);
+  const changeSearch = (value: string) => { setSearch(value); setPage(1); };
+  const resetFilters = () => { setSearch(''); setFilter('all'); setYear('all'); setCategory('all'); setPage(1); };
   return (
     <div className="club-catalogue club-container">
-      <header className="club-page-heading"><span className="club-eyebrow">CURIOUS MINDS. SHARED EXPERIENCES.</span><h1>Our Events</h1><p>Get closer to the ideas, people, and experiences that make this community.</p></header>
+      <header className="club-page-heading"><span className="club-eyebrow">CURIOUS MINDS. SHARED EXPERIENCES.</span><h1>Our Events</h1><p>Get closer to the ideas, people, and experiences that make this community.</p><Link className="club-text-link" to="/gallery">Photo gallery <Icon glyph={FiArrowUpRight} /></Link></header>
       <div className="club-event-toolbar">
-        <div className="club-event-search"><Icon glyph={FiSearch} /><input type="text" aria-label="Search events" placeholder="Find your next inspiration" value={search} onChange={event => setSearch(event.target.value)} />
-          {search && <button type="button" onClick={() => setSearch('')} aria-label="Clear search" title="Clear search"><Icon glyph={FiX} /></button>}
+        <div className="club-event-search"><Icon glyph={FiSearch} /><input type="text" aria-label="Search events" placeholder="Find your next inspiration" value={search} onChange={event => changeSearch(event.target.value)} />
+          {search && <button type="button" onClick={() => changeSearch('')} aria-label="Clear search" title="Clear search"><Icon glyph={FiX} /></button>}
         </div>
-        <label className="club-event-filter"><span className="sr-only">Filter events:</span><select value={filter} onChange={event => setFilter(event.target.value)}><option value="all">All Events</option><option value="upcoming">Upcoming Events</option><option value="past">Past Events</option></select></label>
+        <label className="club-event-filter"><span className="sr-only">Filter events:</span><select value={filter} onChange={event => { setFilter(event.target.value); setPage(1); }}><option value="all">All Events</option><option value="upcoming">Upcoming Events</option><option value="past">Past Events</option><option value="unannounced">Schedule pending</option></select></label>
+        <label className="club-event-filter"><span className="sr-only">Event year</span><select value={year} onChange={event => { setYear(event.target.value); setPage(1); }}><option value="all">All years</option>{years.map(value => <option key={value} value={value}>{value}</option>)}{events.some(event => eventYear(event) === 'undated') && <option value="undated">Date not published</option>}</select></label>
+        <label className="club-event-filter"><span className="sr-only">Event category</span><select value={category} onChange={event => { setCategory(event.target.value); setPage(1); }}><option value="all">All categories</option>{categories.map(value => <option key={value} value={value}>{value}</option>)}</select></label>
+        {(search || filter !== 'all' || year !== 'all' || category !== 'all') && <button type="button" className="club-text-link" onClick={resetFilters}><Icon glyph={FiX} />Reset filters</button>}
       </div>
       {loading ? <div className="club-notice" role="status">Loading events...</div> : error ? <div className="club-notice" role="alert">{error}<button type="button" onClick={retry}>Try again</button></div> : <>
         <p className="club-result-count" aria-live="polite">Showing {filtered.length} of {events.length} events</p>
-        {filtered.length ? <EventGrid events={filtered} onSelect={setSelected} /> : <div className="club-notice">{search ? `No events found matching "${search}"` : 'No events found.'}</div>}
+        {filtered.length ? <EventGrid events={visible} onSelect={setSelected} /> : <div className="club-notice">{search ? `No events found matching "${search}"` : 'No events found.'}</div>}
+        {pageCount > 1 && <nav className="club-pagination" aria-label="Event pages"><button type="button" onClick={() => setPage(currentPage - 1)} disabled={currentPage === 1} aria-label="Previous page" title="Previous page"><Icon glyph={FiArrowLeft} /></button><span aria-live="polite">Page {currentPage} of {pageCount}</span><button type="button" onClick={() => setPage(currentPage + 1)} disabled={currentPage === pageCount} aria-label="Next page" title="Next page"><Icon glyph={FiArrowRight} /></button></nav>}
       </>}
       {selected && <EventDetails key={selected.id} event={selected} onClose={() => setSelected(null)} />}
+      <Link className="club-text-link" to="/sponsors">Sponsors & community partners <Icon glyph={FiArrowUpRight} /></Link>
     </div>
   );
 }

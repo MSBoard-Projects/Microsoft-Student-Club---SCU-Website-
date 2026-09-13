@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { FiEdit2, FiTrash2, FiUploadCloud } from 'react-icons/fi';
-import { eventsApi, membersApi, achievementsApi, showcaseApi } from '../services/api';
+import { eventsApi, membersApi, achievementsApi, showcaseApi, sponsorsApi } from '../services/api';
+import { sponsorTiers } from '../content/sponsors';
+import { publicContactFields } from '../content/members';
 import { localShowcase, useShowcase } from '../context/ShowcaseContext';
 import { useAuth } from '../context/AuthContext';
 import Modal from '../components/Modal';
@@ -20,6 +22,7 @@ const definitions = {
     ['fullName', 'Full name', 'text', true], ['positionTitle', 'Position title', 'text', true], ['memberTypeId', 'Member category', 'category', true],
     ['displayOrder', 'Display order', 'number'], ['imageUrl', 'Portrait URL', 'text'], ['certificateUrl', 'Certificate PDF URL', 'text'],
     ['bio', 'Biography', 'textarea'],
+    ...publicContactFields.map(field => [field.key, field.type === 'url' ? `${field.label} URL (HTTPS)` : field.label, field.type]),
   ] },
   achievements: { title: 'Achievement management', singular: 'Achievement', api: achievementsApi, fields: [
     ['title', 'Title', 'text', true], ['studentNames', 'Student names (one per line)', 'list', true], ['summary', 'Description', 'textarea', true],
@@ -27,6 +30,11 @@ const definitions = {
   ] },
   statistics: { title: 'Community statistics', fields: [
     ['registeredAttendees', 'Registered attendees', 'number'], ['eventLocations', 'Event locations', 'number'], ['beneficiaries', 'Beneficiaries', 'number'], ['eventsConducted', 'Events conducted', 'number'],
+  ] },
+  sponsors: { title: 'Sponsor management', singular: 'Sponsor', api: sponsorsApi, fields: [
+    ['name', 'Sponsor name', 'text', true], ['tier', 'Sponsor tier', 'sponsor-tier', true], ['logoUrl', 'Logo URL', 'text'],
+    ['websiteUrl', 'Website URL', 'url'], ['description', 'Description', 'textarea'], ['eventId', 'Associated event', 'event'],
+    ['displayOrder', 'Display order', 'number'], ['isPublished', 'Published', 'checkbox'],
   ] },
 };
 
@@ -37,7 +45,7 @@ const errorMessage = error => {
 };
 const toForm = (record, fields) => Object.fromEntries(fields.map(([key, , type]) => [key, type === 'list' ? (record[key] || []).join('\n') : record[key] ?? (type === 'checkbox' ? false : '')]));
 const toPayload = (form, fields) => Object.fromEntries(fields.map(([key, , type, required]) => [key,
-  type === 'list' ? form[key].split(/\r?\n/).map(value => value.trim()).filter(Boolean) : type === 'number' || type === 'category' ? form[key] === '' ? null : Number(form[key]) : type === 'checkbox' ? form[key] : form[key].trim() || (required ? '' : null)]));
+  type === 'list' ? form[key].split(/\r?\n/).map(value => value.trim()).filter(Boolean) : type === 'number' || type === 'category' || type === 'event' ? form[key] === '' ? null : Number(form[key]) : type === 'checkbox' ? form[key] : form[key].trim() || (required ? '' : null)]));
 
 export function eventPayload(record) {
   const start = record.startsAt;
@@ -64,6 +72,7 @@ export default function ContentManagement({ kind = 'events' }) {
   const showcase = useShowcase();
   const [records, setRecords] = useState([]);
   const [types, setTypes] = useState([]);
+  const [sponsorEvents, setSponsorEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
@@ -80,17 +89,18 @@ export default function ContentManagement({ kind = 'events' }) {
   useEffect(() => {
     let active = true;
     setLoading(true); setError(''); setEditor(null); setDeleting(null); setSearch(''); setPage(1);
-    Promise.all([kind === 'statistics' ? showcaseApi.getStatistics() : definitions[kind].api.getAll(), showcaseApi.getMemberTypes()])
-      .then(([data, memberTypes]) => {
+    Promise.all([kind === 'statistics' ? showcaseApi.getStatistics() : definitions[kind].api.getAll(), showcaseApi.getMemberTypes(), kind === 'sponsors' ? eventsApi.getAll() : Promise.resolve([])])
+      .then(([data, memberTypes, events]) => {
         if (!Array.isArray(memberTypes) || (kind !== 'statistics' && !Array.isArray(data))) throw new Error('Invalid response');
-        if (active) { setTypes(memberTypes); if (kind === 'statistics') setForm(toForm(data, definitions.statistics.fields)); else setRecords(data); }
+        if (!Array.isArray(events)) throw new Error('Invalid events response');
+        if (active) { setTypes(memberTypes); setSponsorEvents(events); if (kind === 'statistics') setForm(toForm(data, definitions.statistics.fields)); else setRecords(data); }
       }).catch(failure => { if (active) setError(errorMessage(failure)); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [kind, revision]);
 
   const openEditor = record => {
-    const initial = record ? { ...record } : { isUpcoming: true, memberTypeId: types.find(type => type.typeName === 'Member')?.id || types[0]?.id, displayOrder: 0 };
+    const initial = record ? { ...record } : { isUpcoming: true, memberTypeId: types.find(type => type.typeName === 'Member')?.id || types[0]?.id, displayOrder: 0, tier: 'community', isPublished: false };
     if (kind === 'events' && !initial.startsAt && initial.eventDate && !initial.eventDate.startsWith('0001-')) initial.startsAt = initial.eventDate.slice(0, 10);
     setEditor({ record }); setForm(toForm(initial, definition.fields)); setMutationError('');
   };
@@ -100,7 +110,7 @@ export default function ContentManagement({ kind = 'events' }) {
     try {
       let payload = { ...editor?.record, ...toPayload(form, definition.fields) };
       if (kind === 'events') payload = eventPayload(payload);
-      if (kind === 'members') payload.displayOrder = payload.displayOrder ?? 0;
+      if (kind === 'members' || kind === 'sponsors') payload.displayOrder = payload.displayOrder ?? 0;
       if (kind === 'statistics') await showcaseApi.saveStatistics(payload);
       else if (editor.record) await definition.api.update(editor.record.id, payload);
       else await definition.api.create(payload);
@@ -121,10 +131,11 @@ export default function ContentManagement({ kind = 'events' }) {
     const update = event => setForm(previous => ({ ...previous, [key]: type === 'checkbox' ? event.target.checked : event.target.value }));
     if (type === 'checkbox') return <label key={key} className="content-checkbox"><input type="checkbox" checked={!!form[key]} onChange={update} disabled={busy} />{label}</label>;
     if (type === 'category') return <label key={key} className="content-category">{label}<select value={form[key] ?? ''} onChange={update} disabled={busy} required><option value="" disabled>Select category</option>{types.map(item => <option value={item.id} key={item.id}>{item.typeName}</option>)}</select></label>;
+    if (type === 'sponsor-tier' || type === 'event') return <label key={key} className="content-category">{label}<select value={form[key] ?? ''} onChange={update} disabled={busy} required={required}>{type === 'event' ? <><option value="">Club-wide partner</option>{sponsorEvents.map(item => <option value={item.id} key={item.id}>{item.title}</option>)}</> : Object.entries(sponsorTiers).map(([value, text]) => <option value={value} key={value}>{text}</option>)}</select></label>;
     if (type === 'list' || type === 'textarea') return <FormTextarea key={key} name={key} label={label} value={form[key] ?? ''} onChange={update} required={required} disabled={busy} rows={4} />;
     return <FormInput key={key} name={key} label={label} type={type} value={form[key] ?? ''} onChange={update} required={required} disabled={busy} min={type === 'number' ? 0 : undefined} max={type === 'number' ? 2147483647 : undefined} step={type === 'number' ? 1 : undefined} />;
   })}</div>;
-  const filtered = records.filter(record => `${record.title || record.fullName} ${record.positionTitle || record.summary || ''}`.toLowerCase().includes(search.trim().toLowerCase()));
+  const filtered = records.filter(record => `${record.title || record.fullName || record.name} ${record.positionTitle || record.summary || record.tier || ''}`.toLowerCase().includes(search.trim().toLowerCase()));
   const visible = filtered.slice((page - 1) * COLLECTION_PAGE_SIZE, page * COLLECTION_PAGE_SIZE);
 
   return <div className="collection-page content-manager">
@@ -133,10 +144,10 @@ export default function ContentManagement({ kind = 'events' }) {
     {loading ? <p role="status">Loading content...</p> : error ? <div role="alert" className="collection-empty">{error}<Button onClick={refresh}>Try again</Button></div> : kind === 'statistics' ? <form onSubmit={save} className="content-statistics-form">{fields}{mutationError && <p role="alert">{mutationError}</p>}<Button type="submit" disabled={busy}>{busy ? 'Saving...' : 'Save statistics'}</Button></form> : <>
       <CollectionToolbar label={kind} search={search} onSearch={value => { setSearch(value); setPage(1); }} onRefresh={refresh} loading={loading} onCreate={() => openEditor(null)} createLabel={`Add ${definition.singular}`} />
       <p className="content-record-count">{filtered.length} records</p>
-      {filtered.length ? <><div className="content-records">{visible.map(record => <article key={record.id} className="content-record"><div><h2>{record.title || record.fullName}</h2><p>{record.positionTitle || record.startsAt || record.achievedAt || record.summary}</p></div><div className="content-record-actions"><button type="button" title="Edit" aria-label={`Edit ${record.title || record.fullName}`} onClick={() => openEditor(record)}><FiEdit2 /></button><button type="button" title="Delete" aria-label={`Delete ${record.title || record.fullName}`} onClick={() => { setDeleting(record); setMutationError(''); }}><FiTrash2 /></button></div></article>)}</div><CollectionPagination label={kind} page={page} onPage={setPage} total={filtered.length} /></> : <p className="collection-empty">No matching records.</p>}
+      {filtered.length ? <><div className="content-records">{visible.map(record => <article key={record.id} className="content-record"><div><h2>{record.title || record.fullName || record.name}</h2><p>{record.positionTitle || record.startsAt || record.achievedAt || record.summary || (kind === 'sponsors' ? `${sponsorTiers[record.tier]} / ${record.isPublished ? 'Published' : 'Draft'}` : '')}</p></div><div className="content-record-actions"><button type="button" title="Edit" aria-label={`Edit ${record.title || record.fullName || record.name}`} onClick={() => openEditor(record)}><FiEdit2 /></button><button type="button" title="Delete" aria-label={`Delete ${record.title || record.fullName || record.name}`} onClick={() => { setDeleting(record); setMutationError(''); }}><FiTrash2 /></button></div></article>)}</div><CollectionPagination label={kind} page={page} onPage={setPage} total={filtered.length} /></> : <p className="collection-empty">No matching records.</p>}
     </>}
     <Modal isOpen={!!editor} onClose={() => setEditor(null)} title={`${editor?.record ? 'Edit' : 'Add'} ${definition.singular}`} size="lg" busy={busy}><form onSubmit={save}>{fields}{mutationError && <p role="alert" className="content-mutation-error">{mutationError}</p>}<div className="content-form-actions"><Button variant="secondary" onClick={() => setEditor(null)} disabled={busy}>Cancel</Button><Button type="submit" disabled={busy}>{busy ? 'Saving...' : 'Save changes'}</Button></div></form></Modal>
-    <Modal isOpen={!!deleting} onClose={() => setDeleting(null)} title="Delete record" busy={busy}><p>Delete {deleting?.title || deleting?.fullName}? This cannot be undone.</p>{mutationError && <p role="alert">{mutationError}</p>}<div className="content-form-actions"><Button variant="secondary" onClick={() => setDeleting(null)} disabled={busy}>Cancel</Button><Button variant="danger" onClick={remove} disabled={busy}>Delete record</Button></div></Modal>
+    <Modal isOpen={!!deleting} onClose={() => setDeleting(null)} title="Delete record" busy={busy}><p>Delete {deleting?.title || deleting?.fullName || deleting?.name}? This cannot be undone.</p>{mutationError && <p role="alert">{mutationError}</p>}<div className="content-form-actions"><Button variant="secondary" onClick={() => setDeleting(null)} disabled={busy}>Cancel</Button><Button variant="danger" onClick={remove} disabled={busy}>Delete record</Button></div></Modal>
     <Modal isOpen={importing} onClose={() => setImporting(false)} title="Import initial catalogue" busy={busy}><p>Add missing records from the confirmed catalogue: {localShowcase.events.length} events and {localShowcase.members.length} people. Existing records and statistics will not be overwritten.</p>{mutationError && <p role="alert">{mutationError}</p>}<div className="content-form-actions"><Button variant="secondary" onClick={() => setImporting(false)} disabled={busy}>Cancel</Button><Button onClick={importContent} disabled={busy}>{busy ? 'Importing...' : 'Confirm import'}</Button></div></Modal>
   </div>;
 }

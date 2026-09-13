@@ -6,7 +6,9 @@ import { clubContent } from '../content/club';
 import HeroSection from '../components/public/HeroSection';
 import StatisticsBanner from '../components/public/StatisticsBanner';
 import UpcomingEvent from '../components/public/UpcomingEvent';
+import CommunityMoments from '../components/public/CommunityMoments';
 import { HighBoardSection } from './MemberDirectory';
+import { GoldenMembersSection } from './Leaderboard';
 import GlassImage from '../components/public/GlassImage';
 import Icon from '../components/public/Icon';
 import { EventDetails, EventGrid, useEventCatalog } from '../components/public/EventCollection';
@@ -29,7 +31,9 @@ export default function ClubLanding({ statistics }: { statistics?: ClubStatistic
           {loading ? <div className="club-notice" role="status">Loading events...</div> : error ? <div className="club-notice" role="alert">{error}<button type="button" onClick={retry}>Try again</button></div> : events.length ? <EventGrid events={events.slice(0, 3)} onSelect={setSelected} /> : <p className="club-notice">No events published yet.</p>}
         </div>
       </section>
+      <CommunityMoments events={events} onSelect={setSelected} />
       <HighBoardSection />
+      <GoldenMembersSection />
       <section className="club-section club-story" id="club-story">
         <div className="club-container club-story-grid">
           <GlassImage src="/club-media/hero-orientation.jpg" alt="Club members sharing a moment at orientation" className="club-story-photo" position="center 35%" />

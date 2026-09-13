@@ -22,7 +22,7 @@ jest.mock('./components/PageTransition', () => ({ children }) => <div>{children}
 jest.mock('./pages/ClubLanding', () => () => <h1>Club home</h1>);
 jest.mock('./pages/MemberDirectory', () => ({ __esModule: true, default: () => <h1>Club members</h1>, LeadershipPage: () => <h1>Club leadership</h1> }));
 jest.mock('./pages/Achievements', () => () => <h1>Student achievements</h1>);
-jest.mock('./components/public/EventCollection', () => ({ __esModule: true, default: () => <h1>Club events</h1>, EventPage: () => <h1>Club event details</h1> }));
+jest.mock('./components/public/EventCollection', () => ({ __esModule: true, default: () => <h1>Club events</h1>, EventPage: () => <h1>Club event details</h1>, GalleryPage: () => <h1>Club photo gallery</h1> }));
 jest.mock('./pages/AdminDashboard', () => () => <h1>Admin overview</h1>);
 jest.mock('./pages/ContentManagement', () => ({ kind }) => <h1>{kind === 'members' ? 'Member management' : kind === 'events' ? 'Event management' : 'Content management'}</h1>);
 jest.mock('./pages/MemberManagement', () => () => <h1>Member management</h1>);
@@ -55,7 +55,7 @@ test('renders public routes and marks the active navigation link', async () => {
   expect(screen.getAllByRole('link', { name: 'Members', exact: true })[0]).toHaveAttribute('aria-current', 'page');
 });
 
-test.each([['/members', 'Club members'], ['/leadership', 'Club leadership'], ['/achievements', 'Student achievements'], ['/events/orientation-season-2', 'Club event details'], ['/team', 'Club members']])('supports expanded public deep link %s', async (path, title) => {
+test.each([['/members', 'Club members'], ['/leadership', 'Club leadership'], ['/achievements', 'Student achievements'], ['/events/orientation-season-2', 'Club event details'], ['/gallery', 'Club photo gallery'], ['/team', 'Club members']])('supports expanded public deep link %s', async (path, title) => {
   window.history.replaceState(null, '', path);
   render(<App />);
   expect(await screen.findByRole('heading', { name: title })).toBeInTheDocument();

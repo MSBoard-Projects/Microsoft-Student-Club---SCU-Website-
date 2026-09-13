@@ -1,7 +1,7 @@
 import React from 'react';
 import { act, fireEvent, render as testingRender, screen, within } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import Events, { EventPage, EventGallery, formatEventDate, formatEventSchedule } from '../components/public/EventCollection';
+import Events, { EventPage, EventGallery, GalleryPage, formatEventDate, formatEventSchedule } from '../components/public/EventCollection';
 import UpcomingEvent, { countdownTarget } from '../components/public/UpcomingEvent';
 import { eventsData } from '../content/eventsData';
 import { eventsApi } from '../services/api';
@@ -128,4 +128,80 @@ test('precise countdown ticks, stops at zero and cleans up', () => {
     unmount();
     expect(jest.getTimerCount()).toBe(0);
   } finally { jest.useRealTimers(); }
+});
+
+test('event archive combines year and category filters and resets pagination', async () => {
+  eventsApi.getAll.mockResolvedValue(Array.from({ length: 8 }, (_, index) => ({
+    id: index + 1, title: `Workshop ${index + 1}`, description: 'Community learning',
+    eventDate: index < 6 ? '2025-12' : '2026-10-20', isUpcoming: index >= 6, isFeatured: index === 7,
+  })));
+  render(<Events source="api" />);
+  await screen.findByRole('heading', { name: 'Workshop 1' });
+  expect(screen.queryByRole('heading', { name: 'Workshop 7' })).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Previous page' })).toBeDisabled();
+  fireEvent.click(screen.getByRole('button', { name: 'Next page' }));
+  expect(screen.getByRole('heading', { name: 'Workshop 7' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Next page' })).toBeDisabled();
+  fireEvent.change(screen.getByRole('combobox', { name: 'Event year' }), { target: { value: '2025' } });
+  expect(screen.getByRole('heading', { name: 'Workshop 1' })).toBeInTheDocument();
+  expect(screen.queryByRole('navigation', { name: 'Event pages' })).not.toBeInTheDocument();
+  fireEvent.change(screen.getByRole('combobox', { name: 'Event category' }), { target: { value: 'Featured' } });
+  expect(screen.getByText('Showing 0 of 8 events')).toBeInTheDocument();
+  fireEvent.change(screen.getByRole('combobox', { name: 'Event year' }), { target: { value: '2026' } });
+  expect(screen.getByRole('heading', { name: 'Workshop 8' })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Reset filters' }));
+  expect(screen.getByText('Page 1 of 2')).toBeInTheDocument();
+  expect(screen.getByText('Showing 8 of 8 events')).toBeInTheDocument();
+});
+
+test('archive exposes undated events without inventing a year and searches locations', async () => {
+  eventsApi.getAll.mockResolvedValue([{ ...events[0], eventDate: null, location: 'Creativa Ismailia' }, events[1]]);
+  render(<Events source="api" />);
+  await screen.findByRole('heading', { name: 'Cloud workshop' });
+  fireEvent.change(screen.getByRole('combobox', { name: 'Event year' }), { target: { value: 'undated' } });
+  fireEvent.change(screen.getByRole('textbox', { name: 'Search events' }), { target: { value: '  CREATIVA  ' } });
+  expect(await screen.findByText('Showing 1 of 2 events')).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Cloud workshop' })).toBeInTheDocument();
+});
+
+test('photo gallery uses real albums, searches them and restores focus after viewing photos', () => {
+  render(<GalleryPage />);
+  const trigger = screen.getByRole('button', { name: 'Open album: Microsoft Orientation Day Season 2' });
+  trigger.focus();
+  fireEvent.click(trigger);
+  const dialog = screen.getByRole('dialog', { name: 'Microsoft Orientation Day Season 2' });
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Next photo' }));
+  expect(within(dialog).getByRole('img', { name: /photo 2/ })).toHaveAttribute('src', eventsData[0].gallery[1]);
+  fireEvent.keyDown(dialog, { key: 'Escape' });
+  expect(trigger).toHaveFocus();
+  fireEvent.change(screen.getByRole('textbox', { name: 'Search albums' }), { target: { value: '  SEASON 2  ' } });
+  expect(screen.getAllByRole('button', { name: /Open album:/ })).toHaveLength(1);
+  expect(screen.getByRole('link', { name: 'Microsoft Orientation Day Season 2' })).toHaveAttribute('href', '/events/orientation-season-2');
+  fireEvent.change(screen.getByRole('textbox', { name: 'Search albums' }), { target: { value: 'no-matching-album' } });
+  expect(screen.getByText('No albums match your search.')).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Clear search' }));
+  expect(screen.getByRole('button', { name: 'Open album: Microsoft Orientation Day Season 2' })).toBeInTheDocument();
+});
+
+test('photo gallery paginates albums and resets its page when searching', async () => {
+  eventsApi.getAll.mockResolvedValue(Array.from({ length: 8 }, (_, index) => ({ ...events[0], id: index, title: `Album ${index}`, imageUrl: `/photo-${index}.jpg` })));
+  render(<GalleryPage source="api" />);
+  await screen.findByRole('button', { name: 'Open album: Album 0' });
+  expect(screen.getAllByRole('button', { name: /Open album:/ })).toHaveLength(6);
+  fireEvent.click(screen.getByRole('button', { name: 'Next page' }));
+  expect(screen.getAllByRole('button', { name: /Open album:/ })).toHaveLength(2);
+  fireEvent.change(screen.getByRole('textbox', { name: 'Search albums' }), { target: { value: 'Album 0' } });
+  expect(await screen.findByRole('button', { name: 'Open album: Album 0' })).toBeInTheDocument();
+  expect(screen.queryByRole('navigation', { name: 'Album pages' })).not.toBeInTheDocument();
+});
+
+test('photo gallery distinguishes missing photos from a failed request and retries', async () => {
+  eventsApi.getAll.mockRejectedValueOnce(new Error('offline'));
+  render(<GalleryPage source="api" />);
+  expect(screen.getByText('Loading albums...')).toBeInTheDocument();
+  expect(await screen.findByRole('alert')).toHaveTextContent('Failed to load events.');
+  expect(screen.queryByText('No photo albums published yet.')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+  expect(await screen.findByText('No photo albums published yet.')).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /Open album:/ })).not.toBeInTheDocument();
 });

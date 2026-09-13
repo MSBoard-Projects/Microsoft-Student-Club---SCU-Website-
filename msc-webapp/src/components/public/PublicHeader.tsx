@@ -13,8 +13,8 @@ const themes: { id: ThemeName; label: string; icon: IconType }[] = [
   { id: 'day', label: 'Day theme', icon: FiSun },
   { id: 'forest', label: 'Forest theme', icon: FiFeather },
 ];
-const links = [{ to: '/', label: 'Home' }, { to: '/events', label: 'Events' }, { to: '/members', label: 'Members' }, { to: '/leadership', label: 'Leadership' }, { to: '/achievements', label: 'Achievements' }];
-const activeLink = (pathname: string, target: string) => pathname === target || (target === '/events' && pathname.startsWith('/events/'));
+const links = [{ to: '/', label: 'Home' }, { to: '/events', label: 'Events' }, { to: '/gallery', label: 'Gallery' }, { to: '/members', label: 'Members' }, { to: '/leadership', label: 'Leadership' }, { to: '/leaderboard', label: 'Leaderboard' }, { to: '/sponsors', label: 'Sponsors' }, { to: '/achievements', label: 'Achievements' }];
+const activeLink = (pathname: string, target: string) => pathname === target || (['/events', '/members'].includes(target) && pathname.startsWith(`${target}/`));
 
 export default function PublicHeader() {
   const { pathname } = useLocation();

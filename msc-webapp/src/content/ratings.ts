@@ -24,7 +24,7 @@ export function parseRatings(value: unknown): RatingPeriod[] {
 }
 
 export function rankMembers(period: RatingPeriod | undefined, members: readonly ClubMember[], group = 'all') {
-  const eligible = new Map(members.filter(member => member.group !== 'instructor' && (group === 'all' || member.group === group || group === 'board' && member.group === 'high-board')).map(member => [member.id, member]));
+  const eligible = new Map(members.filter(member => member.group !== 'instructor' && (group === 'all' || member.group === group || (group === 'board' && member.group === 'high-board'))).map(member => [member.id, member]));
   const sorted = (period?.entries ?? []).flatMap(entry => {
     const member = eligible.get(entry.memberId);
     return member ? [{ ...entry, member }] : [];
@@ -36,4 +36,15 @@ export function rankMembers(period: RatingPeriod | undefined, members: readonly 
     previousRate = entry.rate;
     return { ...entry, rank };
   });
+}
+
+export function goldenMembers(periods: readonly RatingPeriod[], members: readonly ClubMember[], now = new Date()) {
+  const today = now.toISOString().slice(0, 10);
+  const period = [...periods].filter(item => {
+    const [year, month, day] = item.startDate.split('-').map(Number);
+    const monthEnd = new Date(Date.UTC(year, month, 0)).toISOString().slice(0, 10);
+    return day === 1 && month >= 1 && month <= 12 && item.endDate === monthEnd
+      && item.endDate < today && Date.parse(item.publishedAt) <= now.getTime();
+  }).sort((first, second) => second.endDate.localeCompare(first.endDate) || second.publishedAt.localeCompare(first.publishedAt))[0];
+  return { period, entries: rankMembers(period, members, 'member').filter(entry => entry.rank <= 3) };
 }

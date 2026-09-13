@@ -7,8 +7,13 @@ import OptimizedImage from './OptimizedImage';
 import HeroSection from './HeroSection';
 import StatisticsBanner, { Counter } from './StatisticsBanner';
 import PublicHeader from './PublicHeader';
+import CommunityMoments from './CommunityMoments';
 import { PublicThemeProvider } from './ThemeProvider';
 import { clubContent } from '../../content/club';
+import { members, memberContactLinks } from '../../content/members';
+import { HighBoardSection, MemberSocialLinks } from '../../pages/MemberDirectory';
+
+jest.mock('../../services/api', () => ({ showcaseApi: { get: jest.fn() }, leaderboardApi: { getAll: jest.fn() } }));
 
 jest.mock('framer-motion', () => {
   const actual = jest.requireActual('framer-motion');
@@ -117,4 +122,50 @@ test('theme controls persist a choice and restore it on the next mount', () => {
   expect(screen.getByRole('button', { name: 'Day theme' })).toHaveAttribute('aria-pressed', 'true');
   fireEvent.click(screen.getByRole('button', { name: 'Forest theme' }));
   expect(localStorage.getItem('club-theme')).toBe('forest');
+});
+
+test('community moments has opposite rows, copies outside tab order and pause control', () => {
+  const onSelect = jest.fn();
+  const { container } = render(<MemoryRouter><CommunityMoments events={clubContent.events} onSelect={onSelect} /></MemoryRouter>);
+  expect(container.querySelectorAll('.club-moments-track')).toHaveLength(2);
+  expect(container.querySelectorAll('.club-moments-reverse')).toHaveLength(1);
+  const copies = [...container.querySelectorAll('.club-moments-copy button')];
+  expect(copies.every(button => button.tabIndex === -1)).toBe(true);
+  fireEvent.click(copies[0]);
+  expect(onSelect).toHaveBeenCalledWith(clubContent.events[0]);
+  fireEvent.click(screen.getByRole('button', { name: 'Pause photo animation' }));
+  expect(screen.getByRole('region', { name: 'Moments we share.' })).toHaveAttribute('data-paused', 'true');
+  fireEvent.click(screen.getByRole('button', { name: 'Play photo animation' }));
+  expect(screen.getByRole('region', { name: 'Moments we share.' })).toHaveAttribute('data-paused', 'false');
+  fireEvent.click(screen.getAllByRole('button', { name: /View album:/ })[0]);
+  expect(onSelect).toHaveBeenCalledWith(clubContent.events[0]);
+  expect(screen.getByRole('link', { name: 'All photos' })).toHaveAttribute('href', '/gallery');
+});
+
+test('community moments respects reduced motion and omits an empty photo collection', () => {
+  useReducedMotion.mockReturnValue(true);
+  const { rerender } = render(<MemoryRouter><CommunityMoments events={clubContent.events} onSelect={jest.fn()} /></MemoryRouter>);
+  expect(screen.queryByRole('button', { name: 'Pause photo animation' })).not.toBeInTheDocument();
+  expect(screen.getByRole('region', { name: 'Moments we share.' })).toHaveAttribute('data-paused', 'true');
+  rerender(<MemoryRouter><CommunityMoments events={[]} onSelect={jest.fn()} /></MemoryRouter>);
+  expect(screen.queryByRole('region')).not.toBeInTheDocument();
+});
+
+test('public contact icons appear only for valid supplied links, without inventing accounts', () => {
+  const member = { ...members[0], fullName: 'Test Person', githubUrl: 'https://github.com/test', linkedInUrl: 'https://www.linkedin.com/in/test', facebookUrl: 'https://facebook.com/test', instagramUrl: 'https://instagram.com/test', websiteUrl: 'https://example.com', publicEmail: 'test@example.com', publicPhone: '+201012345678' };
+  const { rerender } = render(<MemberSocialLinks member={member} />);
+  expect(screen.getAllByRole('link')).toHaveLength(7);
+  expect(screen.getByRole('link', { name: 'GitHub: Test Person' })).toHaveAttribute('rel', 'noopener noreferrer');
+  expect(screen.getByRole('link', { name: 'Public email: Test Person' })).toHaveAttribute('href', 'mailto:test@example.com');
+  expect(screen.getByRole('link', { name: 'Public phone (+country code): Test Person' })).toHaveAttribute('href', 'tel:+201012345678');
+  expect(memberContactLinks({ githubUrl: 'javascript:alert(1)', linkedInUrl: '//example.com', websiteUrl: 'https://user:secret@example.com', publicEmail: 'test@example.com?bcc=other@example.com', publicPhone: '123;456', facebookUrl: '', instagramUrl: 'http://example.com' })).toEqual([]);
+  rerender(<MemberSocialLinks member={members[0]} />);
+  expect(screen.queryByRole('group')).not.toBeInTheDocument();
+});
+
+test('home leadership highlights the existing president without duplicating his profile', () => {
+  render(<MemoryRouter><HighBoardSection /></MemoryRouter>);
+  expect(screen.getAllByRole('heading', { name: 'Ali Arabi Ali' })).toHaveLength(1);
+  expect(screen.getByRole('link', { name: 'View profile: Ali Arabi Ali' })).toHaveAttribute('href', '/members/ali-arabi-ali');
+  expect(screen.getByRole('region', { name: 'Meet the High Board' }).querySelector('.club-officer-president')).toHaveTextContent('Ali Arabi Ali');
 });

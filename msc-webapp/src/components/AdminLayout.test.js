@@ -36,8 +36,10 @@ beforeEach(() => {
 test('only SuperAdmins see the user management link and deferred modules are not links', () => {
   const view = render(<AdminLayout />);
   expect(screen.queryByRole('link', { name: 'Admin users' })).not.toBeInTheDocument();
-  expect(screen.getByText('Excel import').closest('[aria-disabled]')).toHaveAttribute('aria-disabled', 'true');
-  expect(screen.queryByRole('link', { name: 'Excel import' })).not.toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Ratings & Excel' })).toHaveAttribute('href', '/admin/ratings');
+  expect(screen.getByRole('link', { name: 'Sponsors & partners' })).toHaveAttribute('href', '/admin/sponsors');
+  expect(screen.getByText('QR attendance').closest('[aria-disabled]')).toHaveAttribute('aria-disabled', 'true');
+  expect(screen.queryByRole('link', { name: 'QR attendance' })).not.toBeInTheDocument();
   useAuth.mockReturnValue({ user: { email: 'admin@example.test', role: 'SuperAdmin' }, isSuperAdmin: () => true, logout });
   view.rerender(<AdminLayout />);
   expect(screen.getByRole('link', { name: 'Admin users' })).toHaveAttribute('href', '/admin/users');

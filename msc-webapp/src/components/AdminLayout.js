@@ -12,6 +12,8 @@ const navigation = [
   { path: '/admin/events', label: 'Events', icon: FiCalendar },
   { path: '/admin/achievements', label: 'Achievements', icon: FiAward },
   { path: '/admin/statistics', label: 'Statistics', icon: FiGrid },
+  { path: '/admin/ratings', label: 'Ratings & Excel', icon: FiUploadCloud },
+  { path: '/admin/sponsors', label: 'Sponsors & partners', icon: FiAward },
   { path: '/admin/content', label: 'Site content', icon: FiFileText },
 ];
 
@@ -67,7 +69,7 @@ export default function AdminLayout() {
         <p className="admin-nav-label">WORKSPACE</p>
         <nav aria-label="Admin navigation">{links.map(({ path, label, icon: Icon }) => <NavLink key={path} to={path} className={({ isActive }) => `admin-nav-link ${isActive ? 'admin-nav-active' : ''}`}><Icon aria-hidden="true" /><span>{label}</span></NavLink>)}</nav>
         <div className="admin-deferred-nav"><p className="admin-nav-label">PENDING SETUP</p>
-          {[{ label: 'Excel import', icon: FiUploadCloud }, { label: 'QR attendance', icon: FiGrid }, { label: 'Certificates', icon: FiAward }].map(({ label, icon: Icon }) => <div key={label} className="admin-nav-pending" aria-disabled="true" title="Backend setup deferred"><Icon aria-hidden="true" /><span>{label}</span><FiLock aria-hidden="true" /></div>)}
+          {[{ label: 'QR attendance', icon: FiGrid }, { label: 'Certificates', icon: FiAward }].map(({ label, icon: Icon }) => <div key={label} className="admin-nav-pending" aria-disabled="true" title="Backend setup deferred"><Icon aria-hidden="true" /><span>{label}</span><FiLock aria-hidden="true" /></div>)}
         </div>
         <div className="admin-session"><div className="admin-session-heading"><FiShield aria-hidden="true" /><span>{user?.role === 'SuperAdmin' ? 'Super Admin' : 'Content Editor'}</span></div><p title={user?.email}>{user?.email}</p>
           <button type="button" className="admin-logout" onClick={handleLogout} disabled={loggingOut}><FiLogOut aria-hidden="true" />{loggingOut ? 'Signing out...' : 'Sign out'}</button>

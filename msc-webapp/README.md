@@ -19,9 +19,12 @@ App
 				StatisticsBanner           four viewport-triggered counters
 				UpcomingEvent              precision-aware schedule and countdown
 				EventGrid -> EventDetails  summaries, full description, date and gallery
-				HighBoardSection           four imported High Board profiles
-			EventCollection              searchable and filterable /events route
+				CommunityMoments           two opposing photo rows with pause and keyboard access
+				HighBoardSection           prominent president and optional public contact icons
+				GoldenMembersSection       latest completed monthly top three, including ties
+			EventCollection              search, status/year/category filters, six-event pages
 			EventPage                    shareable /events/:id with shared gallery
+			GalleryPage                  searchable /gallery albums with shared photo viewer
 			MembersPage / LeadershipPage separate public directories and PDF links
 			Achievements                 curated student achievements
 			PublicFooter
@@ -34,6 +37,37 @@ App
 - [src/components/public/types.ts](src/components/public/types.ts): `ClubAssets`, `ClubStatistics`, `ClubEvent`, and theme contracts.
 - [src/components/public/public.css](src/components/public/public.css): shared tokens, glass surfaces, typography, and responsive layouts. Tailwind handles local utilities; CSS handles reusable themed components.
 - [src/components/public/OptimizedImage.tsx](src/components/public/OptimizedImage.tsx): lazy/eager loading, glass skeleton, cached-image handling, responsive `srcSet`/`sizes`, stable geometry, accessible fallback, optional edge mask, and reduced-motion-aware hover. `GlassImage` remains a compatible alias.
+
+### Homepage Community Highlights (2026-09-13)
+
+The homepage places two opposite-direction photo rows above the High Board, followed immediately by Golden Members. Photos come from existing event galleries, not third-party sites. Motion pauses offscreen, on hover and through an explicit pause control. Keyboard focus switches the focused row to manual scrolling and brings the focused photo into view. Repeated visual copies stay outside the tab order. Reduced-motion preference disables animation and leaves horizontally scrollable photos. No founding year is asserted.
+
+The existing `ali-arabi-ali` profile remains President and is highlighted without adding a duplicate member. Leadership portraits retain their complete framing; missing portraits use initials. The following optional fields render icon links on leadership cards, member cards and profiles only when valid: `githubUrl`, `linkedInUrl`, `facebookUrl`, `instagramUrl`, `websiteUrl`, `publicEmail`, `publicPhone`. Social/site links require HTTPS without embedded credentials; phone uses international format such as `+201012345678` (example only). Empty values produce no icon. Only publish member-approved contact values; private roster contact fields are not imported. Ali approved publication but has not supplied the actual contact values, so no accounts have been guessed or added.
+
+In API mode, edit these fields in `/admin/members`. They are explicitly public, may be cleared, and are persisted by the authenticated member API and exposed by `/api/showcase`. [MemberPublicContacts migration](../MSC.WebAPI/Migrations/20260913135706_MemberPublicContacts.cs) adds seven nullable columns only and has **not** been applied to any live database. Apply the reviewed pending migrations and activate API content mode only through the existing approved deployment procedure. Local previews continue to use the local member records and do not persist admin API changes into source files.
+
+Golden Members uses the user-approved rule: select the most recent published, completed full calendar month, rank only the `member` group by its published `rate`, and include everyone at ranks 1-3 (including ties). Weekly, partial-month, future and unpublished periods are excluded; Board, High Board, instructors and unknown IDs are not candidates. The actual month and period title are displayed with a link to that leaderboard. An empty latest month does not silently fall back to older winners. Publish a full-month period through `/admin/ratings` to populate it; local preview deliberately has no invented ratings or winners.
+
+Verification: all 137 frontend tests passed, then 16 focused public tests passed after photo interaction refinements; TypeScript and editor diagnostics passed. The rebuilt backend content suite passed all 25 tests, including eight new public-contact validation/removal cases and extended roundtrip coverage. EF reported no pending model changes after migration generation. Headless Edge verified real opposite movement, pause, reduced motion, six responsive widths, portraits, section order, duplicate-photo clicks and visible keyboard focus with Enter/Escape restoration. A separate intercepted API-mode browser verified seven contact icons, admin save/read/remove, profile links, four winners tied at third place and four responsive widths; no fixture data was published. Temporary API preview was stopped. Screenshots were reviewed and this turn's generated images were then removed because C: ran out of space. No production build, live database update or deployment was performed.
+
+### Student Branch Website Comparison (2026-09-13)
+
+Reviewed public pages only; third-party application submissions, membership payment, authentication and administration were not tested. Observed labels and published claims are not independent verification of those services.
+
+| Reference | Observed features | Decision for MSC-SCU |
+| --- | --- | --- |
+| [IEEE El Shorouk events](https://ieeesha.org/events) | Upcoming/past sections, event details with location/date ranges, paginated archive | Retain our existing event details; add six-event pages and data-derived year/category filters alongside status and search. |
+| [El Shorouk applications](https://ieeesha.org/applications) | Registration/survey/feedback/general categories; no available forms during review | Defer until official forms, eligibility, data handling and submission ownership are supplied. |
+| [IEEE SCU home](https://ieeescu.org/) | Community photo gallery, mission/vision, awards, executive officers, Member of the Month | Gallery and animated homepage rows use our own photos. Leadership and public contact icons are implemented; Golden Members now follows the explicitly approved monthly ranking rule above. |
+| [IEEE SCU committees](https://ieeescu.org/committees) and [El Shorouk committees](https://ieeesha.org/committees) | Committee descriptions; SCU also exposes technical/non-technical filters and detail pages | Defer until our committee names, descriptions and leaders are confirmed. Do not infer membership from job titles. |
+| [IEEE SCU join](https://ieeescu.org/join) and [membership](https://ieeescu.org/membership) | Recruitment link, benefits, eligibility/fees guidance, FAQ | A club joining/FAQ page needs MSC-specific policies and official links; IEEE membership benefits are not MSC benefits. |
+| [IEEE SCU contact](https://ieeescu.org/contact) and [El Shorouk contact](https://ieeesha.org/contact) | Official email, social channels, location; SCU separates partnership contacts | Defer until MSC public contact channels are approved; do not republish private roster contacts. |
+
+The new `/gallery` route derives albums from the same `ShowcaseProvider` event data as `/events`. It uses `gallery`, or a single `imageUrl` when no gallery is supplied; events without pictures are omitted. Repeated URLs within an album count once. Search matches event title, category and location; six-album pagination and the existing accessible event dialog provide photo browsing and event links. The current local content has one published album with 14 photos. No third-party photos, text or branding were copied.
+
+The event archive combines title/description/category/location search with status, start year and category. Unknown dates have their own filter. Filter changes reset pagination; reset clears every filter. Both additions retain local/API content selection, loading/error/empty states and the existing public themes. No backend, database migration, registration workflow or production deployment was changed for this comparison.
+
+Verification: 47 focused frontend tests across events/gallery, app routing and public components; TypeScript check; headless Edge image loading, album navigation, Escape/focus restoration, search/reset, event filters, mobile navigation and deep-link reload. Gallery/header layout passed at 320, 390, 768, 1001, 1280, 1440, 1451 and 1920px; events passed at five widths. Desktop/night and mobile/day screenshots were reviewed. No production build or live API-to-database validation was performed in this change.
 
 ### Supply Images
 
@@ -143,6 +177,49 @@ The report lists every profile as `matched`, `unassigned`, or `conversion-skippe
 | Mohamed Abdelazim | No directly named portrait; do not substitute Mohamed Abdelmaksoud |
 
 Jana Alaa has two existing roster IDs with different roles, linked by the supplied workbooks. Both existing profiles are preserved; this import does not merge or add profiles. People present only in the response files remain excluded. After live API activation, changing these local seed URLs does not overwrite existing database rows: the initial catalogue import is additive. Use authenticated administration to update existing live portraits after separately approving activation.
+
+### Member Profiles And Ratings
+
+Member names and portraits now link to `/members/:id`. Profiles display the roster name, role, uncropped portrait, biography, optional certificate, and published rating history. Ali Arabi Ali's initial biography is exactly the user-supplied text in [src/content/members.ts](src/content/members.ts). Other biographies remain unpublished. The member editor at `/admin/members` persists a plain-text `bio` of up to 3,000 characters. React renders it as text, not HTML. In API mode the database biography is authoritative; the local biography is an initial import value, not an override for live edits. Existing records are not overwritten by the additive catalogue import, so update their biography explicitly in administration.
+
+Per the user's choice, only administrators edit biographies for now. Member sign-in and self-editing are **not** implemented or implicitly granted by a public profile URL.
+
+`/leaderboard` displays published final scores, with period selection, name/role search, Members versus Board/High Board filters, pagination, member profile links and optional criterion breakdowns. Instructors are excluded. Equal scores share the same competition rank (for example, 1, 1, 3); search preserves the rank, while group selection ranks within that group. Unrated people are not assigned zero or inserted into the ranking. Member profiles link to their historical periods.
+
+The user selected **a final Rate supplied in Excel**, not a weighted calculation. The template uses values from **0 to 100 with at most two decimal places**. No attendance/task/project weights are calculated. Optional criterion scores are reported separately, with missing scores shown as "Not reported".
+
+After API activation, use `/admin/ratings`:
+
+1. Download the authenticated Excel template, populated with eligible database member IDs, names and groups.
+2. Fill the `Ratings` worksheet. Required columns are `MemberId` and `Rate`; `Name` and `Group` are references only. Optional columns are `OnlineAttendance`, `OfflineAttendance`, `Tasks`, and `Projects`. Keep the stable `MemberId` unchanged. Fill only the people being rated; rows with all score cells blank are skipped, not assigned zero.
+3. Enter a period title and inclusive start/end dates for the desired week or month, then upload and preview the workbook.
+4. Correct unknown IDs, duplicate IDs, formulas or invalid scores before publishing. Changing the file or period invalidates the preview.
+5. Confirm publication explicitly. Reusing the same start/end dates replaces only that period, and requires its current ID/version. A stale preview receives HTTP 409 and must be refreshed. Omitted members lose their rating in the replaced period; other periods are unchanged.
+
+The XLSX limit is 2 MB, 2,000 rows, 1,000 ZIP entries and 20 MB decompressed content. External workbook links, macros and formula cells in `Ratings` are rejected. Workbooks and contact fields are not stored. Publication is one EF transaction and does not create member records. The period stores its publication timestamp, update version and administrator ID. Deleting a member also removes their rating entries; replacing a period does not preserve prior revisions within that same period.
+
+| Endpoint | Access | Purpose |
+| --- | --- | --- |
+| `GET /api/leaderboard` | Public | Published periods and final scores |
+| `GET /api/leaderboard/template` | SuperAdmin or ContentEditor | Download XLSX template |
+| `POST /api/leaderboard/preview` | SuperAdmin or ContentEditor | Multipart `file`, `startDate`, `endDate`; read-only validation |
+| `POST /api/leaderboard` | SuperAdmin or ContentEditor | Publish normalized rows or explicitly replace a versioned period |
+
+### Sponsors And Partners
+
+`/sponsors` groups published organisations into Diamond, Gold, Silver, Bronze and Community partners. Filters select tier and event/club-wide association. Event detail pages show only organisations explicitly linked to that event; general club partners are not automatically claimed as that event's sponsors. No real sponsor names or logos have yet been supplied, so the local preview is intentionally empty.
+
+`/admin/sponsors` manages names, tier, description, logo URL, website URL, optional associated event, display order and publication status. New records start as drafts; a logo is required before publication. Logos use uncropped containment. URLs must be site-relative or HTTPS. Add optimized logo assets to the frontend or use approved hosted URLs; this feature does not introduce a new file-upload storage container.
+
+Public `GET /api/sponsors` excludes drafts. `GET /api/sponsors/manage` and `POST/PUT/DELETE /api/sponsors[/{id}]` require SuperAdmin or ContentEditor. Removing an event detaches its sponsor records, retaining them as club-wide records, so review those associations when deleting events.
+
+### Community Feature Activation And Checks
+
+[../MSC.WebAPI/Migrations/20260913121929_MemberProfilesRatingsSponsors.cs](../MSC.WebAPI/Migrations/20260913121929_MemberProfilesRatingsSponsors.cs) adds `Members.Bio`, `RatingPeriods`, `MemberRatings`, and `Sponsors`. **Generated but not applied to a live database.** Review this migration together with the earlier Identity and PublicShowcaseContent migrations under the activation checklist below. Rating rows have unique period/member constraints; periods have unique date ranges and optimistic concurrency versions. A rollback drops ratings, sponsors and biographies.
+
+The public preview remains `REACT_APP_CONTENT_SOURCE=local`. It shows the real profiles and Ali's supplied bio, but no fabricated ratings or sponsors. Persisted changes become public only after separately approved database activation and API-mode startup/build. The new admin pages use real authenticated endpoints; they do not simulate successful saves or store records only in the browser.
+
+Validation on 2026-09-13: 124 frontend tests, 35 backend tests, strict types, production compilation without new ESLint warnings, and an offline EF model/snapshot check passed. The eight newly introduced ClosedXML dependency coordinates had no known CVEs in the dependency assessment. API tests use isolated SQLite and real XLSX generation/parsing, including anonymous access rejection, invalid rows, versioned replacement and sponsor draft/event behaviour. Edge/Playwright verified the real profile route/bio and, in isolated API-mode contexts, ranking search, multipart preview/retry, confirmed publication/read-back, biography update/read-back, sponsor publication/event association, logo rendering and responsive views at 320-1440px. All five browser write requests were intercepted; no live database or deployment was involved. Production output is in `%TEMP%/msc-community-build`; tracked build artifacts were not overwritten. Generic CRA browser-database deprecation notices remain.
 
 ### Student Achievements
 

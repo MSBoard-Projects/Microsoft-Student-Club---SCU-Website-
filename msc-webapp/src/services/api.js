@@ -119,6 +119,14 @@ export const leaderboardApi = {
   publish: async data => (await apiClient.post('/leaderboard', data)).data,
 };
 
+export const sponsorsApi = {
+  getPublished: async () => (await apiClient.get('/sponsors')).data,
+  getAll: async () => (await apiClient.get('/sponsors/manage')).data,
+  create: async data => (await apiClient.post('/sponsors', data)).data,
+  update: async (id, data) => (await apiClient.put(`/sponsors/${id}`, data)).data,
+  delete: async id => { await apiClient.delete(`/sponsors/${id}`); },
+};
+
 export const siteContentApi = {
   // Get all site content
   getAll: async () => {

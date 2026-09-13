@@ -10,6 +10,46 @@ export interface ClubMember {
   imageUrl: string | null;
   certificateUrl: string | null;
   bio?: string | null;
+  githubUrl?: string | null;
+  linkedInUrl?: string | null;
+  facebookUrl?: string | null;
+  instagramUrl?: string | null;
+  websiteUrl?: string | null;
+  publicEmail?: string | null;
+  publicPhone?: string | null;
+}
+
+export const publicContactFields = [
+  { key: 'githubUrl', label: 'GitHub', type: 'url' },
+  { key: 'linkedInUrl', label: 'LinkedIn', type: 'url' },
+  { key: 'facebookUrl', label: 'Facebook', type: 'url' },
+  { key: 'instagramUrl', label: 'Instagram', type: 'url' },
+  { key: 'websiteUrl', label: 'Website', type: 'url' },
+  { key: 'publicEmail', label: 'Public email', type: 'email' },
+  { key: 'publicPhone', label: 'Public phone (+country code)', type: 'tel' },
+] as const;
+
+export function memberContactLinks(member: Partial<ClubMember>) {
+  return publicContactFields.flatMap(field => {
+    const raw = member[field.key];
+    if (typeof raw !== 'string' || !raw.trim()) return [];
+    const value = raw.trim();
+    let href = '';
+    if (field.type === 'email') {
+      if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) return [];
+      href = `mailto:${value}`;
+    } else if (field.type === 'tel') {
+      if (!/^\+[1-9]\d{6,14}$/.test(value)) return [];
+      href = `tel:${value}`;
+    } else {
+      try {
+        const url = new URL(value);
+        if (url.protocol !== 'https:' || url.username || url.password) return [];
+        href = url.href;
+      } catch { return []; }
+    }
+    return [{ key: field.key, label: field.label, href }];
+  });
 }
 
 export const members: readonly ClubMember[] = records.map(record => {

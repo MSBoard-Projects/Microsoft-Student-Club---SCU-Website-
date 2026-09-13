@@ -18,7 +18,9 @@ import Landing from './pages/ClubLanding';
 import MembersPage, { LeadershipPage, MemberProfile } from './pages/MemberDirectory';
 import Achievements from './pages/Achievements';
 import Leaderboard from './pages/Leaderboard';
-import Events, { EventPage } from './components/public/EventCollection';
+import RatingManagement from './pages/RatingManagement';
+import Sponsors from './pages/Sponsors';
+import Events, { EventPage, GalleryPage } from './components/public/EventCollection';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import ContentManagement from './pages/ContentManagement';
@@ -46,8 +48,10 @@ function App() {
               <Route path="/leadership" element={<LeadershipPage />} />
               <Route path="/achievements" element={<Achievements />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/sponsors" element={<Sponsors />} />
               <Route path="/events" element={<Events />} />
               <Route path="/events/:id" element={<EventPage />} />
+              <Route path="/gallery" element={<GalleryPage />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               
               {/* Protected Admin Routes */}
@@ -58,6 +62,8 @@ function App() {
                 <Route path="events" element={<ContentManagement kind="events" />} />
                 <Route path="achievements" element={<ContentManagement kind="achievements" />} />
                 <Route path="statistics" element={<ContentManagement kind="statistics" />} />
+                <Route path="ratings" element={<RatingManagement />} />
+                <Route path="sponsors" element={<ContentManagement kind="sponsors" />} />
                 <Route path="content" element={<SiteContentManagement />} />
                 <Route path="users" element={<AdminUserManagement />} />
                 <Route path="*" element={<NotFound destination="/admin/dashboard" actionLabel="Return to overview" />} />

@@ -4,13 +4,27 @@ import { FiArrowLeft, FiArrowRight, FiAward, FiSearch } from 'react-icons/fi';
 import { leaderboardApi } from '../services/api';
 import { useShowcase } from '../context/ShowcaseContext';
 import usePublishedCollection from '../hooks/usePublishedCollection';
-import { parseRatings, rankMembers, scoreLabels } from '../content/ratings';
+import { goldenMembers, parseRatings, rankMembers, scoreLabels } from '../content/ratings';
 import OptimizedImage from '../components/public/OptimizedImage';
 import Icon from '../components/public/Icon';
 
 const loadRatings = () => leaderboardApi.getAll();
 const score = (value: number | null) => value === null ? 'Not reported' : `${value.toLocaleString('en-GB', { maximumFractionDigits: 2 })} / 100`;
 const periodDate = (value: string) => new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date(`${value}T12:00:00Z`));
+
+export function GoldenMembersSection() {
+  const { data: { members } } = useShowcase();
+  const { data, loading, error, retry } = usePublishedCollection(loadRatings, parseRatings);
+  const { period, entries } = goldenMembers(data, members);
+  const month = period ? new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${period.startDate}T12:00:00Z`)) : null;
+  return <section className="club-section club-golden" aria-labelledby="golden-members-title"><div className="club-container">
+    <div className="club-section-heading"><div><span className="club-eyebrow">{month ? `GOLDEN MEMBERS / ${month.toUpperCase()}` : 'COMMUNITY RECOGNITION'}</span><h2 id="golden-members-title">Golden Members</h2>{month && <p>{month} · {period?.title}</p>}</div><Link className="club-text-link" to={period ? `/leaderboard?period=${period.id}` : '/leaderboard'}>Full leaderboard <Icon glyph={FiArrowRight} /></Link></div>
+    {loading ? <p role="status" className="club-notice">Loading monthly recognition...</p> : error ? <div role="alert" className="club-notice">{error}<button type="button" onClick={retry}>Try again</button></div> : entries.length ? <div className="club-golden-grid">{entries.map(entry => <article key={entry.memberId} className="club-golden-card">
+      <div className="club-golden-photo">{entry.member.imageUrl ? <OptimizedImage src={entry.member.imageUrl} alt={entry.member.fullName} fit="contain" aspectRatio="1" framed={false} sizes="(max-width: 760px) 100vw, 360px" /> : <span className="club-member-initials" aria-hidden="true">{entry.member.fullName.split(/\s+/).slice(0, 2).map(part => part[0]).join('')}</span>}<span className="club-golden-badge"><Icon glyph={FiAward} />Rank {entry.rank}</span></div>
+      <div className="club-golden-copy"><h3><Link to={`/members/${encodeURIComponent(entry.memberId)}`}>{entry.member.fullName}</Link></h3><p>{entry.member.positionTitle}</p><strong>{score(entry.rate)}</strong></div>
+    </article>)}</div> : <p className="club-notice">{period ? 'No member ratings published for this month.' : 'Golden Members will be announced after a monthly rating is published.'}</p>}
+  </div></section>;
+}
 
 export function MemberRatings({ memberId }: { memberId: string }) {
   const { data, loading, error, retry } = usePublishedCollection(loadRatings, parseRatings);

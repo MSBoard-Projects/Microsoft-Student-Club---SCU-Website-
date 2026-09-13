@@ -1,13 +1,20 @@
 import { useDeferredValue, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { FiArrowLeft, FiArrowRight, FiArrowUpRight, FiDownload, FiFileText, FiSearch, FiX } from 'react-icons/fi';
-import { getHighBoard, type ClubMember, type MemberGroup } from '../content/members';
+import { FiArrowLeft, FiArrowRight, FiArrowUpRight, FiDownload, FiFacebook, FiFileText, FiGithub, FiGlobe, FiInstagram, FiLinkedin, FiMail, FiPhone, FiSearch, FiX } from 'react-icons/fi';
+import { getHighBoard, memberContactLinks, type ClubMember, type MemberGroup } from '../content/members';
 import { useShowcase } from '../context/ShowcaseContext';
 import OptimizedImage from '../components/public/OptimizedImage';
 import Icon from '../components/public/Icon';
 import { MemberRatings } from './Leaderboard';
 
 const groupLabels: Record<MemberGroup, string> = { 'high-board': 'High Board', board: 'Board', member: 'Members', instructor: 'Instructors' };
+
+export function MemberSocialLinks({ member }: { member: ClubMember }) {
+  const links = memberContactLinks(member);
+  const icons = { githubUrl: FiGithub, linkedInUrl: FiLinkedin, facebookUrl: FiFacebook, instagramUrl: FiInstagram, websiteUrl: FiGlobe, publicEmail: FiMail, publicPhone: FiPhone };
+  if (!links.length) return null;
+  return <div className="club-member-socials" role="group" aria-label={`Contact ${member.fullName}`}>{links.map(link => <a key={link.key} href={link.href} aria-label={`${link.label}: ${member.fullName}`} title={link.label} {...(link.href.startsWith('https:') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}><Icon glyph={icons[link.key]} /></a>)}</div>;
+}
 
 export function MemberCard({ member }: { member: ClubMember }) {
   const initials = member.fullName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('');
@@ -17,6 +24,7 @@ export function MemberCard({ member }: { member: ClubMember }) {
       <span className="club-member-group">{groupLabels[member.group]}</span>
     </div></Link>
     <div className="club-member-copy"><h3><Link to={`/members/${encodeURIComponent(member.id)}`}><bdi>{member.fullName}</bdi></Link></h3><p>{member.positionTitle}</p>
+      <MemberSocialLinks member={member} />
       {member.certificateUrl ? <div className="club-member-certificate">
         <a href={member.certificateUrl} target="_blank" rel="noopener noreferrer" aria-label={`View certificate: ${member.fullName}`}><Icon glyph={FiFileText} />Certificate PDF</a>
         <a href={member.certificateUrl} download title={`Download certificate: ${member.fullName}`} aria-label={`Download certificate: ${member.fullName}`}><Icon glyph={FiDownload} /></a>
@@ -29,7 +37,10 @@ export function HighBoardSection() {
   const highBoard = getHighBoard(useShowcase().data.members);
   return <section className="club-section club-leadership-preview" aria-labelledby="home-leadership-title"><div className="club-container">
     <div className="club-section-heading"><div><span className="club-eyebrow">THE PEOPLE BEHIND THE COMMUNITY</span><h2 id="home-leadership-title">Meet the High Board</h2></div><Link to="/leadership" className="club-text-link">Our leadership <Icon glyph={FiArrowUpRight} /></Link></div>
-    <div className="club-member-grid">{highBoard.map(member => <MemberCard key={member.id} member={member} />)}</div>
+    <div className="club-officers">{highBoard.map(member => <article key={member.id} className={`club-officer ${member.positionTitle.toLowerCase() === 'president' ? 'club-officer-president' : ''}`}>
+      <Link className="club-officer-photo" to={`/members/${encodeURIComponent(member.id)}`} aria-label={`View profile: ${member.fullName}`}>{member.imageUrl ? <OptimizedImage src={member.imageUrl} alt={member.fullName} fit="contain" aspectRatio="1" framed={false} sizes="(max-width: 760px) 100vw, 400px" /> : <span className="club-member-initials" aria-hidden="true">{member.fullName.split(/\s+/).slice(0, 2).map(part => part[0]).join('')}</span>}</Link>
+      <div className="club-officer-copy"><span className="club-eyebrow">{member.positionTitle}</span><h3><Link to={`/members/${encodeURIComponent(member.id)}`}><bdi>{member.fullName}</bdi></Link></h3>{member.bio && <p dir="auto">{member.bio}</p>}<MemberSocialLinks member={member} /><Link to={`/members/${encodeURIComponent(member.id)}`} className="club-text-link">View profile <Icon glyph={FiArrowUpRight} /></Link></div>
+    </article>)}</div>
   </div></section>;
 }
 
@@ -79,6 +90,7 @@ export function MemberProfile() {
     <section className="club-member-profile" aria-labelledby="member-profile-title">
       <div className="club-profile-portrait">{member.imageUrl ? <OptimizedImage src={member.imageUrl} alt={member.fullName} fit="contain" aspectRatio="1" priority framed={false} /> : <span className="club-member-initials" aria-hidden="true">{member.fullName.split(/\s+/).slice(0, 2).map(part => part[0]).join('')}</span>}</div>
       <div><span className="club-eyebrow">{groupLabels[member.group]}</span><h1 id="member-profile-title"><bdi>{member.fullName}</bdi></h1><p className="club-profile-role">{member.positionTitle}</p><h2>About</h2><p className="club-profile-bio" dir="auto">{member.bio || 'No biography published yet.'}</p>
+        <MemberSocialLinks member={member} />
         {member.certificateUrl && <a className="club-text-link" href={member.certificateUrl} target="_blank" rel="noopener noreferrer"><Icon glyph={FiFileText} />View certificate</a>}
         <MemberRatings memberId={member.id} />
       </div>

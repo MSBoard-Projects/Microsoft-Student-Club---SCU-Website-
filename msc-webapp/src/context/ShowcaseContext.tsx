@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { clubContent } from '../content/club';
-import { members, type ClubMember } from '../content/members';
+import { members, publicContactFields, type ClubMember } from '../content/members';
 import { achievements, type StudentAchievement } from '../content/achievements';
 import type { ClubEvent, ClubStatistics, EventSource } from '../components/public/types';
 import { showcaseApi } from '../services/api';
@@ -21,6 +21,7 @@ export function parseShowcase(value: unknown): ShowcaseData {
   if (!object(value) || !Array.isArray(value.events) || !Array.isArray(value.members) || !Array.isArray(value.achievements) || !object(value.statistics)) throw new Error('Invalid content response');
   if (!value.events.every(item => object(item) && ['id', 'title', 'summary', 'description', 'category'].every(key => text(item[key])) && optionalText(item.imageUrl) && optionalText(item.startsAt) && (item.endsAt === undefined || optionalText(item.endsAt)) && optionalText(item.location) && stringList(item.gallery) && ['past', 'upcoming', 'unannounced'].includes(String(item.status)))) throw new Error('Invalid event data');
   if (!value.members.every(item => object(item) && ['id', 'fullName', 'positionTitle'].every(key => text(item[key])) && ['member', 'instructor', 'board', 'high-board'].includes(String(item.group)) && optionalText(item.imageUrl) && optionalText(item.certificateUrl) && (item.bio === undefined || optionalText(item.bio)))) throw new Error('Invalid member data');
+  if (!value.members.every(item => publicContactFields.every(field => item[field.key] === undefined || optionalText(item[field.key])))) throw new Error('Invalid public contact data');
   if (!value.achievements.every(item => object(item) && ['id', 'title', 'summary'].every(key => text(item[key])) && stringList(item.studentNames) && optionalText(item.achievedAt) && optionalText(item.imageUrl) && optionalText(item.evidenceUrl))) throw new Error('Invalid achievement data');
   for (const key of ['registeredAttendees', 'beneficiaries', 'eventLocations', 'eventsConducted']) {
     const total = value.statistics[key];

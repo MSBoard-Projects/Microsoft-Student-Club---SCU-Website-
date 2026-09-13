@@ -18,6 +18,7 @@ namespace MSC.WebAPI.Data
         public DbSet<CommunityStatistics> CommunityStatistics { get; set; }
         public DbSet<RatingPeriod> RatingPeriods { get; set; }
         public DbSet<MemberRating> MemberRatings { get; set; }
+        public DbSet<Sponsor> Sponsors { get; set; }
         public DbSet<SiteContent> SiteContents { get; set; }
         public DbSet<AdminUser> AdminUsers { get; set; }
 
@@ -46,6 +47,13 @@ namespace MSC.WebAPI.Data
                     .HasMaxLength(500);
                 entity.Property(e => e.PublicId).HasMaxLength(120);
                 entity.Property(e => e.Bio).HasMaxLength(3000);
+                entity.Property(e => e.GithubUrl).HasMaxLength(500);
+                entity.Property(e => e.LinkedInUrl).HasMaxLength(500);
+                entity.Property(e => e.FacebookUrl).HasMaxLength(500);
+                entity.Property(e => e.InstagramUrl).HasMaxLength(500);
+                entity.Property(e => e.WebsiteUrl).HasMaxLength(500);
+                entity.Property(e => e.PublicEmail).HasMaxLength(254);
+                entity.Property(e => e.PublicPhone).HasMaxLength(16);
                 entity.HasIndex(e => e.PublicId).IsUnique().HasFilter("[PublicId] IS NOT NULL");
 
                 // Configure relationship with MemberType
@@ -110,6 +118,7 @@ namespace MSC.WebAPI.Data
                 foreach (var property in new[] { nameof(MemberRating.Rate), nameof(MemberRating.OnlineAttendance), nameof(MemberRating.OfflineAttendance), nameof(MemberRating.Tasks), nameof(MemberRating.Projects) })
                     entity.Property(property).HasPrecision(5, 2);
             });
+                    modelBuilder.Entity<Sponsor>().HasOne(sponsor => sponsor.Event).WithMany().HasForeignKey(sponsor => sponsor.EventId).OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<SiteContent>(entity =>
             {
