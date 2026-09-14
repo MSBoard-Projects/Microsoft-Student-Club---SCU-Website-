@@ -18,7 +18,7 @@ export const eventsData: readonly ClubEvent[] = [
   },
   {
     id: 'canal-startup-sprint',
-    title: 'Canal Startup Sprint Hackathon',
+    title: 'Canal Startups Sprint Hackathon',
     category: 'Hackathon',
     summary: 'From student ideas to startup MVPs, in collaboration with Creativa.',
     description: 'Running across July and August 2026, Canal Startup Sprint Hackathon was an intensive bootcamp guiding students through building startup minimum viable products (MVPs), in collaboration with Creativa.',
@@ -26,8 +26,8 @@ export const eventsData: readonly ClubEvent[] = [
     endsAt: '2026-08',
     location: null,
     status: 'past',
-    imageUrl: null,
-    gallery: [],
+    imageUrl: '/club-media/hackathons/canal-team.jpg',
+    gallery: ['/club-media/hackathons/canal-team.jpg', '/club-media/hackathons/canal-activity.jpg', '/club-media/hackathons/canal-session.jpg'],
   },
   {
     id: 'orientation-season-3',
@@ -53,8 +53,8 @@ export const eventsData: readonly ClubEvent[] = [
     endsAt: '2026-10-28T20:00:00+03:00',
     location: 'Creativa Innovation Hub Ismailia',
     status: 'upcoming',
-    imageUrl: null,
-    gallery: [],
+    imageUrl: '/club-media/hackathons/hacktoberfest-2026.png',
+    gallery: ['/club-media/hackathons/hacktoberfest-2026.png'],
   },
   {
     id: 'microsoft-ai-startups-competition',

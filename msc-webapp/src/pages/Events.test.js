@@ -17,6 +17,22 @@ const events = [
 
 beforeEach(() => eventsApi.getAll.mockResolvedValue(events));
 
+test('approved hackathon covers and galleries reference published image files', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const canal = eventsData.find(event => event.id === 'canal-startup-sprint');
+  const hacktoberfest = eventsData.find(event => event.id === 'hacktoberfest-hack-day-2026');
+  expect(canal.imageUrl).toBe('/club-media/hackathons/canal-team.jpg');
+  expect(canal.gallery).toHaveLength(3);
+  expect(hacktoberfest.imageUrl).toBe('/club-media/hackathons/hacktoberfest-2026.png');
+  for (const event of [canal, hacktoberfest]) {
+    expect(event.gallery).toContain(event.imageUrl);
+    for (const image of event.gallery) {
+      expect(fs.existsSync(path.join(process.cwd(), 'public', image))).toBe(true);
+    }
+  }
+});
+
 test('competition shows all winners and three named teams with distinct event covers', () => {
   const competition = eventsData.find(event => event.id === 'microsoft-ai-startups-competition');
   expect(eventsData).toHaveLength(7);
