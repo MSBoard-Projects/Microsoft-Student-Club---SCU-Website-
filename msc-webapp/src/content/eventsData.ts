@@ -1,5 +1,6 @@
 import type { ClubEvent } from '../components/public/types';
 import season2Media from './season2Media.json';
+import { teamPhoto } from './communityAlbums';
 
 export const eventsData: readonly ClubEvent[] = [
   {
@@ -37,7 +38,21 @@ export const eventsData: readonly ClubEvent[] = [
     endsAt: '2026-10-19T19:00:00+03:00',
     location: 'Creativa Innovation Hub Ismailia',
     status: 'upcoming',
-    imageUrl: null,
-    gallery: [],
+    imageUrl: teamPhoto,
+    gallery: teamPhoto ? [teamPhoto] : [],
+  },
+  {
+    id: 'hacktoberfest-hack-day-2026',
+    registrationUrl: 'https://events.mlh.com/events/14824-hacktoberfest-hack-day-ismailia-x-microsoft-student-club-scu',
+    title: 'Hacktoberfest Hack Day Ismailia x Microsoft Student Club SCU',
+    category: 'Hackathon',
+    summary: 'Build open-source AI. Learn together. Turn your ideas into contributions.',
+    description: 'Join our community at Creativa Innovation Hub Ismailia on October 28, 2026, from 3 PM to 8 PM (Cairo time). Hacktoberfest focuses on open-source artificial intelligence, AI tools and open-weight models. Build AI agent workflows, explore model adaptation and collaborate on practical open-source contributions for your portfolio. Expect a collaborative day of competition, learning and career development, with 30-50 participants expected. Applications are confirmed on a rolling basis.',
+    startsAt: '2026-10-28T15:00:00+03:00',
+    endsAt: '2026-10-28T20:00:00+03:00',
+    location: 'Creativa Innovation Hub Ismailia',
+    status: 'upcoming',
+    imageUrl: teamPhoto,
+    gallery: teamPhoto ? [teamPhoto] : [],
   },
 ];

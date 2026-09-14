@@ -245,3 +245,43 @@ test('golden cards and search follow canonical member identity changes, preservi
   expect(screen.getByRole('img', { name: updated.fullName })).toHaveAttribute('src', updated.imageUrl);
   expect(screen.getByText('2 recognitions')).toBeInTheDocument();
 });
+
+test('reviewed Golden aliases reuse roster portraits and leave unmatched identities unlinked', () => {
+  const aliases = {
+    'zahraa-khaled': 'zahra-khaled',
+    'dina-amr-ismail': 'dina-amr',
+    'roaa-ali-ghareeb': 'roaa-ali',
+    'esraa-attia': 'essra-attia-ali-attia',
+    'ahmed-mohamed': 'ahmed-nashaat',
+    'ziad-abdel-qader': 'zeyad-abdalkader-mohamed',
+    'yassin-ahmed': 'yassin-ahmad-mahmoud',
+    'yasmin-naser': 'yasmin-nasser',
+    'sara-elsayed': 'sara-elsayed-mohamed',
+    'nawal-samir-ali': 'nawal-samir',
+    'haneen-ahmad': 'haneen-ahmed',
+    'mennat-allah': 'menna-allah-amire',
+    'judy-ahmed': 'judy-ahmed-mohamed',
+    'kareem-mohamed': 'karim-mohamed',
+    'mohamed-ahmed': 'mohamed-abdelazim',
+    'mahmoud-ali': 'mahmoud-mohamed-ali',
+  };
+  useShowcase.mockReturnValue({ source: 'local', data: { members } });
+  renderPage(<GoldenMembers />);
+  Object.entries(aliases).forEach(([goldenId, memberId]) => {
+    const person = goldenRecipients.find(entry => entry.id === goldenId);
+    const member = members.find(entry => entry.id === memberId);
+    expect(person.memberId).toBe(memberId);
+    expect(person).not.toHaveProperty('imageUrl');
+    expect(screen.getByRole('link', { name: member.fullName })).toHaveAttribute('href', `/members/${memberId}`);
+    if (member.imageUrl) {
+      expect(screen.getByRole('img', { name: member.fullName })).toHaveAttribute('src', member.imageUrl);
+    } else {
+      expect(screen.queryByRole('img', { name: member.fullName })).not.toBeInTheDocument();
+    }
+  });
+  const unlinked = goldenRecipients.filter(person => !person.memberId);
+  expect(unlinked.map(person => person.id).sort()).toEqual(['jana-medhat', 'omar-mohamed', 'rawan-ahmed']);
+  unlinked.forEach(person => expect(screen.queryByRole('link', { name: person.name })).not.toBeInTheDocument());
+  const linkedIds = goldenRecipients.filter(person => person.memberId).map(person => person.memberId);
+  expect(new Set(linkedIds).size).toBe(linkedIds.length);
+});

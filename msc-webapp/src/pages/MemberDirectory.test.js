@@ -36,11 +36,11 @@ test('published portraits are restricted to reviewed roster IDs with valid local
   const reviewed = JSON.parse(readFileSync(path.resolve(__dirname, '../../scripts/member-photo-matches.json'), 'utf8'));
   const report = JSON.parse(readFileSync(path.resolve(__dirname, '../../scripts/member-photo-report.json'), 'utf8'));
   const portraits = members.filter(member => member.imageUrl);
-  expect(reviewed).toHaveLength(64);
-  expect(portraits).toHaveLength(63);
+  expect(reviewed).toHaveLength(67);
+  expect(portraits).toHaveLength(66);
   expect(report).toHaveLength(102);
-  expect(report.filter(entry => entry.status === 'matched')).toHaveLength(63);
-  expect(report.filter(entry => entry.status === 'unassigned')).toHaveLength(38);
+  expect(report.filter(entry => entry.status === 'matched')).toHaveLength(66);
+  expect(report.filter(entry => entry.status === 'unassigned')).toHaveLength(35);
   expect(report.filter(entry => entry.status === 'conversion-skipped').map(entry => entry.id)).toEqual(['mai-elsayed-hafez-amen']);
   expect(new Set(reviewed.map(entry => entry.id)).size).toBe(reviewed.length);
   reviewed.forEach(entry => expect(members.some(member => member.id === entry.id)).toBe(true));
@@ -62,6 +62,28 @@ test('a supplied portrait has the roster name as alt text and unassigned portrai
   rerender(<MemberCard member={members.find(member => member.id === 'mai-elsayed-hafez-amen')} />);
   expect(screen.queryByRole('img')).not.toBeInTheDocument();
   expect(screen.getByText('ME')).toBeInTheDocument();
+});
+
+test('confirmed spelling matches publish the selected portraits without conflating similar names', () => {
+  const confirmed = {
+    'ahmed-nashaat': 'Members/Ahmed Mohammed.jpg',
+    'aya-mohamed': 'Members/IMG-20260120-WA0028 - aya mohamed.jpg',
+    'mahmoud-mohamed-ali': 'Members/IMG_8250 - Mahmoud Mohamed.jpeg',
+  };
+  const reviewed = JSON.parse(readFileSync(path.resolve(__dirname, '../../scripts/member-photo-matches.json'), 'utf8'));
+  Object.entries(confirmed).forEach(([id, source]) => {
+    const entry = reviewed.find(person => person.id === id);
+    expect(`${entry.folder}/${entry.pattern}`).toBe(source);
+    expect(entry.verification).toBe('user-confirmed');
+    const member = members.find(person => person.id === id);
+    const { unmount } = render(<MemberCard member={member} />);
+    expect(screen.getByRole('img', { name: member.fullName })).toHaveAttribute('src', `/club-media/members/${id}.jpg`);
+    unmount();
+  });
+  expect(members.find(person => person.id === 'mahmoud-ali').imageUrl).toBe('/club-media/members/mahmoud-ali.jpg');
+  for (const id of ['yassin-ahmad-mahmoud', 'judy-ahmed-mohamed', 'yasmin-nasser']) {
+    expect(members.find(person => person.id === id).imageUrl).toBeNull();
+  }
 });
 
 test('member directory paginates, searches and separates instructors from members and leadership', () => {

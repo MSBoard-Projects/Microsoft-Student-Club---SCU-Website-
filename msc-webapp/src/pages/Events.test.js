@@ -137,10 +137,11 @@ test('event archive combines year and category filters and resets pagination', a
   })));
   render(<Events source="api" />);
   await screen.findByRole('heading', { name: 'Workshop 1' });
-  expect(screen.queryByRole('heading', { name: 'Workshop 7' })).not.toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Workshop 7' })).toBeInTheDocument();
+  expect(screen.queryByRole('heading', { name: 'Workshop 5' })).not.toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Previous page' })).toBeDisabled();
   fireEvent.click(screen.getByRole('button', { name: 'Next page' }));
-  expect(screen.getByRole('heading', { name: 'Workshop 7' })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Workshop 5' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Next page' })).toBeDisabled();
   fireEvent.change(screen.getByRole('combobox', { name: 'Event year' }), { target: { value: '2025' } });
   expect(screen.getByRole('heading', { name: 'Workshop 1' })).toBeInTheDocument();

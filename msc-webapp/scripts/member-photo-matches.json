@@ -1,4 +1,7 @@
 [
+  { "id": "ahmed-nashaat", "folder": "Members", "pattern": "Ahmed Mohammed.jpg", "verification": "user-confirmed" },
+  { "id": "mahmoud-mohamed-ali", "folder": "Members", "pattern": "IMG_8250 - Mahmoud Mohamed.jpeg", "verification": "user-confirmed" },
+  { "id": "aya-mohamed", "folder": "Members", "pattern": "IMG-20260120-WA0028 - aya mohamed.jpg", "verification": "user-confirmed" },
   { "id": "ahmed-eyada", "folder": "Board", "pattern": "Ahmed Eyadaa.jpg", "verification": "user-confirmed" },
   { "id": "ahmed-hariedy", "folder": "Board", "pattern": "Ahmed Hariedy.jpg", "verification": "user-confirmed" },
   { "id": "haidy-mohamed-salah", "folder": "Board", "pattern": "Haidy mohamed salah.jpg", "verification": "user-confirmed" },

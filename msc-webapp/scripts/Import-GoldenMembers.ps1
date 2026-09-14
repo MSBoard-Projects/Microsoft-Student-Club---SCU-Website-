@@ -10,6 +10,24 @@ function Read-Part([string]$name) {
     try { return [xml]$reader.ReadToEnd() } finally { $reader.Dispose() }
 }
 function Normalize-Name([string]$name) { return ($name.Trim().ToLowerInvariant() -replace '\s+', ' ') }
+$reviewedAliases = @{
+    'zahraa khaled' = 'zahra-khaled'
+    'dina amr ismail' = 'dina-amr'
+    'roaa ali ghareeb' = 'roaa-ali'
+    'esraa attia' = 'essra-attia-ali-attia'
+    'ahmed mohamed' = 'ahmed-nashaat'
+    'ziad abdel qader' = 'zeyad-abdalkader-mohamed'
+    'yassin ahmed' = 'yassin-ahmad-mahmoud'
+    'yasmin naser' = 'yasmin-nasser'
+    'sara elsayed' = 'sara-elsayed-mohamed'
+    'nawal samir ali' = 'nawal-samir'
+    'haneen ahmad' = 'haneen-ahmed'
+    'mennat allah' = 'menna-allah-amire'
+    'judy ahmed' = 'judy-ahmed-mohamed'
+    'kareem mohamed' = 'karim-mohamed'
+    'mohamed ahmed' = 'mohamed-abdelazim'
+    'mahmoud ali' = 'mahmoud-mohamed-ali'
+}
 try {
     $strings = @()
     if ($archive.GetEntry('xl/sharedStrings.xml')) {
@@ -53,6 +71,10 @@ try {
             if (-not $people.Contains($key)) {
                 $matches = @($roster | Where-Object { (Normalize-Name $_.fullName) -eq $key })
                 if ($matches.Count -gt 1) { $matches = @($matches | Where-Object { (Normalize-Name $_.positionTitle) -eq (Normalize-Name $role) }) }
+                if ($reviewedAliases.ContainsKey($key)) {
+                    $matches = @($roster | Where-Object { $_.id -ceq $reviewedAliases[$key] })
+                    if ($matches.Count -ne 1) { throw "Reviewed Golden alias has no unique roster member: $name" }
+                }
                 $people[$key] = [pscustomobject][ordered]@{ id = ($key -replace '[^a-z0-9]+', '-').Trim('-'); name = $name; memberId = if ($matches.Count -eq 1) { $matches[0].id } else { $null }; awards = @() }
             }
             if (@($people[$key].awards | Where-Object { $_.month -eq $month }).Count) { throw "Duplicate award in ${month}: $name" }
@@ -62,6 +84,8 @@ try {
     }
     $records = @($people.Values | ForEach-Object { $_.awards = @($_.awards | Sort-Object month -Descending); $_ })
     if (-not $records.Count -or @($records.id | Sort-Object -Unique).Count -ne $records.Count) { throw 'Empty catalogue or colliding award identifiers.' }
+    $linkedIds = @($records | Where-Object memberId | ForEach-Object memberId)
+    if (@($linkedIds | Sort-Object -Unique).Count -ne $linkedIds.Count) { throw 'Multiple Golden identities resolve to the same member. Review the workbook aliases.' }
     $repeated = @($records | Where-Object { $_.awards.Count -gt 1 })
     Write-Output "$rowCount awards; $($records.Count) people; $($repeated.Count) recognised in multiple months; $(@($records | Where-Object { -not $_.memberId }).Count) profiles awaiting verified matching."
     $repeated | Group-Object { $_.awards[0].category } | Select-Object Name, Count | Format-Table -AutoSize

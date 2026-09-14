@@ -16,6 +16,7 @@ import { communityAlbums, teamPhoto } from '../../content/communityAlbums';
 import { members, memberContactLinks } from '../../content/members';
 import { HighBoardSection, MemberSocialLinks } from '../../pages/MemberDirectory';
 import ClubLanding from '../../pages/ClubLanding';
+import Tracks from '../../pages/Tracks';
 
 jest.mock('../../services/api', () => ({ showcaseApi: { get: jest.fn() }, leaderboardApi: { getAll: jest.fn() } }));
 
@@ -93,7 +94,7 @@ test('statistics expose all four metrics and distinguish zero from unpublished v
   useReducedMotion.mockReturnValue(true);
   render(<StatisticsBanner statistics={{ registeredAttendees: 0, eventLocations: 8, beneficiaries: null, eventsConducted: -1 }} />);
   expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
-  expect(screen.getByText('Total Registered Attendees')).toBeInTheDocument();
+  expect(screen.getByText('Students at our events')).toBeInTheDocument();
   expect(screen.getByLabelText('0')).toBeInTheDocument();
   expect(screen.getAllByText('Not published yet')).toHaveLength(2);
 });
@@ -128,7 +129,7 @@ test('hero highlights can switch photographs and still work without supplied ass
   const { rerender } = render(<MemoryRouter><HeroSection assets={clubContent.assets} /></MemoryRouter>);
   expect(screen.getByRole('button', { name: 'Show All Team' })).toHaveAttribute('aria-pressed', 'true');
   expect(screen.getByRole('img', { name: 'The Microsoft Student Club team together at orientation' })).toHaveAttribute('src', teamPhoto);
-  expect(within(screen.getByRole('group', { name: 'Community highlights' })).getAllByRole('button')).toHaveLength(4);
+  expect(within(screen.getByRole('group', { name: 'Community highlights' })).getAllByRole('button')).toHaveLength(5);
   fireEvent.click(screen.getByRole('button', { name: 'Show Orientation' }));
   expect(screen.getByRole('button', { name: 'Show Orientation' })).toHaveAttribute('aria-pressed', 'true');
   expect(screen.getByRole('img', { name: 'Students gathering at the club orientation' })).toHaveAttribute('src', '/club-media/hero-orientation.jpg');
@@ -136,6 +137,35 @@ test('hero highlights can switch photographs and still work without supplied ass
   expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Microsoft');
   expect(screen.getByRole('img', { name: 'Club community' })).toBeInTheDocument();
   expect(screen.queryByRole('group', { name: 'Community highlights' })).not.toBeInTheDocument();
+});
+
+test('hero cycles every six seconds and pauses for keyboard focus, hover and explicit pause', () => {
+  jest.useFakeTimers();
+  try {
+    const { unmount } = render(<MemoryRouter><HeroSection assets={clubContent.assets} /></MemoryRouter>);
+    act(() => jest.advanceTimersByTime(6000));
+    expect(screen.getByRole('button', { name: 'Show Microsoft Egypt' })).toHaveAttribute('aria-pressed', 'true');
+    const group = screen.getByRole('group', { name: 'Community highlights' });
+    fireEvent.focus(screen.getByRole('button', { name: 'Show Microsoft Egypt' }));
+    fireEvent.mouseEnter(group);
+    fireEvent.mouseLeave(group);
+    act(() => jest.advanceTimersByTime(12000));
+    expect(screen.getByRole('button', { name: 'Show Microsoft Egypt' })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.blur(group, { relatedTarget: document.body });
+    fireEvent.click(screen.getByRole('button', { name: 'Pause photo slideshow' }));
+    act(() => jest.advanceTimersByTime(12000));
+    expect(screen.getByRole('button', { name: 'Show Microsoft Egypt' })).toHaveAttribute('aria-pressed', 'true');
+    unmount();
+  } finally { jest.useRealTimers(); }
+});
+
+test('tracks expose all twelve disciplines and four group anchors', () => {
+  useReducedMotion.mockReturnValue(true);
+  const { container } = render(<MemoryRouter><Tracks /></MemoryRouter>);
+  expect(container.querySelectorAll('.club-track')).toHaveLength(12);
+  expect(screen.getByRole('heading', { name: 'Cyber Security' })).toBeInTheDocument();
+  expect(screen.getByText(/graphic design, video editing and marketing/)).toBeInTheDocument();
+  expect(within(screen.getByRole('navigation', { name: 'Track groups' })).getAllByRole('link')).toHaveLength(4);
 });
 
 test('theme controls persist a choice and restore it on the next mount', () => {
@@ -220,7 +250,12 @@ test('homepage orders programs, next event, story and event catalogue before rec
   expect(screen.getAllByRole('img', { name: 'GitHub logo' })).toHaveLength(1);
   expect(within(screen.getByRole('region', { name: 'Sponsors & supporters' })).getAllByRole('img')).toHaveLength(16);
   expect(container.querySelector('.club-hero').nextElementSibling).toHaveClass('club-program-band');
-  expect(container.querySelector('.club-program-band').nextElementSibling).toHaveClass('club-upcoming');
+  expect(container.querySelector('.club-program-band').nextElementSibling).toHaveClass('club-statistics');
+  expect(container.querySelector('.club-statistics').nextElementSibling).toHaveClass('club-upcoming');
+  expect(screen.getByLabelText('3,000')).toBeInTheDocument();
+  expect(screen.getByLabelText('5,000')).toBeInTheDocument();
+  expect(screen.getByLabelText('100+')).toBeInTheDocument();
+  expect(container.querySelectorAll('.club-event-card')).toHaveLength(4);
   expect(container.querySelector('.club-upcoming').nextElementSibling).toHaveAttribute('id', 'club-story');
   expect(container.querySelector('#club-story').nextElementSibling).toHaveAttribute('id', 'club-events');
   expect(container.querySelector('.club-supporters').previousElementSibling).toHaveClass('club-golden');

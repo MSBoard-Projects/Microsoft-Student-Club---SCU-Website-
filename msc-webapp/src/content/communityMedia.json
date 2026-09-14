@@ -423,9 +423,9 @@
         "photos":  [
                        {
                            "src":  "/club-media/community-import/album-4afd2e8853-1-1280.jpg",
-                           "srcSet":  "/club-media/community-import/album-4afd2e8853-1-640.jpg 640w, /club-media/community-import/album-4afd2e8853-1-1280.jpg 904w",
-                           "width":  904,
-                           "height":  652,
+                           "srcSet":  "/club-media/community-import/album-4afd2e8853-1-640.jpg 640w, /club-media/community-import/album-4afd2e8853-1-1280.jpg 1280w",
+                           "width":  1280,
+                           "height":  960,
                            "isTeam":  true,
                            "sourceFormat":  ".jpg"
                        },

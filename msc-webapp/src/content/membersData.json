@@ -164,7 +164,7 @@
         "fullName":  "Ahmed Nashaat",
         "positionTitle":  "Public Relation Team Member",
         "group":  "member",
-        "imageUrl":  null,
+        "imageUrl":  "/club-media/members/ahmed-nashaat.jpg",
         "certificateUrl":  "/club-certificates/Certificate_Ahmed_Nashaat.pdf"
     },
     {
@@ -260,7 +260,7 @@
         "fullName":  "Aya Mohamed",
         "positionTitle":  "Media Team Member",
         "group":  "member",
-        "imageUrl":  null,
+        "imageUrl":  "/club-media/members/aya-mohamed.jpg",
         "certificateUrl":  "/club-certificates/Certificate_Aya_Mohamed.pdf"
     },
     {
@@ -732,7 +732,7 @@
         "fullName":  "Mahmoud Mohamed Ali",
         "positionTitle":  "Media Specialist",
         "group":  "board",
-        "imageUrl":  null,
+        "imageUrl":  "/club-media/members/mahmoud-mohamed-ali.jpg",
         "certificateUrl":  "/club-certificates/Certificate_Mahmoud_Mohamed_Ali.pdf"
     },
     {

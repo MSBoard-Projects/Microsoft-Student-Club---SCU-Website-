@@ -11,6 +11,7 @@ import CommunityMoments from '../components/public/CommunityMoments';
 import { SupporterPrograms, SupporterWall } from '../components/public/Supporters';
 import { HighBoardSection } from './MemberDirectory';
 import { RecurringGoldenSection } from './GoldenMembers';
+import { TracksSection } from './Tracks';
 import GlassImage from '../components/public/GlassImage';
 import Icon from '../components/public/Icon';
 import { EventDetails, EventGrid, useEventCatalog } from '../components/public/EventCollection';
@@ -26,6 +27,7 @@ export default function ClubLanding({ statistics }: { statistics?: ClubStatistic
     <>
       <HeroSection assets={clubContent.assets} />
       <SupporterPrograms />
+      <StatisticsBanner statistics={statistics ?? data.statistics} />
       <UpcomingEvent event={events.filter(event => event.status === 'upcoming').sort((first, second) => (first.startsAt ?? '9999').localeCompare(second.startsAt ?? '9999'))[0]} />
       <section className="club-section club-story" id="club-story">
         <div className="club-container club-story-grid">
@@ -43,10 +45,10 @@ export default function ClubLanding({ statistics }: { statistics?: ClubStatistic
       <section className="club-section" id="club-events">
         <div className="club-container">
           <div className="club-section-heading"><div><span className="club-eyebrow">EXPERIENCES THAT STAY WITH YOU</span><h2>Upcoming & past events</h2><p>Real people. New perspectives. A community that takes learning further.</p></div><Link to="/events" className="club-text-link">All events <Icon glyph={FiArrowUpRight} /></Link></div>
-          {loading ? <div className="club-notice" role="status">Loading events...</div> : error ? <div className="club-notice" role="alert">{error}<button type="button" onClick={retry}>Try again</button></div> : events.length ? <EventGrid events={events} onSelect={setSelected} /> : <p className="club-notice">No events published yet.</p>}
+          {loading ? <div className="club-notice" role="status">Loading events...</div> : error ? <div className="club-notice" role="alert">{error}<button type="button" onClick={retry}>Try again</button></div> : events.length ? <EventGrid events={[...events].sort((first, second) => Number(second.status === 'upcoming') - Number(first.status === 'upcoming')).slice(0, 6)} onSelect={setSelected} /> : <p className="club-notice">No events published yet.</p>}
         </div>
       </section>
-      <StatisticsBanner statistics={statistics ?? data.statistics} />
+      <TracksSection preview />
       <CommunityMoments events={[...communityAlbums, ...events]} onSelect={setSelected} />
       <HighBoardSection />
       <RecurringGoldenSection />

@@ -11,6 +11,7 @@ export interface ClubEvent {
   gallery: readonly string[];
   startsAt: string | null;
   endsAt?: string | null;
+  registrationUrl?: string | null;
   location: string | null;
   status: 'upcoming' | 'past' | 'unannounced';
 }

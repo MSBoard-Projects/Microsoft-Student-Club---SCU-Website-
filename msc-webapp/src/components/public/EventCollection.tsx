@@ -77,7 +77,7 @@ export function EventGrid({ events, onSelect }: { events: readonly ClubEvent[]; 
   return (
     <div className="club-event-grid">
       {events.map((event, index) => (
-        <motion.article key={event.id} className="club-event-card" initial={reducedMotion ? false : { opacity: 0, y: 24 }}
+        <motion.article key={event.id} className={`club-event-card${event.status === 'upcoming' ? ' club-event-upcoming' : ''}`} initial={reducedMotion ? false : { opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.12 }} transition={{ duration: 0.5, delay: Math.min(index, 3) * 0.08 }}>
           <GlassImage src={event.imageUrl} alt={event.title} className="club-event-photo" framed={false} position="center 32%" sizes="(max-width: 760px) 100vw, 33vw" />
           <div className="club-event-copy">
@@ -120,6 +120,7 @@ function EventBody({ event }: { event: ClubEvent }) {
       <div><Icon glyph={FiMapPin} /><span><strong>WHERE</strong>{event.location || 'Location not published'}</span></div>
     </div>
     <p className="club-detail-description">{event.description}</p>
+    {event.registrationUrl?.startsWith('https://events.mlh.com/events/') && <a className="club-cta club-cta-primary" href={event.registrationUrl} target="_blank" rel="noreferrer">Apply on MLH <Icon glyph={FiArrowUpRight} /></a>}
   </>;
 }
 
@@ -215,7 +216,7 @@ export default function EventCollection({ source }: { source?: EventSource }) {
   const eventYear = (event: ClubEvent) => event.startsAt && formatEventDate(event.startsAt) !== 'Date not published' ? event.startsAt.slice(0, 4) : 'undated';
   const years = [...new Set(events.map(eventYear).filter(value => value !== 'undated'))].sort().reverse();
   const categories = [...new Set(events.map(event => event.category))].sort();
-  const filtered = events.filter(event => (filter === 'all' || event.status === filter)
+  const filtered = [...events].sort((first, second) => Number(second.status === 'upcoming') - Number(first.status === 'upcoming')).filter(event => (filter === 'all' || event.status === filter)
     && (year === 'all' || eventYear(event) === year) && (category === 'all' || event.category === category)
     && `${event.title} ${event.description} ${event.category} ${event.location ?? ''}`.toLowerCase().includes(query));
   const pageCount = Math.max(1, Math.ceil(filtered.length / 6));

@@ -8,6 +8,10 @@ The public home, events, people and achievements experiences use strict TypeScri
 
 ### Current Layout And Identity Checks
 
+The latest portrait rematching publishes 66 optimized portraits from 67 reviewed assignments (one unsupported Mai WebP remains skipped). User-confirmed files now supply Ahmed Nashaat, Aya Mohamed and Mahmoud Mohamed Ali (Media). Sixteen reviewed Golden aliases add 14 roster links and correct two existing links: 33 of 36 honourees now share roster identities, with all 45 awards and nine recurring honourees preserved. Jana Medhat, Omar Mohamed and Rawan Ahmed remain unlinked. No nickname-only portrait was assigned by elimination.
+
+Verification for this rematching: 29 tests passed in MemberDirectory and CommunityFeatures, and scoped editor diagnostics were clear. Headless Edge verified the three new profiles, 16 reviewed Golden links, 12 associated portrait decodes, Golden search and profile navigation, and no horizontal overflow at 320, 390, 768 and 1440px. Desktop/mobile screenshots were inspected; no browser runtime errors were reported. No live database update or deployment was performed.
+
 After the grouped-logo, canonical-member and five-portrait updates: 64 tests passed across PublicExperience, CommunityFeatures, MemberDirectory and Events, together with strict TypeScript and scoped editor diagnostics. Headless Edge verified all five new portraits in profiles and leadership, the old-ID redirect, matching Golden name/role/image and search, 20 decoded logo assets, 11/5 accessible strip images, opposite movement, pause and reduced motion. Home and leadership had no horizontal overflow at 320, 390, 768, 1440 and 1920px. Desktop/mobile screenshots were inspected; no browser runtime errors were reported. No production build, live database update or deployment was performed for this change.
 
 ### Architecture
@@ -53,7 +57,7 @@ The existing `ali-arabi-ali` profile remains President and is highlighted withou
 
 In API mode, edit these fields in `/admin/members`. They are explicitly public, may be cleared, and are persisted by the authenticated member API and exposed by `/api/showcase`. [MemberPublicContacts migration](../MSC.WebAPI/Migrations/20260913135706_MemberPublicContacts.cs) adds seven nullable columns only and has **not** been applied to any live database. Apply the reviewed pending migrations and activate API content mode only through the existing approved deployment procedure. Local previews continue to use the local member records and do not persist admin API changes into source files.
 
-The homepage now uses workbook recognition history: nine people recognised in both February and April 2026, grouped into Heads, Instructors and Members. `/golden-members` retains all 36 honourees and 45 recognitions, with category, month, recurrence and name/role filters. Linked names, current roles, images and profile URLs come directly from the shared member roster; awards store recognition months/categories and historical source labels, not an independently maintained profile. A shared member update changes the Golden card and search results too. The 17 currently unlinked honourees retain historical recognition labels without invented portraits or profile links; confirmed roster IDs are needed before they can use shared identity data.
+The homepage now uses workbook recognition history: nine people recognised in both February and April 2026, grouped into Heads, Instructors and Members. `/golden-members` retains all 36 honourees and 45 recognitions, with category, month, recurrence and name/role filters. Linked names, current roles, images and profile URLs come directly from the shared member roster; awards store recognition months/categories and historical source labels, not an independently maintained profile. A shared member update changes the Golden card and search results too. The three currently unlinked honourees retain historical recognition labels without invented portraits or profile links; confirmed roster IDs are needed before they can use shared identity data.
 
 The earlier ratings-based `GoldenMembersSection` remains available separately, but is no longer the homepage recognition source. Its latest-completed-month/top-three-with-ties rule and the published leaderboard are unchanged. Workbook honours do not fabricate leaderboard scores. Verification paragraphs below describe their historical implementation phases, not a fresh full-suite run.
 
@@ -152,8 +156,8 @@ The user confirmed that the old Mohamed Ahmed / Cyber V.Head identity is Mohamed
 - `/leadership`: separate High Board and Board sections with search and role filtering.
 - `/team`: compatibility redirect to `/members`.
 - 101 source certificates remain in [public/club-certificates](public/club-certificates); 100 are linked by canonical public profiles after deduplication. Ali Arabi Ali has no supplied PDF, so no link is rendered for that profile.
-- 63 roster-approved portraits, including the five newly confirmed leadership photos, are served from [public/club-media/members](public/club-media/members). The JPEGs total 3.97 MB, have a maximum dimension of 720px, respect EXIF orientation, and omit original metadata. Square frames use `contain` so portraits are not cropped. Ordinary member portraits are compact (180px maximum), Golden portraits 220px, while Board/High Board retain their original full card width. Originals are unchanged.
-- 37 canonical profiles have no assigned local portrait and retain initials. One additional profile, Mai Elsayed Hafez Amen, was explicitly skipped because the supplied WebP cannot be decoded by the installed Windows codec. The user chose to skip unsupported images rather than install another converter.
+- 66 roster-approved portraits, including the five confirmed leadership photos and three newly confirmed member photos, are served from [public/club-media/members](public/club-media/members). The JPEGs total 4.14 MB, have a maximum dimension of 720px, respect EXIF orientation, and omit original metadata. Square frames use `contain` so portraits are not cropped. Ordinary member portraits are compact (180px maximum), Golden portraits 220px, while Board/High Board retain their original full card width. Originals are unchanged.
+- 34 canonical profiles have no assigned local portrait and retain initials. One additional profile, Mai Elsayed Hafez Amen, was explicitly skipped because the supplied WebP cannot be decoded by the installed Windows codec. The user chose to skip unsupported images rather than install another converter.
 
 Re-import after updating the workbook or certificate files, from the repository root:
 
@@ -166,9 +170,10 @@ Re-import after updating the workbook or certificate files, from the repository 
 
 ### Roster-Only Portrait Import
 
-The certificate workbook remains the sole membership allowlist. Photo response workbooks under `Microsoft Data` are only identity evidence, never a source of additional profiles. [scripts/member-photo-matches.json](scripts/member-photo-matches.json) contains 64 explicitly reviewed assignments, not fuzzy guesses. Most matches use exact private email equality; five reviewed name-only matches and the named President portrait are marked separately. Five `user-confirmed` exceptions require exact approved IDs, Board folder and filenames: Ahmed Eyadaa, Ahmed Hariedy, Haidy mohamed salah, Salwa, and Mohamed Abdelazim. Neither emails, phone numbers, national IDs, response workbooks nor remote upload links are published. The raw 102-row report records 63 matched, 38 unassigned (including the suppressed duplicate) and one conversion-skipped.
+The certificate workbook remains the sole membership allowlist. Photo response workbooks under `Microsoft Data` are only identity evidence, never a source of additional profiles. [scripts/member-photo-matches.json](scripts/member-photo-matches.json) contains 67 explicitly reviewed assignments, not fuzzy guesses. Most matches use exact private email equality; five reviewed name-only matches and the named President portrait are marked separately. Eight `user-confirmed` exceptions require exact approved IDs, folders and filenames: five Board portraits plus Ahmed Nashaat, Aya Mohamed and Mahmoud Mohamed Ali from Members. Neither emails, phone numbers, national IDs, response workbooks nor remote upload links are published. The raw 102-row report records 66 matched, 35 unassigned (including the suppressed duplicate) and one conversion-skipped.
 
 ```powershell
+& .\msc-webapp\scripts\Import-MemberPhotos.ps1 -ReviewCandidates
 & .\msc-webapp\scripts\Import-MemberPhotos.ps1 -InspectOnly
 & .\msc-webapp\scripts\Import-MemberPhotos.ps1 -PrepareOnly
 & .\msc-webapp\scripts\Import-MemberPhotos.ps1
@@ -180,10 +185,10 @@ The report lists every profile as `matched`, `unassigned`, or `conversion-skippe
 
 | Roster profile or source label | Reason left unassigned |
 | --- | --- |
-| Aya Mohamed | Multiple similarly named response owners and portrait files |
-| Mahmoud Mohamed Ali | Several Mahmoud Mohamed identities; ambiguous file label |
 | Salma Mohammad | Similarly named response has a different role and email |
 | DKWN, Denji, jujjj, Kim Jasmine | Upload labels do not establish a roster identity |
+
+Ahmed Nashaat uses the newly supplied `Ahmed Mohammed.jpg`; Aya Mohamed uses `IMG-20260120-WA0028 - aya mohamed.jpg`; Mahmoud Mohamed Ali (Media) uses `IMG_8250 - Mahmoud Mohamed.jpeg`. The separate Cyber Mahmoud retains his own identity and portrait. Conditional approval to assign nickname files only if they were the last unmatched people does not apply: other unmatched profiles remain.
 
 Ahmed Hariedy and Mohamed Abdelazim now use their explicitly named, user-confirmed Board files. Mohamed Abdelmaksoud is a different person and is not used as a substitute portrait.
 
