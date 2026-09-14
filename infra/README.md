@@ -1,0 +1,68 @@
+# MSC-SCU Infrastructure Review Handoff
+
+Status: scaffold under final validation, not approved for deployment. After user-approved portable tooling installation, Bicep 0.47.16 compilation passed and Azure CLI authentication was verified for the approved subscription and deployer. Full conformance passed after the explicitly approved local checker correction described below. No application build, migration or deployment was run for this handoff. The active session records final manifest validation and phase status.
+
+## Authoritative Scope
+
+Source: `.copilot-azure/sessions/0617e015-f719-4782-a67e-8256fd8f7a9c/prepare-plan.json`, `context.json` and `prereq-output.json`.
+
+- Subscription: `8a0c6992-77d2-41e6-96e3-c8dbd9bf8be4`.
+- Tenant: `84c31ca0-ac3b-4eae-ad11-519d80233e6f`.
+- Subscription-scope template creates `rg-mscscu-prod-0617` in Italy North with all five session tags.
+- All ten planned resource names and SKUs are preserved. SWA metadata is in West Europe; backend resources are in Italy North.
+- Every planned service module and the RBAC module is unconditional. Firewall and secrets are separate modules to avoid a dependency cycle and secret-valued outputs.
+- No existing legacy database or unrelated resources are referenced. No Dockerfile or azure.yaml is needed.
+
+The approved estimate is USD32.789/month, superseding the earlier USD25 ceiling. It is not a spending cap or deployment approval. Assumptions: one B1 instance, Basic SQL, 5GB media, 100K Blob reads, 10K writes, 10K vault operations, 1GB telemetry and 30GB paid API/Blob egress. Workspace ingestion is counted once. At 100GB paid API/Blob egress the estimate is USD38.879 before SWA overage. Verify the shared SWA 100GB allowance; excess is USD0.20/GB. Budget-alert thresholds require approval. No zone redundancy, private endpoints or multi-region failover is provisioned.
+
+## Files and Configuration
+
+`main.bicep` orchestrates the resource modules. `main.parameters.json` contains only nonsecret metadata. `staticwebapp.config.json` is a staging artifact: during an approved deployment, place it at the root of the finished SPA build artifact, not in application source. Publish the prebuilt artifact to detached SWA; there is no linked API backend or repository integration.
+
+Build from `msc-webapp` with the returned `frontendBuildEnvironment` values. `REACT_APP_API_URL` includes `/api`; `REACT_APP_CONTENT_SOURCE=api` is mandatory. SWA runtime settings cannot replace these build-time inputs. The backend and Blob CORS origins use the actual SWA HTTPS hostname. Custom domains require a separately reviewed CORS change. SPA fallback excludes API paths, static assets, media and certificates so missing files are not replaced with HTML.
+
+Production API settings replace LocalDB, the development JWT secret, localhost CORS and missing Blob credentials. Issuer, audience, expiry and container keys match the application's configuration. SQL, JWT and Blob connection strings are versionless Key Vault references. .NET `DOTNETCORE|8.0` is provisional until Linux App Service runtime availability/support is verified. The package is prebuilt, run-from-package, with no on-host build or custom startup/migration command. No health path is invented.
+
+## Required Deployment Inputs
+
+The parameters file is intentionally incomplete and must not be deployed unchanged:
+
+- Replace the empty `deployerObjectId` through a deployment-time override with the verified Entra object ID in the target tenant. Its length constraint rejects the empty placeholder. Supply `deployerPrincipalType` as `User`, `ServicePrincipal` or `Group` after verification; the email is not an object ID.
+- Securely supply `sqlAdministratorPassword`, `sqlApplicationPassword` and `jwtKey`. These have no defaults and are never committed, output, or entered into chat. Generate independent values only after deployment approval using a cryptographic generator in the trusted deployment runner. Use SQL-compliant passwords of 16-128 characters and a JWT secret with at least 32 bytes of entropy; random Base64 values are suitable when validated against SQL complexity requirements.
+- Use protected deployment inputs, disable command tracing, and never place secret values on a logged command line or in a committed parameters file. Secure template parameters protect deployment-history values, not an insecure caller.
+- On redeployment securely retrieve/reuse the existing SQL administrator secret, application credential from the stored connection string using a SQL connection-string parser, and JWT key. Do not regenerate by default: password changes require coordinated database activation; JWT rotation invalidates existing sessions. Blob connection strings are constructed inside the secrets module from `listKeys`, never returned from a module.
+- Verify the explicit subscription and tenant before every later Azure operation. The editor's default subscription differs. The template itself cannot validate the caller's CLI account context.
+
+## Security and Activation Gates
+
+The API has a system-assigned identity. It receives Key Vault Secrets User at the three runtime secret scopes only; it cannot read the separately stored administrator password through these assignments. The verified deployer gets vault-scoped Key Vault Secrets Officer. Deployment authorization must already include subscription resource creation, applicable resource-provider operations (including vault secret resource writes and storage listKeys), and role-assignment writes. The role-assignment module does not bootstrap those control-plane permissions.
+
+Key Vault uses RBAC, seven-day soft delete, public authenticated access, and no access policies. `enablePurgeProtection` is intentionally omitted, not set false. SQL requires TLS 1.2; the connection string encrypts and validates the server certificate. API and storage enforce HTTPS/TLS. Storage shared-key access remains enabled because the existing SAS implementation needs it; identity-only upload access would require source changes.
+
+1. Review and approve the proposed least-privilege SQL activation: the server creates `msc_admin`, while the runtime connection string uses a separate contained user `msc_app`. IaC does not create that database user. After separately authorized migrations, create it securely in `MSC_DB` with the supplied application password and only the required table/procedure permissions. Do not grant DDL/db_owner to the running API. Until this step passes, database-backed API requests will fail. Do not launch API-mode content against an empty database.
+2. SQL firewall rules allow only the API's reported current outbound IPv4 addresses. These addresses are shared infrastructure, not an exclusive application identity. No all-Azure or internet-wide rule is created. No migration IP is assumed: approve a specific executor IPv4 address, add its single-IP rule only for activation, then explicitly delete it. Reconcile firewall rules after outbound-IP changes; incremental deployment does not remove rules absent from the template. Verify the reported IP list is nonempty and matches live egress.
+3. All three Blob containers are private and account-level public access is disabled pending visibility review. This deliberately blocks anonymous published image/certificate URLs. Resolve intended public-image access and certificate/personal-data authorization before launch; the current scaffold does not supply a read-SAS endpoint. Preserve media-to-record associations and test upload/read-back. Do not delete original media or rewrite URLs in bulk without correspondence tests.
+4. KV references may initially be unresolved until identity RBAC propagates. Verify all three references resolve, then refresh references/restart through an approved operation. Verify API identity cannot retrieve the administrator secret. The app may be provisioned before its package or database is ready; successful infrastructure deployment is not application readiness.
+5. SCM basic publishing is temporarily enabled per the upload reference; FTP is disabled. Prefer an approved Entra-authenticated publishing path when supported. Immediately after the authorized upload, set `scmBasicPublishingEnabled=false` and verify it remains false on subsequent deployments. The default is not a permanent production setting.
+
+## Monitoring and Acceptance
+
+Insights is workspace-linked using the workspace resource ID; both retain 30 days. The nonsecret Insights connection string is wired to the installed Serilog sink through external configuration and also to `APPLICATIONINSIGHTS_CONNECTION_STRING`. The component requests 10 percent sampling. Actual sink loading, ingestion sampling effectiveness, request/dependency coverage and log volume are unverified; installed packages alone are not telemetry evidence. No codeless agent, duplicate ingestion pipeline, daily spending cap or alert resources are silently added. Review telemetry for personal data and confirm masking/sampling with real requests before launch.
+
+Required gates: authenticated CLI and deployment permissions; provider registration and inherited policy; Italy North and West Europe quotas/SKU/offer eligibility; global names; supported .NET and frontend build toolchain; fresh locked production build; actual hostnames/CORS; SWA <=500MB per environment and <=2GB total; migration/user/bootstrap authorization; persisted content import/read-back; login and authorization; SAS upload and media visibility; deep links and genuine missing-file responses; secret resolution; sampled telemetry; SQL backup/restore and load tests. Twenty thousand visits/month and 100 concurrent users are targets, not validated capacity. SQL Basic, one B1 instance and LRS remain resilience/performance compromises.
+
+Scaffold-phase warnings W-SPA-DEPLOYMENT and W-PRODUCTION-CONFIG are addressed in artifacts but remain runtime-unverified. W-FRONTEND-HOST-CHOICE uses the approved SWA Standard plus one B1 plan. All deployment and post-deployment gates remain open.
+
+## Validation and Provenance
+
+Independent review resolved all 12 module contracts and found no committed secret values. Follow-up moved all ten exact resource names and the frontend region into root parameters; focused JSON/name/parameter assertions passed. Service SKUs remain fixed to the approved plan. Bicep 0.47.16 compiled `infra/main.bicep` with an explicit zero exit-code check on 2026-09-14 at 05:55:43 UTC.
+
+The installed conformance script initially returned a false `NO-BICEP-LITERAL-SECRET` result for interpolated credentials. The user explicitly approved correcting the installed checker outside the repository. Its per-file detector now recognizes direct secure string parameters, the exact SQL quote-escaping expression, and verified storage resource key expressions. Literal or mixed credential values and unverified expressions remain blocked; multiline comments/strings disable exemptions conservatively. Twenty regression cases passed, followed by the full conformance script returning `passed: true` with no failures. Execution uses explicit UTF-8 decoding on Windows PowerShell 5.1. No infrastructure secrets were rewritten to hide the finding and no check was bypassed. No deployment gate has been passed.
+
+The initial two delegated compiler attempts failed because tools were absent. The user subsequently approved installation. Portable tools reside at `D:/msc-azure-tools-0617/bicep.exe` and `D:/msc-azure-tools-0617/cli/bin/az.cmd`; the corrected template now compiles. CLI browser login succeeded with Windows broker disabled for that terminal session. The approved subscription is Enabled and the verified deployer object ID is `dd3f9f41-b201-4be2-81a4-e0aeb6aafa40`. Authentication and compilation do not prove deployment permissions, quotas, ARM validation or runtime readiness.
+
+Azure best-practice guidance and MCP Bicep schema results were consulted. Schema versions: resourceGroups `2025-04-01`; Web staticSites/serverfarms/sites/basicPublishingCredentialsPolicies `2024-11-01`; SQL servers/databases/firewallRules `2023-08-01`; Storage accounts/blobServices/containers `2025-01-01`; Key Vault vaults/secrets `2024-11-01`; workspaces `2025-02-01`; Insights components `2020-02-02`; roleAssignments `2022-04-01`. Schema lookup is not live service validation.
+
+AVM discovery covered each planned resource type. The following three README examples were retrieved at commit `2e9bcda8e3c894f4fe24701112bb791df285478c` in `Azure/bicep-registry-modules`: `avm/res/web/site`, `avm/res/web/static-site`, `avm/res/sql/server`. Additional README discovery used mutable `main` under `https://raw.githubusercontent.com/Azure/bicep-registry-modules/main/`: `avm/res/resources/resource-group`, `avm/res/web/serverfarm`, `avm/res/sql/server/database`, `avm/res/storage/storage-account`, `avm/res/key-vault/vault`, `avm/res/operational-insights/workspace`, `avm/res/insights/component`, and `avm/ptn/authorization/role-assignment`. These are discovery evidence, not pinned module dependencies.
+
+Native local modules preserve exact names, detached SWA configuration, the B1/Basic sizing, omission of purge protection, explicit monitoring settings and secret-scoped RBAC without importing AVM defaults or telemetry resources. AVM examples include larger default plans/databases, explicit purge-protection values and telemetry defaults that should not be inherited silently. Generic hashed naming and Entra-only SQL examples were not substituted for the approved exact names and generated SQL-credential strategy. All writes are confined to `infra/`.

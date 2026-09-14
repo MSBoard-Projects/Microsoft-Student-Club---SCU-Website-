@@ -10,6 +10,10 @@ import Icon from './Icon';
 import { useShowcase } from '../../context/ShowcaseContext';
 import { EventSponsors } from '../../pages/Sponsors';
 import { communityAlbums, isCommunityAlbum } from '../../content/communityAlbums';
+import recognitionMedia from '../../content/recognitionMedia.json';
+
+const recognitionLabels = ['All competition winners', 'First place: Post Accident System', 'Second place: Med VR', 'Third place: HR Solution'];
+const photoLabel = (image: string) => recognitionLabels[recognitionMedia.slice(0, 4).findIndex(photo => photo.src === image)];
 
 export function parseApiEvents(data: unknown): ClubEvent[] {
   if (!Array.isArray(data)) throw new Error('Invalid events response');
@@ -24,6 +28,7 @@ export function parseApiEvents(data: unknown): ClubEvent[] {
       category: event.isFeatured === true ? 'Featured' : 'Club event', imageUrl, gallery: imageUrl ? [imageUrl] : [],
       startsAt: typeof event.eventDate === 'string' ? event.eventDate : null,
       location: typeof event.location === 'string' && event.location ? event.location : null,
+      registrationUrl: typeof event.registrationUrl === 'string' ? event.registrationUrl : null,
       status: event.isUpcoming === true ? 'upcoming' : 'past',
     };
   });
@@ -77,7 +82,7 @@ export function EventGrid({ events, onSelect }: { events: readonly ClubEvent[]; 
   return (
     <div className="club-event-grid">
       {events.map((event, index) => (
-        <motion.article key={event.id} className="club-event-card" initial={reducedMotion ? false : { opacity: 0, y: 24 }}
+        <motion.article key={event.id} className={`club-event-card${event.status === 'upcoming' ? ' club-event-upcoming' : ''}`} initial={reducedMotion ? false : { opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.12 }} transition={{ duration: 0.5, delay: Math.min(index, 3) * 0.08 }}>
           <GlassImage src={event.imageUrl} alt={event.title} className="club-event-photo" framed={false} position="center 32%" sizes="(max-width: 760px) 100vw, 33vw" />
           <div className="club-event-copy">
@@ -105,8 +110,8 @@ export function EventGallery({ event }: { event: ClubEvent }) {
         <span aria-live="polite">{current + 1} / {images.length}</span>
         <button type="button" aria-label="Next photo" title="Next photo" onClick={() => setPhoto((current + 1) % images.length)}><Icon glyph={FiArrowRight} /></button>
       </div>
-      <div className="club-photo-picker" role="group" aria-label="Event photos">
-        {images.map((image, index) => <button key={`${image}-${index}`} type="button" aria-label={`Show photo ${index + 1}`} title={`Show photo ${index + 1}`} aria-pressed={current === index} onClick={() => setPhoto(index)}><GlassImage src={image} alt="" sizes="66px" framed={false} /></button>)}
+      <div className={`club-photo-picker${images.some(image => photoLabel(image)) ? ' club-recognition-picker' : ''}`} role="group" aria-label="Event photos">
+        {images.map((image, index) => <button key={`${image}-${index}`} type="button" aria-label={photoLabel(image) ?? `Show photo ${index + 1}`} title={photoLabel(image) ?? `Show photo ${index + 1}`} aria-pressed={current === index} onClick={() => setPhoto(index)}><GlassImage src={image} alt="" fit={photoLabel(image) ? 'contain' : 'cover'} sizes={photoLabel(image) ? '360px' : '66px'} framed={false} />{photoLabel(image) && <span>{photoLabel(image)}</span>}</button>)}
       </div>
     </>}
   </div>;
@@ -120,6 +125,7 @@ function EventBody({ event }: { event: ClubEvent }) {
       <div><Icon glyph={FiMapPin} /><span><strong>WHERE</strong>{event.location || 'Location not published'}</span></div>
     </div>
     <p className="club-detail-description">{event.description}</p>
+    {typeof event.registrationUrl === 'string' && /^https:\/\/events\.mlh\.com\/events\/[^\s\\]+$/.test(event.registrationUrl) && <a className="club-cta club-cta-primary" href={event.registrationUrl} target="_blank" rel="noreferrer">Apply on MLH <Icon glyph={FiArrowUpRight} /></a>}
   </>;
 }
 
@@ -215,7 +221,7 @@ export default function EventCollection({ source }: { source?: EventSource }) {
   const eventYear = (event: ClubEvent) => event.startsAt && formatEventDate(event.startsAt) !== 'Date not published' ? event.startsAt.slice(0, 4) : 'undated';
   const years = [...new Set(events.map(eventYear).filter(value => value !== 'undated'))].sort().reverse();
   const categories = [...new Set(events.map(event => event.category))].sort();
-  const filtered = events.filter(event => (filter === 'all' || event.status === filter)
+  const filtered = [...events].sort((first, second) => Number(second.status === 'upcoming') - Number(first.status === 'upcoming')).filter(event => (filter === 'all' || event.status === filter)
     && (year === 'all' || eventYear(event) === year) && (category === 'all' || event.category === category)
     && `${event.title} ${event.description} ${event.category} ${event.location ?? ''}`.toLowerCase().includes(query));
   const pageCount = Math.max(1, Math.ceil(filtered.length / 6));

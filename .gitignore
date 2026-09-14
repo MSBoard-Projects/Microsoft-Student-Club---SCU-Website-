@@ -63,3 +63,4 @@ Desktop.ini
 /MSC.WebAPI/appsettings*.json
 /MSC.WebAPI/*.ps1
 /MSC.WebAPI/msc-webapp/
+.copilot-azure/

@@ -47,6 +47,7 @@ public class ContentApiTests
         Assert.Equal(HttpStatusCode.Created, created.StatusCode);
         var eventId = (await created.Content.ReadFromJsonAsync<Event>())!.Id;
         eventInput.Location = "Creativa Innovation Hub Ismailia";
+        eventInput.RegistrationUrl = "https://events.mlh.com/events/14824-hacktoberfest-hack-day-ismailia-x-microsoft-student-club-scu";
         Assert.Equal(HttpStatusCode.NoContent, (await client.PutAsJsonAsync($"/api/events/{eventId}", eventInput)).StatusCode);
         var member = new MemberWriteRequest { FullName = "Test member", PositionTitle = "President", MemberTypeId = 1, PublicId = "test-member", CertificateUrl = "/club-certificates/test.pdf" };
         var memberCreated = await client.PostAsJsonAsync("/api/members", member);
@@ -65,6 +66,7 @@ public class ContentApiTests
         client.DefaultRequestHeaders.Authorization = null;
         var snapshot = (await client.GetFromJsonAsync<JsonElement>("/api/showcase"));
         Assert.Equal("Creativa Innovation Hub Ismailia", snapshot.GetProperty("events")[0].GetProperty("location").GetString());
+        Assert.Equal(eventInput.RegistrationUrl, snapshot.GetProperty("events")[0].GetProperty("registrationUrl").GetString());
         Assert.Equal(2, snapshot.GetProperty("events")[0].GetProperty("gallery").GetArrayLength());
         Assert.Equal("high-board", snapshot.GetProperty("members")[0].GetProperty("group").GetString());
         Assert.Equal("Vice President", snapshot.GetProperty("members")[0].GetProperty("positionTitle").GetString());
@@ -80,6 +82,19 @@ public class ContentApiTests
         var persisted = (await client.GetFromJsonAsync<Member>($"/api/members/{memberId}"))!;
         Assert.Equal(member.GithubUrl, persisted.GithubUrl);
         Assert.Equal(member.PublicPhone, persisted.PublicPhone);
+    }
+
+    [Theory]
+    [InlineData("javascript:alert(1)")]
+    [InlineData("https://events.mlh.com.evil.test/events/123")]
+    [InlineData("http://events.mlh.com/events/123")]
+    public async Task UnsafeEventRegistrationLinksAreRejected(string registrationUrl)
+    {
+        using var factory = new AuthApiFactory();
+        using var client = factory.CreateClient(new() { BaseAddress = new Uri("https://localhost") });
+        await Authenticate(factory, client);
+        var input = new Event { Title = "Hack Day", Description = "Open source", RegistrationUrl = registrationUrl };
+        Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsJsonAsync("/api/events", input)).StatusCode);
     }
 
     [Theory]

@@ -1,5 +1,7 @@
 import type { ClubEvent } from '../components/public/types';
 import season2Media from './season2Media.json';
+import { communityAlbums, teamPhoto } from './communityAlbums';
+import recognitionMedia from './recognitionMedia.json';
 
 export const eventsData: readonly ClubEvent[] = [
   {
@@ -37,7 +39,57 @@ export const eventsData: readonly ClubEvent[] = [
     endsAt: '2026-10-19T19:00:00+03:00',
     location: 'Creativa Innovation Hub Ismailia',
     status: 'upcoming',
+    imageUrl: teamPhoto,
+    gallery: teamPhoto ? [teamPhoto] : [],
+  },
+  {
+    id: 'hacktoberfest-hack-day-2026',
+    registrationUrl: 'https://events.mlh.com/events/14824-hacktoberfest-hack-day-ismailia-x-microsoft-student-club-scu',
+    title: 'Hacktoberfest Hack Day Ismailia x Microsoft Student Club SCU',
+    category: 'Hackathon',
+    summary: 'Build open-source AI. Learn together. Turn your ideas into contributions.',
+    description: 'Join our community at Creativa Innovation Hub Ismailia on October 28, 2026, from 3 PM to 8 PM (Cairo time). Hacktoberfest focuses on open-source artificial intelligence, AI tools and open-weight models. Build AI agent workflows, explore model adaptation and collaborate on practical open-source contributions for your portfolio. Expect a collaborative day of competition, learning and career development, with 30-50 participants expected. Applications are confirmed on a rolling basis.',
+    startsAt: '2026-10-28T15:00:00+03:00',
+    endsAt: '2026-10-28T20:00:00+03:00',
+    location: 'Creativa Innovation Hub Ismailia',
+    status: 'upcoming',
     imageUrl: null,
     gallery: [],
+  },
+  {
+    id: 'microsoft-ai-startups-competition',
+    title: 'Microsoft AI Startups Competition',
+    category: 'Competition',
+    summary: 'Student innovation, celebrated. Meet the three winning teams.',
+    description: 'Celebrating the Microsoft AI Startups Competition winners: first place, Post Accident System; second place, Med VR; third place, HR Solution. The album brings together the winners and their individual team recognition photos.',
+    startsAt: null,
+    location: null,
+    status: 'past',
+    imageUrl: recognitionMedia[0].src,
+    gallery: recognitionMedia.slice(0, 4).map(image => image.src),
+  },
+  {
+    id: 'microsoft-dev-day-feb-2026',
+    title: 'Microsoft Dev Day at ITI',
+    category: 'Developer event',
+    summary: 'Moments from Microsoft Dev Day at ITI, February 2026.',
+    description: 'Explore the community photo album from Microsoft Dev Day at ITI in February 2026.',
+    startsAt: '2026-02',
+    location: 'ITI',
+    status: 'past',
+    imageUrl: communityAlbums.find(album => album.id === 'album-4f8090abc5')?.imageUrl ?? null,
+    gallery: communityAlbums.find(album => album.id === 'album-4f8090abc5')?.gallery ?? [],
+  },
+  {
+    id: 'microsoft-egypt-visit',
+    title: 'Microsoft Egypt',
+    category: 'Community visit',
+    summary: 'Our community together at Microsoft Egypt.',
+    description: 'A photo collection from the Microsoft Student Club community at Microsoft Egypt.',
+    startsAt: null,
+    location: 'Microsoft Egypt',
+    status: 'past',
+    imageUrl: communityAlbums.find(album => album.id === 'album-e9fa62dc62')?.imageUrl ?? null,
+    gallery: communityAlbums.find(album => album.id === 'album-e9fa62dc62')?.gallery ?? [],
   },
 ];

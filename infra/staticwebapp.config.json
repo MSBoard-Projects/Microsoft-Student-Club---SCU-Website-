@@ -1,0 +1,13 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [
+      "/api",
+      "/api/*",
+      "/static/*",
+      "/club-media/*",
+      "/club-certificates/*",
+      "/*.{css,js,json,map,ico,png,jpg,jpeg,gif,webp,svg,pdf,woff,woff2,ttf,txt,xml}"
+    ]
+  }
+}

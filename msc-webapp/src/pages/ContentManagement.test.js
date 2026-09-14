@@ -25,11 +25,13 @@ test('editing an event preserves schedule precision and gallery, and retains the
   const dialog = screen.getByRole('dialog', { name: 'Edit Event' });
   expect(within(dialog).getByLabelText('Start (date, month or ISO timestamp)')).toHaveValue('2026-10-19T15:00:00+03:00');
   fireEvent.change(within(dialog).getByLabelText('Gallery URLs (one per line)'), { target: { value: '/one.jpg\n/two.jpg' } });
+  fireEvent.change(within(dialog).getByLabelText('MLH registration URL (HTTPS)'), { target: { value: 'https://events.mlh.com/events/123' } });
   fireEvent.click(within(dialog).getByRole('button', { name: 'Save changes' }));
   expect(await within(dialog).findByRole('alert')).toHaveTextContent('The request failed');
   fireEvent.click(within(dialog).getByRole('button', { name: 'Save changes' }));
   await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   expect(eventsApi.update).toHaveBeenLastCalledWith(12, expect.objectContaining({ startsAt: '2026-10-19T15:00:00+03:00', endsAt: '2026-10-19T19:00:00+03:00', gallery: ['/one.jpg', '/two.jpg'] }));
+  expect(eventsApi.update).toHaveBeenLastCalledWith(12, expect.objectContaining({ registrationUrl: 'https://events.mlh.com/events/123' }));
 });
 
 test('legacy event dates remain editable without inventing a timezone', async () => {
@@ -89,10 +91,10 @@ test('achievement creation submits actual names and evidence', async () => {
 
 test('initial import uses confirmed data and is exposed only to SuperAdmin', async () => {
   const payload = initialImport(types);
-  expect(payload.members).toHaveLength(102);
+  expect(payload.members).toHaveLength(101);
   expect(payload.events[0].startsAt).toBe('2025-12-01');
   expect(payload.events[0].gallery).toHaveLength(14);
-  expect(payload.statistics.registeredAttendees).toBe(8000);
+  expect(payload.statistics.registeredAttendees).toBe(3000);
   const { rerender } = render(<ContentManagement kind="events" />);
   await screen.findByRole('button', { name: 'Edit Orientation' });
   expect(screen.queryByRole('button', { name: 'Import initial catalogue' })).not.toBeInTheDocument();

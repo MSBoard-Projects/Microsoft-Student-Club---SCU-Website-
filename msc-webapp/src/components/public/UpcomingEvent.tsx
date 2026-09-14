@@ -4,6 +4,7 @@ import { FiArrowUpRight } from 'react-icons/fi';
 import type { ClubEvent } from './types';
 import { formatEventSchedule } from './EventCollection';
 import Icon from './Icon';
+import GlassImage from './GlassImage';
 
 export function countdownTarget(startsAt: string | null): number | null {
   if (!startsAt || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})$/.test(startsAt)) return null;
@@ -33,6 +34,7 @@ export default function UpcomingEvent({ event }: { event: ClubEvent | undefined 
     { label: 'Seconds', value: remaining % 60 },
   ];
   return <section className="club-upcoming" aria-label="Next club event"><div className="club-container club-upcoming-layout">
+    {event.imageUrl && <Link to={`/events/${encodeURIComponent(event.id)}`} className="club-upcoming-cover" aria-label={`View ${event.title}`}><GlassImage src={event.imageUrl} alt={event.title} framed={false} fit="contain" /></Link>}
     <div><span className="club-eyebrow">NEXT UP / {formatEventSchedule(event)}</span><h2>{event.title}</h2><p>{event.summary}</p><Link to={`/events/${encodeURIComponent(event.id)}`} className="club-text-link">Explore the event <Icon glyph={FiArrowUpRight} /></Link></div>
     {remaining === null ? <p className="club-schedule-pending">{formatEventSchedule(event)}<span>Exact day and time to be announced</span></p> : remaining === 0 ? <p className="club-schedule-pending">Scheduled start reached<span>See event details for updates</span></p> : <div className="club-countdown" role="timer" aria-label={`Countdown to ${event.title}`}>
       {units.map(unit => <div key={unit.label}><strong>{String(unit.value).padStart(2, '0')}</strong><span>{unit.label}</span></div>)}

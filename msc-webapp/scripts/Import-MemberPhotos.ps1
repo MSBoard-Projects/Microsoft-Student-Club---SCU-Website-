@@ -1,4 +1,4 @@
-param([switch]$InspectOnly, [switch]$PrepareOnly)
+param([switch]$InspectOnly, [switch]$PrepareOnly, [switch]$ReviewCandidates)
 
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -83,6 +83,16 @@ foreach ($member in $members) {
     $publicIds[$member.id] = $true
 }
 $folders = @{ Board = 'Board\Image (File responses)'; Members = 'Members\Your Photo (File responses)' }
+$confirmedPortraits = @{
+    'ahmed-eyada' = 'Board/Ahmed Eyadaa.jpg'
+    'ahmed-hariedy' = 'Board/Ahmed Hariedy.jpg'
+    'haidy-mohamed-salah' = 'Board/Haidy mohamed salah.jpg'
+    'salwa-alaa-eldin-hegazy' = 'Board/Salwa.jpg'
+    'mohamed-abdelazim' = 'Board/Mohamed Abdelazim.jpeg'
+    'ahmed-nashaat' = 'Members/Ahmed Mohammed.jpg'
+    'mahmoud-mohamed-ali' = 'Members/IMG_8250 - Mahmoud Mohamed.jpeg'
+    'aya-mohamed' = 'Members/IMG-20260120-WA0028 - aya mohamed.jpg'
+}
 $manifest = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'member-photo-matches.json') -Raw -Encoding UTF8 | ConvertFrom-Json
 $selected = @{}
 $usedSources = @{}
@@ -93,6 +103,8 @@ foreach ($entry in $manifest) {
     $verification = if ($entry.verification) { $entry.verification } else { 'email' }
     if ($verification -eq 'filename') {
         if ($entry.id -ne 'ali-arabi-ali' -or $entry.pattern -cne 'Ali Arabi.jpg') { throw 'Only the explicit President portrait can bypass the response workbooks.' }
+    } elseif ($verification -eq 'user-confirmed') {
+        if (-not $confirmedPortraits.ContainsKey($entry.id) -or "$($entry.folder)/$($entry.pattern)" -cne $confirmedPortraits[$entry.id]) { throw "Unconfirmed portrait assignment: $($entry.id)" }
     } elseif ($verification -in @('email', 'name')) {
         $responseMatches = @($responses | Where-Object { $_.Folder -eq $entry.folder -and $_.Name -eq $entry.responseName -and $_.HasPhoto })
         if ($verification -eq 'email') { $responseMatches = @($responseMatches | Where-Object { $_.Email -eq $rosterById[$entry.id][$columns.Email].ToLowerInvariant() }) }
@@ -108,6 +120,21 @@ foreach ($entry in $manifest) {
 if ($selected.Count -eq 0) { throw 'No reviewed portraits selected.' }
 Write-Output "Validated $($selected.Count) reviewed portraits against $($rosterById.Count) authorized profiles. No extra profiles will be added."
 $members | Where-Object { -not $selected.ContainsKey($_.id) } | ForEach-Object { Write-Output "Unassigned: $($_.fullName) [$($_.positionTitle)]" }
+if ($ReviewCandidates) {
+    foreach ($member in $members | Where-Object { -not $selected.ContainsKey($_.id) }) {
+        $aliases = @($responses | Where-Object { $_.Email -eq $rosterById[$member.id][$columns.Email].ToLowerInvariant() })
+        foreach ($alias in $aliases) {
+            Write-Output "Roster alias: $($member.id) | $($alias.Name) | $($alias.Folder) | photo=$($alias.HasPhoto)"
+        }
+    }
+    foreach ($folder in $folders.Keys | Sort-Object) {
+        Get-ChildItem -LiteralPath (Join-Path $mediaRoot $folders[$folder]) -File | Where-Object { -not $usedSources.ContainsKey($_.FullName) } | Sort-Object Name | ForEach-Object {
+            Write-Output "Unused file: $folder | $($_.Name)"
+        }
+    }
+    $responses | Sort-Object Folder, Name -Unique | ForEach-Object { Write-Output "Response: $($_.Folder) | $($_.Name) | photo=$($_.HasPhoto)" }
+    return
+}
 if ($InspectOnly) { return }
 
 Add-Type -AssemblyName System.Drawing

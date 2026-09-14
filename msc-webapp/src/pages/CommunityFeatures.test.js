@@ -7,6 +7,7 @@ import Sponsors, { EventSponsors } from './Sponsors';
 import GoldenMembers, { RecurringGoldenSection, goldenRecipients, recurringRecipients } from './GoldenMembers';
 import { parseSponsors } from '../content/sponsors';
 import { goldenMembers, parseRatings, rankMembers } from '../content/ratings';
+import { members } from '../content/members';
 import { useShowcase } from '../context/ShowcaseContext';
 import { leaderboardApi, membersApi, sponsorsApi } from '../services/api';
 
@@ -25,6 +26,14 @@ const people = [
 const rating = (memberId, rate) => ({ memberId, rate, onlineAttendance: null, offlineAttendance: 70, tasks: null, projects: null });
 const period = { id: 1, title: 'Week one', startDate: '2026-09-01', endDate: '2026-09-07', publishedAt: '2026-09-08T10:00:00Z', version: 'version-one', entries: [rating('first-person', 95), rating('second-person', 95), rating('board-person', 80)] };
 const renderPage = component => render(<MemoryRouter>{component}</MemoryRouter>);
+
+test('Golden page begins with the uncropped collective recognition photograph', () => {
+  renderPage(<GoldenMembers />);
+  const photo = screen.getByRole('img', { name: 'Golden Members together at their recognition ceremony' });
+  expect(photo).toHaveAttribute('src', '/club-media/recognition/image-05-1280.jpg');
+  expect(photo).toHaveStyle({ objectFit: 'contain' });
+  expect(photo.compareDocumentPosition(screen.getByRole('group', { name: 'Golden category' })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
 
 beforeAll(() => {
   HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', ''); };
@@ -149,12 +158,17 @@ test('an event never claims sponsorship from an unrelated event or a general clu
   expect(() => parseSponsors([{ ...sponsor(1, 'gold'), isPublished: false }])).toThrow();
 });
 
-test('local sponsor page displays the user-supplied logos without invented tiers or descriptions', () => {
+test('local sponsor page displays current supplied logos and approved partnership categories', () => {
   useShowcase.mockReturnValue({ source: 'local', data: { events: [] } });
   renderPage(<Sponsors />);
-  expect(screen.getAllByRole('img')).toHaveLength(22);
+  expect(screen.getAllByRole('img')).toHaveLength(20);
+  expect(within(screen.getByRole('region', { name: 'Strategic Partners' })).getByRole('img', { name: 'KAAF logo' })).toBeInTheDocument();
   expect(screen.getByRole('img', { name: 'Microsoft logo' })).toBeInTheDocument();
   expect(screen.getByRole('img', { name: 'GitHub logo' })).toBeInTheDocument();
+  expect(within(screen.getByRole('region', { name: 'Sponsors' })).getAllByRole('img')).toHaveLength(4);
+  expect(within(screen.getByRole('region', { name: 'Community Partners' })).getAllByRole('img')).toHaveLength(5);
+  expect(screen.getByText('Powered by Microsoft')).toBeInTheDocument();
+  expect(screen.getByText('Powered by GitHub')).toBeInTheDocument();
   expect(sponsorsApi.getPublished).not.toHaveBeenCalled();
   expect(screen.queryByRole('article')).not.toBeInTheDocument();
 });
@@ -217,4 +231,65 @@ test('golden directory combines category, month, recurring and name filters with
   expect(screen.queryByRole('link', { name: 'Zahraa Khaled' })).not.toBeInTheDocument();
   fireEvent.change(screen.getByRole('textbox', { name: 'Search golden honourees' }), { target: { value: 'not-a-name' } });
   expect(screen.getByText('No honourees match these filters.')).toBeInTheDocument();
+});
+
+test('golden cards and search follow canonical member identity changes, preserving only recognition details', () => {
+  const member = members.find(person => person.id === 'mohamed-abdelazim');
+  useShowcase.mockReturnValue({ source: 'local', data: { members } });
+  const { rerender } = renderPage(<GoldenMembers />);
+  fireEvent.change(screen.getByRole('textbox', { name: 'Search golden honourees' }), { target: { value: member.fullName } });
+  expect(screen.getAllByRole('article')).toHaveLength(1);
+  expect(screen.getByRole('link', { name: member.fullName })).toHaveAttribute('href', '/members/mohamed-abdelazim');
+  expect(screen.getByText(member.positionTitle)).toBeInTheDocument();
+  expect(screen.getByRole('img', { name: member.fullName })).toHaveAttribute('src', member.imageUrl);
+  expect(screen.getByText('2 recognitions')).toBeInTheDocument();
+  expect(screen.queryByText('Mohamed Ahmed')).not.toBeInTheDocument();
+  const updated = { ...member, fullName: 'Updated canonical name', positionTitle: 'Updated canonical role', imageUrl: '/updated-photo.jpg' };
+  useShowcase.mockReturnValue({ source: 'local', data: { members: members.map(person => person.id === member.id ? updated : person) } });
+  rerender(<MemoryRouter><GoldenMembers /></MemoryRouter>);
+  expect(screen.getByText('No honourees match these filters.')).toBeInTheDocument();
+  fireEvent.change(screen.getByRole('textbox', { name: 'Search golden honourees' }), { target: { value: 'Updated canonical role' } });
+  expect(screen.getByRole('link', { name: updated.fullName })).toHaveAttribute('href', '/members/mohamed-abdelazim');
+  expect(screen.getByRole('img', { name: updated.fullName })).toHaveAttribute('src', updated.imageUrl);
+  expect(screen.getByText('2 recognitions')).toBeInTheDocument();
+});
+
+test('reviewed Golden aliases reuse roster portraits and leave unmatched identities unlinked', () => {
+  const aliases = {
+    'zahraa-khaled': 'zahra-khaled',
+    'dina-amr-ismail': 'dina-amr',
+    'roaa-ali-ghareeb': 'roaa-ali',
+    'esraa-attia': 'essra-attia-ali-attia',
+    'ahmed-mohamed': 'ahmed-nashaat',
+    'ziad-abdel-qader': 'zeyad-abdalkader-mohamed',
+    'yassin-ahmed': 'yassin-ahmad-mahmoud',
+    'yasmin-naser': 'yasmin-nasser',
+    'sara-elsayed': 'sara-elsayed-mohamed',
+    'nawal-samir-ali': 'nawal-samir',
+    'haneen-ahmad': 'haneen-ahmed',
+    'mennat-allah': 'menna-allah-amire',
+    'judy-ahmed': 'judy-ahmed-mohamed',
+    'kareem-mohamed': 'karim-mohamed',
+    'mohamed-ahmed': 'mohamed-abdelazim',
+    'mahmoud-ali': 'mahmoud-mohamed-ali',
+  };
+  useShowcase.mockReturnValue({ source: 'local', data: { members } });
+  renderPage(<GoldenMembers />);
+  Object.entries(aliases).forEach(([goldenId, memberId]) => {
+    const person = goldenRecipients.find(entry => entry.id === goldenId);
+    const member = members.find(entry => entry.id === memberId);
+    expect(person.memberId).toBe(memberId);
+    expect(person).not.toHaveProperty('imageUrl');
+    expect(screen.getByRole('link', { name: member.fullName })).toHaveAttribute('href', `/members/${memberId}`);
+    if (member.imageUrl) {
+      expect(screen.getByRole('img', { name: member.fullName })).toHaveAttribute('src', member.imageUrl);
+    } else {
+      expect(screen.queryByRole('img', { name: member.fullName })).not.toBeInTheDocument();
+    }
+  });
+  const unlinked = goldenRecipients.filter(person => !person.memberId);
+  expect(unlinked.map(person => person.id).sort()).toEqual(['jana-medhat', 'omar-mohamed', 'rawan-ahmed']);
+  unlinked.forEach(person => expect(screen.queryByRole('link', { name: person.name })).not.toBeInTheDocument());
+  const linkedIds = goldenRecipients.filter(person => person.memberId).map(person => person.memberId);
+  expect(new Set(linkedIds).size).toBe(linkedIds.length);
 });

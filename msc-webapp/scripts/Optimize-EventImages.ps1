@@ -1,16 +1,33 @@
+param([switch]$Recognition)
+
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 $frontend = Split-Path $PSScriptRoot -Parent
 $root = Split-Path $frontend -Parent
 $source = Join-Path $root 'Images Microsoft website\Events Photos\Microsoft Oriantation 2'
 $destination = Join-Path $frontend 'public\club-media\orientation-season-2'
+$manifestName = 'season2Media.json'
+$publicDirectory = 'orientation-season-2'
+$files = @(Get-ChildItem -LiteralPath $source -Filter '*.jpg' | Sort-Object Name)
+if ($Recognition) {
+    $source = Join-Path $root 'Images Microsoft website\Events Photos\Microsoft AI Startups Competion'
+    $publicDirectory = 'recognition'
+    $destination = Join-Path $frontend "public\club-media\$publicDirectory"
+    $manifestName = 'recognitionMedia.json'
+    $available = @(Get-ChildItem -LiteralPath $source -Filter '*.jpg' -Recurse)
+    $files = @(foreach ($name in @('Microsoft AI Startups Winners.jpg', 'Frist Place (Post Accident System).jpg', 'Second Place Med VR.jpg', 'Third Place (Hr Solution).jpg', 'Microsoft  All GOLDEN MEMBERS .jpg')) {
+        $match = @($available | Where-Object { $_.Name -ceq $name })
+        if ($match.Count -ne 1) { throw "Expected exactly one recognition photo: $name" }
+        $match[0]
+    })
+}
 New-Item -ItemType Directory -Path $destination -Force | Out-Null
 $encoder = [Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() | Where-Object { $_.MimeType -eq 'image/jpeg' }
 $parameters = [Drawing.Imaging.EncoderParameters]::new(1)
 $parameters.Param[0] = [Drawing.Imaging.EncoderParameter]::new([Drawing.Imaging.Encoder]::Quality, [long]82)
 $index = 0
 try {
-    $manifest = @(Get-ChildItem -LiteralPath $source -Filter '*.jpg' | Sort-Object Name | ForEach-Object {
+    $manifest = @($files | ForEach-Object {
         $index++
         $image = [Drawing.Image]::FromFile($_.FullName)
         try {
@@ -30,13 +47,13 @@ try {
                     $graphics.DrawImage($image, 0, 0, $width, $height)
                     $bitmap.Save((Join-Path $destination $filename), $encoder, $parameters)
                 } finally { $graphics.Dispose(); $bitmap.Dispose() }
-                [pscustomobject]@{ src = "/club-media/orientation-season-2/$filename"; width = $width; height = $height }
+                [pscustomobject]@{ src = "/club-media/$publicDirectory/$filename"; width = $width; height = $height }
             })
             [pscustomobject][ordered]@{ src = $variants[-1].src; srcSet = ($variants | ForEach-Object { "$($_.src) $($_.width)w" }) -join ', '; width = $variants[-1].width; height = $variants[-1].height }
         } finally { $image.Dispose() }
     })
     if ($manifest.Count -eq 0) { throw 'No event images found.' }
-    [IO.File]::WriteAllText((Join-Path $frontend 'src\content\season2Media.json'), (ConvertTo-Json -InputObject $manifest -Depth 4) + [Environment]::NewLine, [Text.UTF8Encoding]::new($false))
+    [IO.File]::WriteAllText((Join-Path $frontend "src\content\$manifestName"), (ConvertTo-Json -InputObject $manifest -Depth 4) + [Environment]::NewLine, [Text.UTF8Encoding]::new($false))
     $bytes = (Get-ChildItem -LiteralPath $destination -Filter '*.jpg' | Measure-Object Length -Sum).Sum
     Write-Output "Optimized $($manifest.Count) photos; all renditions total $([Math]::Round($bytes / 1MB, 2)) MB. Original files unchanged."
 } finally { $parameters.Dispose() }

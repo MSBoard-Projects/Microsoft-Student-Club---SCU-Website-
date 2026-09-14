@@ -1,7 +1,7 @@
 import { useDeferredValue, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { FiArrowLeft, FiArrowRight, FiArrowUpRight, FiDownload, FiFacebook, FiFileText, FiGithub, FiGlobe, FiInstagram, FiLinkedin, FiMail, FiPhone, FiSearch, FiX } from 'react-icons/fi';
-import { getHighBoard, memberContactLinks, type ClubMember, type MemberGroup } from '../content/members';
+import { canonicalMemberId, getHighBoard, memberContactLinks, type ClubMember, type MemberGroup } from '../content/members';
 import { useShowcase } from '../context/ShowcaseContext';
 import OptimizedImage from '../components/public/OptimizedImage';
 import Icon from '../components/public/Icon';
@@ -18,7 +18,7 @@ export function MemberSocialLinks({ member }: { member: ClubMember }) {
 
 export function MemberCard({ member }: { member: ClubMember }) {
   const initials = member.fullName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('');
-  return <article className="club-member-card">
+  return <article className={`club-member-card${member.group === 'board' || member.group === 'high-board' ? ' club-member-card-leadership' : ''}`}>
     <Link className="club-member-profile-link" to={`/members/${encodeURIComponent(member.id)}`} aria-label={`View profile: ${member.fullName}`}><div className="club-member-portrait">
       {member.imageUrl ? <OptimizedImage src={member.imageUrl} alt={member.fullName} aspectRatio="1" fit="contain" sizes="(max-width: 760px) 100vw, 300px" framed={false} /> : <span className="club-member-initials" aria-hidden="true">{initials}</span>}
       <span className="club-member-group">{groupLabels[member.group]}</span>
@@ -83,11 +83,12 @@ export function LeadershipPage() { return <Directory leadership />; }
 
 export function MemberProfile() {
   const { id } = useParams();
-  const member = useShowcase().data.members.find(person => person.id === id);
+  const member = useShowcase().data.members.find(person => person.id === canonicalMemberId(id ?? ''));
+  if (member && member.id !== id) return <Navigate to={`/members/${encodeURIComponent(member.id)}`} replace />;
   if (!member) return <div className="club-container club-notice"><h1>Member not found</h1><Link to="/members">Back to members</Link></div>;
   return <div className="club-container club-directory">
     <Link className="club-text-link" to={member.group === 'board' || member.group === 'high-board' ? '/leadership' : '/members'}><Icon glyph={FiArrowLeft} />Back to people</Link>
-    <section className="club-member-profile" aria-labelledby="member-profile-title">
+    <section className={`club-member-profile${member.group === 'board' || member.group === 'high-board' ? ' club-member-profile-leadership' : ''}`} aria-labelledby="member-profile-title">
       <div className="club-profile-portrait">{member.imageUrl ? <OptimizedImage src={member.imageUrl} alt={member.fullName} fit="contain" aspectRatio="1" priority framed={false} /> : <span className="club-member-initials" aria-hidden="true">{member.fullName.split(/\s+/).slice(0, 2).map(part => part[0]).join('')}</span>}</div>
       <div><span className="club-eyebrow">{groupLabels[member.group]}</span><h1 id="member-profile-title"><bdi>{member.fullName}</bdi></h1><p className="club-profile-role">{member.positionTitle}</p><h2>About</h2><p className="club-profile-bio" dir="auto">{member.bio || 'No biography published yet.'}</p>
         <MemberSocialLinks member={member} />

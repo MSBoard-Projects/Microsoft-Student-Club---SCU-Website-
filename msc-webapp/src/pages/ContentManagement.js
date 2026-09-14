@@ -16,6 +16,7 @@ const definitions = {
   events: { title: 'Event management', singular: 'Event', api: eventsApi, fields: [
     ['title', 'Title', 'text', true], ['slug', 'Public link identifier', 'text'], ['category', 'Category', 'text'], ['summary', 'Short description', 'text'],
     ['description', 'Full description', 'textarea', true], ['startsAt', 'Start (date, month or ISO timestamp)', 'text'], ['endsAt', 'End (date, month or ISO timestamp)', 'text'],
+    ['registrationUrl', 'MLH registration URL (HTTPS)', 'url'],
     ['location', 'Location', 'text'], ['imageUrl', 'Cover image URL', 'text'], ['gallery', 'Gallery URLs (one per line)', 'list'], ['isUpcoming', 'Upcoming', 'checkbox'], ['isFeatured', 'Featured', 'checkbox'],
   ] },
   members: { title: 'Member management', singular: 'Member', api: membersApi, fields: [
