@@ -24,7 +24,7 @@ export default function HeroSection({ assets }: { assets: ClubAssets }) {
     if (reducedMotion || paused || interacting || !inView || photos.length < 2) return;
     const timer = window.setInterval(() => {
       if (!document.hidden) setActivePhoto(current => (current + 1) % photos.length);
-    }, 6000);
+    }, 3000);
     return () => window.clearInterval(timer);
   }, [reducedMotion, paused, interacting, inView, photos.length]);
 
@@ -60,7 +60,7 @@ export default function HeroSection({ assets }: { assets: ClubAssets }) {
               <GlassImage src={image.src} alt="" framed={false} className="h-full w-full" />
               <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
             </button>)}
-            {!reducedMotion && <button type="button" aria-label={paused ? 'Play photo slideshow' : 'Pause photo slideshow'} title={paused ? 'Play photo slideshow' : 'Pause photo slideshow'} onClick={() => setPaused(value => !value)}><Icon glyph={paused ? FiPlay : FiPause} /></button>}
+            {!reducedMotion && <button className="club-hero-playback" type="button" aria-label={paused ? 'Play photo slideshow' : 'Pause photo slideshow'} title={paused ? 'Play photo slideshow' : 'Pause photo slideshow'} onClick={() => setPaused(value => !value)}><Icon glyph={paused ? FiPlay : FiPause} /></button>}
             <span className="club-hero-caption">{photo.label}</span>
           </div>}
         </div>

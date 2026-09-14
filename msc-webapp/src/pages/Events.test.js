@@ -17,6 +17,28 @@ const events = [
 
 beforeEach(() => eventsApi.getAll.mockResolvedValue(events));
 
+test('competition shows all winners and three named teams with distinct event covers', () => {
+  const competition = eventsData.find(event => event.id === 'microsoft-ai-startups-competition');
+  expect(eventsData).toHaveLength(7);
+  const covers = eventsData.map(event => event.imageUrl).filter(Boolean);
+  expect(new Set(covers).size).toBe(covers.length);
+  expect(competition.gallery).toHaveLength(4);
+  render(<EventGallery event={competition} />);
+  expect(screen.getByRole('img', { name: /photo 1/ })).toHaveAttribute('src', competition.gallery[0]);
+  ['First place: Post Accident System', 'Second place: Med VR', 'Third place: HR Solution'].forEach((name, index) => {
+    fireEvent.click(screen.getByRole('button', { name }));
+    expect(screen.getByRole('img', { name: new RegExp(`photo ${index + 2}`) })).toHaveAttribute('src', competition.gallery[index + 1]);
+  });
+});
+
+test('real catalogue shows six events with the remaining event on the next page', () => {
+  render(<Events />);
+  expect(screen.getAllByRole('button', { name: /^View details:/ })).toHaveLength(6);
+  fireEvent.click(screen.getByRole('button', { name: 'Next page' }));
+  expect(screen.getAllByRole('button', { name: /^View details:/ })).toHaveLength(1);
+  expect(screen.getByRole('heading', { name: 'Microsoft Egypt' })).toBeInTheDocument();
+});
+
 beforeAll(() => {
   HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', ''); };
   HTMLDialogElement.prototype.close = function () { this.removeAttribute('open'); };

@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { FiArrowUpRight, FiCpu, FiLayout, FiServer, FiPenTool, FiSmartphone, FiShield, FiUsers, FiHeart, FiClipboard, FiCamera, FiMessageCircle, FiTrendingUp } from 'react-icons/fi';
 import Icon from '../components/public/Icon';
@@ -43,5 +44,10 @@ export function TracksSection({ preview = false }: { preview?: boolean }) {
 }
 
 export default function Tracks() {
+  const { hash } = useLocation();
+  useEffect(() => {
+    const group = groups.find(item => `#${item.id}` === hash);
+    if (group) document.getElementById(group.id)?.scrollIntoView({ block: 'start' });
+  }, [hash]);
   return <><header className="club-container club-page-heading"><span className="club-eyebrow">MICROSOFT STUDENT CLUB / SCU</span><h1>Our Tracks</h1><p>Develop technical skills, grow as a leader and turn shared ideas into meaningful projects.</p><nav className="club-track-navigation" aria-label="Track groups">{groups.map(group => <a key={group.id} href={`#${group.id}`}>{group.title}</a>)}</nav></header><TracksSection /></>;
 }

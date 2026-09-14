@@ -23,7 +23,7 @@ public sealed class ShowcaseController(ApplicationDbContext database) : Controll
             events = events.Select(item => new { id = item.Slug ?? item.Id.ToString(), title = item.Title, description = item.Description,
                 summary = item.Summary ?? item.Description, category = item.Category ?? "Club event", imageUrl = item.ImageUrl, gallery = item.Gallery,
                 startsAt = item.StartsAt ?? (item.EventDate == default ? null : item.EventDate.ToString("yyyy-MM-dd")), endsAt = item.EndsAt,
-                location = item.Location, status = item.IsUpcoming ? "upcoming" : "past" }),
+                location = item.Location, registrationUrl = item.RegistrationUrl, status = item.IsUpcoming ? "upcoming" : "past" }),
             members = members.Select(member => new { id = member.PublicId ?? member.Id.ToString(), fullName = member.FullName,
                 positionTitle = member.PositionTitle, bio = member.Bio, imageUrl = member.ImageUrl, certificateUrl = member.CertificateUrl,
                 githubUrl = member.GithubUrl, linkedInUrl = member.LinkedInUrl, facebookUrl = member.FacebookUrl,

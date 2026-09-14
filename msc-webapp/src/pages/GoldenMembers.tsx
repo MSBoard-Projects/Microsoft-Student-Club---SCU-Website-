@@ -2,6 +2,7 @@ import { useDeferredValue, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiArrowUpRight, FiAward, FiSearch, FiX } from 'react-icons/fi';
 import records from '../content/goldenData.json';
+import recognitionMedia from '../content/recognitionMedia.json';
 import { canonicalMemberId, ClubMember } from '../content/members';
 import { useShowcase } from '../context/ShowcaseContext';
 import OptimizedImage from '../components/public/OptimizedImage';
@@ -54,6 +55,7 @@ export default function GoldenMembers() {
   });
   return <div className="club-golden-theme"><div className="club-container club-directory">
     <header className="club-page-heading"><span className="club-eyebrow">MICROSOFT STUDENT CLUB / SCU</span><h1>Golden Honours</h1><p>Our Golden Heads, Instructors and Members. February & April 2026.</p></header>
+    <OptimizedImage src={recognitionMedia[4].src} srcSet={recognitionMedia[4].srcSet} alt="Golden Members together at their recognition ceremony" fit="contain" aspectRatio="16 / 9" framed={false} priority className="club-golden-group-photo" sizes="(max-width: 760px) 100vw, 1200px" />
     <div className="club-directory-segments" role="group" aria-label="Golden category">{[['all', 'All honourees'], ...Object.entries(categories)].map(([value, label]) => <button type="button" key={value} aria-pressed={category === value} onClick={() => setCategory(value)}>{label}</button>)}</div>
     <div className="club-event-toolbar"><div className="club-event-search"><Icon glyph={FiSearch} /><input aria-label="Search golden honourees" value={search} placeholder="Name or committee" onChange={event => setSearch(event.target.value)} />{search && <button type="button" title="Clear search" aria-label="Clear search" onClick={() => setSearch('')}><Icon glyph={FiX} /></button>}</div><label className="club-event-filter"><span className="sr-only">Recognition month</span><select value={month} onChange={event => setMonth(event.target.value)}><option value="all">All months</option>{months.map(value => <option key={value} value={value}>{monthLabel(value)}</option>)}</select></label><label className="club-golden-repeat"><input type="checkbox" checked={recurring} onChange={event => setRecurring(event.target.checked)} />Recognised in both months</label></div>
     <p className="club-result-count" aria-live="polite">{people.length} honourees</p>

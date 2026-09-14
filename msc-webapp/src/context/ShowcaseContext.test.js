@@ -19,7 +19,7 @@ test('API mode uses saved content, refreshes after writes and does not replace a
   showcaseApi.get.mockResolvedValueOnce(localShowcase);
   fireEvent.click(screen.getByRole('button', { name: 'Refresh' }));
   expect(await screen.findByText(/Microsoft Orientation Day Season 2/)).toBeInTheDocument();
-  expect(screen.getByText('Attendees: 8000')).toBeInTheDocument();
+  expect(screen.getByText('Attendees: 3000')).toBeInTheDocument();
 });
 
 test('API errors are visible and retry recovers without local fallback', async () => {
@@ -28,11 +28,12 @@ test('API errors are visible and retry recovers without local fallback', async (
   expect(await screen.findByRole('alert')).toHaveTextContent('Content could not be loaded');
   expect(screen.queryByText(/Microsoft Orientation/)).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
-  expect(await screen.findByText('Attendees: 8000')).toBeInTheDocument();
+  expect(await screen.findByText('Attendees: 3000')).toBeInTheDocument();
 });
 
 test('snapshot validation rejects malformed records and statistics', () => {
   expect(() => parseShowcase({ ...localShowcase, members: [{}] })).toThrow();
   expect(() => parseShowcase({ ...localShowcase, statistics: { ...localShowcase.statistics, beneficiaries: -1 } })).toThrow();
-  expect(parseShowcase(localShowcase).members).toHaveLength(102);
+  expect(() => parseShowcase({ ...localShowcase, events: [{ ...localShowcase.events[0], registrationUrl: 123 }] })).toThrow();
+  expect(parseShowcase(localShowcase).members).toHaveLength(101);
 });

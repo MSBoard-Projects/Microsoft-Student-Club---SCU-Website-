@@ -10,6 +10,10 @@ import Icon from './Icon';
 import { useShowcase } from '../../context/ShowcaseContext';
 import { EventSponsors } from '../../pages/Sponsors';
 import { communityAlbums, isCommunityAlbum } from '../../content/communityAlbums';
+import recognitionMedia from '../../content/recognitionMedia.json';
+
+const recognitionLabels = ['All competition winners', 'First place: Post Accident System', 'Second place: Med VR', 'Third place: HR Solution'];
+const photoLabel = (image: string) => recognitionLabels[recognitionMedia.slice(0, 4).findIndex(photo => photo.src === image)];
 
 export function parseApiEvents(data: unknown): ClubEvent[] {
   if (!Array.isArray(data)) throw new Error('Invalid events response');
@@ -24,6 +28,7 @@ export function parseApiEvents(data: unknown): ClubEvent[] {
       category: event.isFeatured === true ? 'Featured' : 'Club event', imageUrl, gallery: imageUrl ? [imageUrl] : [],
       startsAt: typeof event.eventDate === 'string' ? event.eventDate : null,
       location: typeof event.location === 'string' && event.location ? event.location : null,
+      registrationUrl: typeof event.registrationUrl === 'string' ? event.registrationUrl : null,
       status: event.isUpcoming === true ? 'upcoming' : 'past',
     };
   });
@@ -105,8 +110,8 @@ export function EventGallery({ event }: { event: ClubEvent }) {
         <span aria-live="polite">{current + 1} / {images.length}</span>
         <button type="button" aria-label="Next photo" title="Next photo" onClick={() => setPhoto((current + 1) % images.length)}><Icon glyph={FiArrowRight} /></button>
       </div>
-      <div className="club-photo-picker" role="group" aria-label="Event photos">
-        {images.map((image, index) => <button key={`${image}-${index}`} type="button" aria-label={`Show photo ${index + 1}`} title={`Show photo ${index + 1}`} aria-pressed={current === index} onClick={() => setPhoto(index)}><GlassImage src={image} alt="" sizes="66px" framed={false} /></button>)}
+      <div className={`club-photo-picker${images.some(image => photoLabel(image)) ? ' club-recognition-picker' : ''}`} role="group" aria-label="Event photos">
+        {images.map((image, index) => <button key={`${image}-${index}`} type="button" aria-label={photoLabel(image) ?? `Show photo ${index + 1}`} title={photoLabel(image) ?? `Show photo ${index + 1}`} aria-pressed={current === index} onClick={() => setPhoto(index)}><GlassImage src={image} alt="" fit={photoLabel(image) ? 'contain' : 'cover'} sizes={photoLabel(image) ? '360px' : '66px'} framed={false} />{photoLabel(image) && <span>{photoLabel(image)}</span>}</button>)}
       </div>
     </>}
   </div>;
@@ -120,7 +125,7 @@ function EventBody({ event }: { event: ClubEvent }) {
       <div><Icon glyph={FiMapPin} /><span><strong>WHERE</strong>{event.location || 'Location not published'}</span></div>
     </div>
     <p className="club-detail-description">{event.description}</p>
-    {event.registrationUrl?.startsWith('https://events.mlh.com/events/') && <a className="club-cta club-cta-primary" href={event.registrationUrl} target="_blank" rel="noreferrer">Apply on MLH <Icon glyph={FiArrowUpRight} /></a>}
+    {typeof event.registrationUrl === 'string' && /^https:\/\/events\.mlh\.com\/events\/[^\s\\]+$/.test(event.registrationUrl) && <a className="club-cta club-cta-primary" href={event.registrationUrl} target="_blank" rel="noreferrer">Apply on MLH <Icon glyph={FiArrowUpRight} /></a>}
   </>;
 }
 

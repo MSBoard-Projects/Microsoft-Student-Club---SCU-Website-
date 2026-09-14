@@ -11,7 +11,6 @@ export const clubContent: ClubContent = {
     heroGallery: [
       { src: teamPhoto!, alt: 'The Microsoft Student Club team together at orientation', label: 'All Team' },
       { src: '/club-media/microsoft-egypt.jpg', alt: 'Microsoft Student Club members together at Microsoft Egypt', label: 'Microsoft Egypt' },
-      { src: '/club-media/hero-orientation.jpg', alt: 'Students gathering at the club orientation', label: 'Orientation' },
       { src: '/club-media/community.jpg', alt: 'The Microsoft Student Club community together on campus', label: 'Our community' },
       { src: '/club-media/community-import/album-b8da72a7e3-1-1280.jpg', alt: 'The club team together at the 2024 orientation', label: 'Together since 2024' },
     ],

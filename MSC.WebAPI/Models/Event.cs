@@ -27,6 +27,8 @@ namespace MSC.WebAPI.Models
         public string? StartsAt { get; set; }
         [MaxLength(40), EventSchedule]
         public string? EndsAt { get; set; }
+        [MaxLength(2048), RegularExpression(@"^https://events\.mlh\.com/events/[^\s\\]+$")]
+        public string? RegistrationUrl { get; set; }
         [Required, MaxLength(50)]
         public List<string> Gallery { get; set; } = [];
 

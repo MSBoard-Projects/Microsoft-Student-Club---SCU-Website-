@@ -1,5 +1,31 @@
 # Microsoft-Student-Club---SCU-Website-
 
+## Design Preview And Rollback
+
+Public theme buttons control both the palette and the design.
+The previous design remains in its original stylesheets; the new appearance is
+an additive, scoped layer in `msc-webapp/src/designs/glass.css`.
+
+- Night (moon): previous night design, with cyan text accents retained.
+- Day (sun): previous day design, with readable blue text accents retained.
+- Feather (Forest button): the new dark frosted-glass design, not the green palette.
+- The public selection persists using `club-theme` in local storage. Previous
+  `?design=glass` / `?design=classic` public URLs no longer override these buttons.
+- Admin design selection remains independent, using `club-design` and the
+  `?design=glass` / `?design=classic` parameters on admin routes. Admin glass uses
+  a light palette to preserve existing form and status contrast.
+- Images remain unblurred. Glass has opaque fallbacks for browsers without
+  backdrop-filter support and for reduced-transparency preferences.
+
+Theme mapping regression: 24 focused public-experience tests passed, including
+all three buttons, persisted selection and independent admin design selection.
+
+Earlier glass baseline: 153 frontend tests across 17 suites and TypeScript passed. Headless
+Edge checked public routes and login at 320, 768 and 1440px, all three public
+themes, dialog Escape behavior, design restoration and recognition photo loading.
+Homepage layout also passed at 390 and 1024px. This does not verify live Azure
+authentication, database writes or deployment.
+
 # GitHub Copilot Instructions - MSC-SCU Website
 
 ## Project Overview

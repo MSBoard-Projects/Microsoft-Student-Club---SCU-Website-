@@ -27,6 +27,14 @@ const rating = (memberId, rate) => ({ memberId, rate, onlineAttendance: null, of
 const period = { id: 1, title: 'Week one', startDate: '2026-09-01', endDate: '2026-09-07', publishedAt: '2026-09-08T10:00:00Z', version: 'version-one', entries: [rating('first-person', 95), rating('second-person', 95), rating('board-person', 80)] };
 const renderPage = component => render(<MemoryRouter>{component}</MemoryRouter>);
 
+test('Golden page begins with the uncropped collective recognition photograph', () => {
+  renderPage(<GoldenMembers />);
+  const photo = screen.getByRole('img', { name: 'Golden Members together at their recognition ceremony' });
+  expect(photo).toHaveAttribute('src', '/club-media/recognition/image-05-1280.jpg');
+  expect(photo).toHaveStyle({ objectFit: 'contain' });
+  expect(photo.compareDocumentPosition(screen.getByRole('group', { name: 'Golden category' })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
+
 beforeAll(() => {
   HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', ''); };
   HTMLDialogElement.prototype.close = function () { this.removeAttribute('open'); };

@@ -1,0 +1,148 @@
+.club-public[data-design='classic'] :is(.club-eyebrow, .club-text-link, .club-story-lines span, .club-album-cover > span, .club-achievement-people, .club-member-certificate a, .club-notice button, .club-event-tags > span:first-child) { color: var(--club-cyan); }
+
+.App[data-design='glass'] {
+  --frost-bg: #101719;
+  --frost-panel: rgb(23 34 38 / 70%);
+  --frost-raised: rgb(25 38 43 / 86%);
+  --frost-field: rgb(9 19 23 / 48%);
+  --frost-edge: rgb(231 245 250 / 24%);
+  --frost-shine: rgb(255 255 255 / 13%);
+  --frost-ink: #f4f7f8;
+  --frost-muted: #becdd2;
+  --frost-shadow: 0 12px 36px #00000024, 0 2px 8px #00000014;
+  --frost-blue: #50e6ff;
+  --frost-gold: #efcd70;
+  --frost-dust: #ffffff14;
+  --frost-plane: #50e6ff0a;
+  background-color: var(--frost-bg);
+  background-image: linear-gradient(125deg, transparent 12%, var(--frost-plane) 12.1%, transparent 39%), linear-gradient(35deg, transparent 48%, var(--frost-plane) 48.1%, transparent 73%), repeating-linear-gradient(120deg, transparent 0 180px, var(--frost-edge) 181px, transparent 182px 420px), radial-gradient(ellipse at center, var(--frost-dust) 0 0.7px, transparent 1px);
+  background-size: 100% 900px, 100% 1100px, 100% 1400px, 19px 23px;
+  color: var(--frost-ink);
+  min-height: 100svh;
+}
+
+.App[data-design='glass'][data-theme='day'] {
+  --frost-bg: #edf2f5;
+  --frost-panel: rgb(255 255 255 / 62%);
+  --frost-raised: rgb(255 255 255 / 88%);
+  --frost-field: rgb(255 255 255 / 48%);
+  --frost-edge: rgb(32 58 108 / 20%);
+  --frost-shine: rgb(255 255 255 / 90%);
+  --frost-ink: #2e2e2e;
+  --frost-muted: #485964;
+  --frost-shadow: 0 12px 36px #203a6c12, 0 2px 8px #203a6c08;
+  --frost-blue: #0078d4;
+  --frost-gold: #806000;
+  --frost-dust: #203a6c12;
+  --frost-plane: #0078d412;
+  color-scheme: light;
+}
+
+.App[data-design='glass'][data-theme='forest'] {
+  --frost-bg: #10201b;
+  --frost-panel: rgb(26 49 40 / 70%);
+  --frost-raised: rgb(26 49 40 / 88%);
+  --frost-field: rgb(12 30 22 / 48%);
+  --frost-blue: #aeea94;
+  --frost-plane: #aeea940c;
+}
+
+.club-public[data-design='glass'] {
+  --club-bg: var(--frost-bg);
+  --club-surface: var(--frost-panel);
+  --club-glass: var(--frost-raised);
+  --club-solid: var(--frost-bg);
+  --club-text: var(--frost-ink);
+  --club-muted: var(--frost-muted);
+  --club-line: var(--frost-edge);
+  --club-accent: var(--frost-blue);
+  --club-on-accent: #102022;
+}
+.club-public[data-design='glass'][data-theme='day'] { --club-on-accent: #ffffff; }
+
+.App[data-design='glass'] :is(.club-header, .club-footer, .club-event-dialog, .club-event-card, .club-member-card, .club-officer, .club-golden-card, .club-sponsor-card, .club-album-cover, .club-notice, .club-directory-segments, .club-theme-switch) {
+  background: linear-gradient(135deg, var(--frost-shine), transparent 44%), var(--frost-panel);
+  border-color: var(--frost-edge);
+  box-shadow: inset 0 1px 0 var(--frost-shine), inset 0 -1px 0 #ffffff06, var(--frost-shadow);
+  -webkit-backdrop-filter: blur(28px) saturate(125%);
+  backdrop-filter: blur(28px) saturate(125%);
+}
+.App[data-design='glass'] :is(.club-header, .club-event-dialog) { background-color: var(--frost-raised); }
+.App[data-design='glass'] .club-header { border-radius: 0 0 8px 8px; }
+.App[data-design='glass'] .club-footer { border-radius: 8px 8px 0 0; }
+.App[data-design='glass'] :is(.club-story, .club-tracks, .club-upcoming, .club-statistics, .club-golden, .club-program-band) {
+  background: var(--frost-field);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+.App[data-design='glass'] :is(.club-cta, .club-event-search, .club-event-filter select, .club-pagination button, .club-member-socials a) {
+  background: var(--frost-field);
+  border: 1px solid var(--frost-edge);
+  border-radius: 6px;
+  box-shadow: inset 0 1px var(--frost-shine);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  color: var(--frost-ink);
+}
+.App[data-design='glass'] .club-cta-primary { border-color: var(--club-accent); color: var(--club-accent); }
+.App[data-design='glass'] :is(button, a, input, select, textarea):focus-visible { outline: 2px solid var(--frost-gold); outline-offset: 4px; }
+.App[data-design='glass'] :is(.club-event-card, .club-member-card, .club-officer, .club-golden-card, .club-sponsor-card):hover { border-color: var(--frost-gold); }
+.App[data-design='glass'] :is(.club-theme-switch button, .club-directory-segments button)[aria-pressed='true'] { color: var(--frost-gold); background: var(--frost-field); box-shadow: inset 0 -2px var(--frost-gold); }
+.App[data-design='glass'] .club-desktop-navigation a[aria-current='page']::after { background: var(--frost-gold); }
+.App[data-design='glass'] .club-event-filter option { background: var(--frost-bg); color: var(--frost-ink); }
+
+.App[data-design='glass'] .club-hero .club-cta-primary { background: #10202294; color: #ffffff; border-color: #efcd70; box-shadow: inset 0 1px #ffffff33; }
+.App[data-design='glass'][data-theme='day'] .club-hero .club-cta-primary { background: #ffffffa8; color: #203a6c; border-color: #806000; }
+.App[data-design='glass'] .club-hero-gallery button[aria-pressed='true'] { border-color: #efcd70; }
+.App[data-design='glass'] :is(.club-moment, .club-sponsor-logo, .club-supporter-logo, .club-supporter-tile) { border-color: var(--frost-edge); box-shadow: inset 0 1px var(--frost-shine), var(--frost-shadow); }
+.App[data-design='glass'] :is(.club-sponsor-logo, .club-supporter-logo, .club-supporter-tile) { background: #ffffffdd; -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+.App[data-design='glass'] .club-moment > span { background: #102022ad; -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+.App[data-design='glass'] .club-golden-theme { --club-accent: var(--frost-gold); --club-cyan: var(--frost-gold); }
+.App[data-design='glass'] .club-event-upcoming .club-event-tags span:last-child { color: var(--club-on-accent); }
+.App[data-design='glass'] .club-event-dialog::backdrop { background: #08151e70; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+
+.App[data-design='glass']:not(.club-public) { font-family: 'Manrope', 'Segoe UI', sans-serif; }
+.App[data-design='glass'] :is(.admin-shell, .bg-background-light) { background: transparent; }
+.App[data-design='glass'] :is(.admin-topbar, .admin-sidebar, .club-dialog, .overview-metric, .collection-empty),
+.App[data-design='glass']:not(.club-public) .bg-white {
+  background: linear-gradient(135deg, var(--frost-shine), transparent 50%), var(--frost-panel);
+  border: 1px solid var(--frost-edge);
+  box-shadow: inset 0 1px var(--frost-shine), var(--frost-shadow);
+  -webkit-backdrop-filter: blur(28px) saturate(125%);
+  backdrop-filter: blur(28px) saturate(125%);
+}
+.App[data-design='glass'] :is(.admin-topbar, .admin-sidebar, .club-dialog) { background-color: var(--frost-raised); }
+.App[data-design='glass'] .admin-topbar { border-radius: 0 0 8px 8px; }
+.App[data-design='glass'] .club-dialog { border-radius: 8px; }
+.App[data-design='glass'] .club-dialog .bg-white { background: transparent; border: 0; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.App[data-design='glass'] .club-dialog::backdrop { background: #10202266; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.App[data-design='glass'] :is(.overview-icon-button, .overview-segments, .overview-search, .collection-search, .collection-icon, .content-record-actions button) {
+  background: var(--frost-field);
+  border-color: var(--frost-edge);
+  box-shadow: inset 0 1px var(--frost-shine);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+.App[data-design='glass']:not(.club-public) :is(input:not([type='checkbox']):not([type='radio']):not([type='file']), textarea, select) {
+  background: var(--frost-field);
+  color: var(--frost-ink);
+  border-color: var(--frost-edge);
+  border-radius: 6px;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.App[data-design='glass']:not(.club-public) :is(.collection-search, .overview-search) input { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.App[data-design='glass'] :is(.overview-primary, .collection-create, .bg-primary) { background: #0078d415; border: 1px solid #0078d480; color: #005a9e; box-shadow: inset 0 1px var(--frost-shine); }
+.App[data-design='glass'] :is(.overview-primary, .collection-create, .bg-primary):hover { background: #0078d426; }
+.App[data-design='glass'] .admin-nav-active { background: #0078d412; box-shadow: inset 3px 0 #806000; }
+.App[data-design='glass'] .overview-segments button[aria-pressed='true'] { background: var(--frost-raised); color: #806000; }
+.App[data-design='glass'] .Toastify__toast { background: var(--frost-raised); color: var(--frost-ink); border: 1px solid var(--frost-edge); border-radius: 8px; -webkit-backdrop-filter: blur(28px); backdrop-filter: blur(28px); box-shadow: var(--frost-shadow); }
+.App[data-design='glass'] .Toastify__close-button { color: var(--frost-ink); }
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .App[data-design='glass'] { --frost-panel: var(--frost-bg); --frost-raised: var(--frost-bg); --frost-field: var(--frost-bg); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .App[data-design='glass'] { --frost-panel: var(--frost-bg); --frost-raised: var(--frost-bg); --frost-field: var(--frost-bg); background-image: none; }
+  .App[data-design='glass'] * { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}

@@ -17,6 +17,53 @@ import { members, memberContactLinks } from '../../content/members';
 import { HighBoardSection, MemberSocialLinks } from '../../pages/MemberDirectory';
 import ClubLanding from '../../pages/ClubLanding';
 import Tracks from '../../pages/Tracks';
+import SiteFrame from './SiteFrame';
+
+test('public theme buttons select classic night, classic day and glass night despite old design preferences', () => {
+  localStorage.setItem('club-design', 'glass');
+  const { container, unmount } = render(<MemoryRouter initialEntries={['/?design=glass']}><PublicThemeProvider><SiteFrame><PublicHeader /></SiteFrame></PublicThemeProvider></MemoryRouter>);
+  expect(container.firstChild).toHaveAttribute('data-design', 'classic');
+  expect(container.firstChild).toHaveAttribute('data-theme', 'night');
+  fireEvent.click(screen.getByRole('button', { name: 'Day theme' }));
+  expect(container.firstChild).toHaveAttribute('data-design', 'classic');
+  expect(container.firstChild).toHaveAttribute('data-theme', 'day');
+  fireEvent.click(screen.getByRole('button', { name: 'Forest theme' }));
+  expect(container.firstChild).toHaveAttribute('data-design', 'glass');
+  expect(container.firstChild).toHaveAttribute('data-theme', 'night');
+  expect(screen.getByRole('button', { name: 'Forest theme' })).toHaveAttribute('aria-pressed', 'true');
+  expect(localStorage.getItem('club-theme')).toBe('forest');
+  unmount();
+  const restored = render(<MemoryRouter initialEntries={['/events?design=classic']}><PublicThemeProvider><SiteFrame><PublicHeader /></SiteFrame></PublicThemeProvider></MemoryRouter>);
+  expect(restored.container.firstChild).toHaveAttribute('data-design', 'glass');
+  expect(restored.container.firstChild).toHaveAttribute('data-theme', 'night');
+  fireEvent.click(screen.getByRole('button', { name: 'Night theme' }));
+  expect(restored.container.firstChild).toHaveAttribute('data-design', 'classic');
+  expect(restored.container.firstChild).toHaveAttribute('data-theme', 'night');
+  expect(localStorage.getItem('club-theme')).toBe('night');
+});
+
+test('admin design selection remains independent of the public theme', () => {
+  localStorage.setItem('club-theme', 'forest');
+  const classic = render(<MemoryRouter initialEntries={['/admin/login?design=classic']}><PublicThemeProvider><SiteFrame>Content</SiteFrame></PublicThemeProvider></MemoryRouter>);
+  expect(classic.container.firstChild).toHaveAttribute('data-design', 'classic');
+  expect(localStorage.getItem('club-design')).toBe('classic');
+  classic.unmount();
+  const restored = render(<MemoryRouter initialEntries={['/admin/login']}><SiteFrame>Content</SiteFrame></MemoryRouter>);
+  expect(restored.container.firstChild).toHaveAttribute('data-design', 'classic');
+  restored.unmount();
+  const glass = render(<MemoryRouter initialEntries={['/admin/login?design=glass']}><SiteFrame>Content</SiteFrame></MemoryRouter>);
+  expect(glass.container.firstChild).toHaveAttribute('data-design', 'glass');
+  expect(glass.container.firstChild).toHaveAttribute('data-theme', 'day');
+  expect(glass.container.firstChild).not.toHaveClass('club-public');
+});
+
+test('homepage previews six real events and links to the full archive', () => {
+  const { container } = render(<MemoryRouter><ClubLanding /></MemoryRouter>);
+  const section = container.querySelector('#club-events');
+  expect(within(section).getAllByRole('button', { name: /^View details:/ })).toHaveLength(6);
+  expect(within(section).getByRole('button', { name: 'View details: Microsoft AI Startups Competition' })).toBeInTheDocument();
+  expect(within(section).getByRole('link', { name: 'All events' })).toHaveAttribute('href', '/events');
+});
 
 jest.mock('../../services/api', () => ({ showcaseApi: { get: jest.fn() }, leaderboardApi: { getAll: jest.fn() } }));
 
@@ -129,21 +176,24 @@ test('hero highlights can switch photographs and still work without supplied ass
   const { rerender } = render(<MemoryRouter><HeroSection assets={clubContent.assets} /></MemoryRouter>);
   expect(screen.getByRole('button', { name: 'Show All Team' })).toHaveAttribute('aria-pressed', 'true');
   expect(screen.getByRole('img', { name: 'The Microsoft Student Club team together at orientation' })).toHaveAttribute('src', teamPhoto);
-  expect(within(screen.getByRole('group', { name: 'Community highlights' })).getAllByRole('button')).toHaveLength(5);
-  fireEvent.click(screen.getByRole('button', { name: 'Show Orientation' }));
-  expect(screen.getByRole('button', { name: 'Show Orientation' })).toHaveAttribute('aria-pressed', 'true');
-  expect(screen.getByRole('img', { name: 'Students gathering at the club orientation' })).toHaveAttribute('src', '/club-media/hero-orientation.jpg');
+  expect(within(screen.getByRole('group', { name: 'Community highlights' })).getAllByRole('button')).toHaveLength(4);
+  expect(screen.queryByRole('button', { name: 'Show Orientation' })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Show Microsoft Egypt' }));
+  expect(screen.getByRole('button', { name: 'Show Microsoft Egypt' })).toHaveAttribute('aria-pressed', 'true');
+  expect(screen.getByRole('img', { name: 'Microsoft Student Club members together at Microsoft Egypt' })).toHaveAttribute('src', '/club-media/microsoft-egypt.jpg');
   rerender(<MemoryRouter><HeroSection assets={{ logo: null, hero: null, heroAlt: 'Club community', community: null }} /></MemoryRouter>);
   expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Microsoft');
   expect(screen.getByRole('img', { name: 'Club community' })).toBeInTheDocument();
   expect(screen.queryByRole('group', { name: 'Community highlights' })).not.toBeInTheDocument();
 });
 
-test('hero cycles every six seconds and pauses for keyboard focus, hover and explicit pause', () => {
+test('hero cycles every three seconds and pauses for keyboard focus, hover and explicit pause', () => {
   jest.useFakeTimers();
   try {
     const { unmount } = render(<MemoryRouter><HeroSection assets={clubContent.assets} /></MemoryRouter>);
-    act(() => jest.advanceTimersByTime(6000));
+    act(() => jest.advanceTimersByTime(2999));
+    expect(screen.getByRole('button', { name: 'Show All Team' })).toHaveAttribute('aria-pressed', 'true');
+    act(() => jest.advanceTimersByTime(1));
     expect(screen.getByRole('button', { name: 'Show Microsoft Egypt' })).toHaveAttribute('aria-pressed', 'true');
     const group = screen.getByRole('group', { name: 'Community highlights' });
     fireEvent.focus(screen.getByRole('button', { name: 'Show Microsoft Egypt' }));
@@ -255,7 +305,7 @@ test('homepage orders programs, next event, story and event catalogue before rec
   expect(screen.getByLabelText('3,000')).toBeInTheDocument();
   expect(screen.getByLabelText('5,000')).toBeInTheDocument();
   expect(screen.getByLabelText('100+')).toBeInTheDocument();
-  expect(container.querySelectorAll('.club-event-card')).toHaveLength(4);
+  expect(container.querySelectorAll('.club-event-card')).toHaveLength(6);
   expect(container.querySelector('.club-upcoming').nextElementSibling).toHaveAttribute('id', 'club-story');
   expect(container.querySelector('#club-story').nextElementSibling).toHaveAttribute('id', 'club-events');
   expect(container.querySelector('.club-supporters').previousElementSibling).toHaveClass('club-golden');

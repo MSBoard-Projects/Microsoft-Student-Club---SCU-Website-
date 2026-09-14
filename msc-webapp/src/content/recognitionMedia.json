@@ -1,0 +1,32 @@
+[
+    {
+        "src":  "/club-media/recognition/image-01-1280.jpg",
+        "srcSet":  "/club-media/recognition/image-01-640.jpg 640w, /club-media/recognition/image-01-1280.jpg 1280w",
+        "width":  1280,
+        "height":  720
+    },
+    {
+        "src":  "/club-media/recognition/image-02-1280.jpg",
+        "srcSet":  "/club-media/recognition/image-02-640.jpg 640w, /club-media/recognition/image-02-1280.jpg 1280w",
+        "width":  1280,
+        "height":  720
+    },
+    {
+        "src":  "/club-media/recognition/image-03-1280.jpg",
+        "srcSet":  "/club-media/recognition/image-03-640.jpg 640w, /club-media/recognition/image-03-1280.jpg 1280w",
+        "width":  1280,
+        "height":  720
+    },
+    {
+        "src":  "/club-media/recognition/image-04-1280.jpg",
+        "srcSet":  "/club-media/recognition/image-04-640.jpg 640w, /club-media/recognition/image-04-1280.jpg 1280w",
+        "width":  1280,
+        "height":  960
+    },
+    {
+        "src":  "/club-media/recognition/image-05-1280.jpg",
+        "srcSet":  "/club-media/recognition/image-05-640.jpg 640w, /club-media/recognition/image-05-1280.jpg 1280w",
+        "width":  1280,
+        "height":  720
+    }
+]
