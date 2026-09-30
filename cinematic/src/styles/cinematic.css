@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
+
+.cinematic-document { background: #080b0c; scroll-behavior: smooth; color-scheme: dark; }
+.cinematic-world { --cine-ink: #f3f5ef; --cine-muted: #b3bdb9; --cine-accent: #b7f470; margin: 0; background: transparent; color: var(--cine-ink); font-family: 'Manrope', sans-serif; isolation: isolate; letter-spacing: 0; }
+.cinematic-world *, .cinematic-world *::before, .cinematic-world *::after { box-sizing: border-box; }
+.cinematic-world a { color: inherit; text-decoration: none; }
+.cinematic-world button { font: inherit; }
+.cinematic-world :focus-visible { outline: 2px solid var(--cine-accent); outline-offset: 7px; }
+.cinematic-world ::selection { background: #b7f470; color: #080b0c; }
+.cine-stage, #cinematic-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+.cine-stage { background: radial-gradient(ellipse at 70% 40%, #183333 0%, #101516 40%, #080b0c 78%); }
+#cinematic-canvas { display: block; }
+.cine-atmosphere { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(8,11,12,.75), transparent 70%), repeating-linear-gradient(0deg, transparent, transparent 119px, #ffffff03 120px); }
+.cine-header { position: absolute; inset: 0 0 auto; z-index: 3; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 30px 5%; border-bottom: 1px solid #ffffff14; }
+.cine-brand { display: flex; align-items: center; gap: 13px; font-size: 13px; font-weight: 700; }
+.cine-brand small { display: block; margin-top: 5px; font-size: 9px; color: var(--cine-muted); }
+.cine-mark { display: grid; grid-template-columns: repeat(2, 12px); gap: 3px; }
+.cine-mark i { width: 12px; height: 12px; background: #f35325; }
+.cine-mark i:nth-child(2) { background: #81bc06; }
+.cine-mark i:nth-child(3) { background: #05a6f0; }
+.cine-mark i:nth-child(4) { background: #ffba08; }
+.cine-return { display: inline-flex; align-items: center; gap: 15px; font-size: 12px; }
+.cinematic-world svg { width: 20px; height: 20px; stroke-width: 1.5; flex-shrink: 0; }
+.cine-section { position: relative; min-height: 110svh; padding: 130px 9% 100px; display: flex; align-items: center; }
+.cine-hero { min-height: 96svh; padding: 160px 7% 115px; }
+.cine-hero-copy { max-width: 760px; }
+.cine-eyebrow { display: flex; align-items: center; gap: 10px; font-size: 10px; font-weight: 700; margin: 0 0 27px; color: var(--cine-accent); }
+.cine-eyebrow > span { width: 6px; height: 6px; border-radius: 50%; background: var(--cine-accent); }
+.cinematic-world h1, .cinematic-world h2 { font-family: 'Barlow Condensed', 'Impact', sans-serif; font-weight: 600; letter-spacing: 0; margin: 0; line-height: .98; }
+.cinematic-world h1 { font-size: 112px; }
+.cine-period { color: var(--cine-accent); }
+.cinematic-world h2 { font-size: 76px; }
+.cinematic-world h2 em { font-style: normal; color: var(--cine-accent); }
+.cine-hero-bottom { display: flex; align-items: flex-end; gap: 70px; margin-top: 38px; }
+.cine-hero-bottom p { font-size: 13px; line-height: 1.9; color: var(--cine-muted); margin: 0; }
+.cine-hero-bottom strong { color: var(--cine-ink); font-weight: 500; }
+.cine-circle-link { width: 52px; height: 52px; border: 1px solid #ffffff45; border-radius: 50%; display: grid; place-items: center; transition: background .2s, border-color .2s; }
+.cine-circle-link:hover { background: #b7f47018; border-color: var(--cine-accent); }
+.cine-object-label { position: absolute; right: 14%; bottom: 18%; display: grid; gap: 7px; font-size: 9px; color: #a1b8b4; padding-left: 16px; border-left: 1px solid #a1b8b455; }
+.cine-object-label span:first-child { color: var(--cine-ink); }
+.cine-section-foot { position: absolute; bottom: 36px; left: 7%; right: 7%; display: flex; align-items: center; justify-content: space-between; gap: 18px; border-top: 1px solid #ffffff1f; padding-top: 18px; font-size: 9px; color: var(--cine-muted); }
+.cine-section-foot a { display: flex; align-items: center; gap: 10px; }
+.cine-chapters { position: fixed; right: 25px; top: 42%; z-index: 4; display: grid; gap: 18px; }
+.cine-chapters a { display: flex; justify-content: flex-end; align-items: center; gap: 12px; min-height: 28px; color: #a4afac; }
+.cine-chapters span { font-size: 10px; opacity: 0; transition: opacity .2s; }
+.cine-chapters a:hover span, .cine-chapters a:focus-visible span, .cine-chapters a[aria-current] span { opacity: 1; }
+.cine-chapters b { font-size: 10px; font-weight: 500; border-right: 2px solid #ffffff30; padding-right: 10px; }
+.cine-chapters a[aria-current] { color: var(--cine-accent); }
+.cine-chapters a[aria-current] b { border-color: var(--cine-accent); }
+.cine-section-copy { width: 510px; max-width: 100%; }
+.cine-intro { font-size: 14px; color: var(--cine-muted); line-height: 1.8; max-width: 380px; margin: 25px 0 30px; }
+.cine-paths { display: grid; gap: 10px; margin-top: 30px; }
+.cine-glass { background: linear-gradient(120deg, #ffffff0d, #ffffff03); border: 1px solid #ffffff26; backdrop-filter: blur(18px) saturate(120%); -webkit-backdrop-filter: blur(18px) saturate(120%); border-radius: 6px; box-shadow: inset 0 1px #ffffff0a, 0 16px 36px #00000015; }
+.cine-path { display: flex; align-items: center; gap: 18px; padding: 21px; transition: border-color .2s, background .2s; }
+.cine-path > svg:first-child { color: var(--cine-accent); }
+.cine-path > svg:last-child { margin-left: auto; }
+.cine-path strong { display: block; font-size: 13px; font-weight: 600; }
+.cine-path small { display: block; margin-top: 7px; font-size: 11px; color: var(--cine-muted); }
+.cine-path:hover { border-color: #b7f47088; background: #b7f4700d; }
+.cine-together { justify-content: flex-end; padding-right: 13%; }
+.cine-memory { margin: 30px 0 0; }
+.cine-memory img { display: block; width: 100%; height: auto; aspect-ratio: 16/9; object-fit: cover; border-radius: 3px; }
+.cine-memory figcaption { display: flex; align-items: center; justify-content: space-between; font-size: 9px; margin-top: 12px; color: var(--cine-muted); }
+.cine-memory figcaption a { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid #ffffff30; border-radius: 50%; }
+.cine-finale { min-height: 110svh; text-align: center; justify-content: center; padding-top: 35svh; }
+.cine-finale-copy { max-width: 900px; }
+.cine-finale .cine-eyebrow { justify-content: center; }
+.cine-finale h2 { font-size: 88px; }
+.cine-finale .cine-intro { margin-left: auto; margin-right: auto; }
+.cine-primary { display: inline-flex; align-items: center; gap: 25px; min-height: 56px; padding: 16px 25px; background: var(--cine-accent); color: #10160b !important; font-size: 12px; font-weight: 700; border-radius: 3px; transition: background .2s; }
+.cine-primary:hover { background: #d3ffa0; }
+.cine-text-link { display: flex; width: fit-content; align-items: center; justify-content: center; gap: 10px; margin: 23px auto 0; font-size: 12px; }
+.cine-hud { position: fixed; z-index: 5; right: 25px; bottom: 14px; display: flex; align-items: center; gap: 20px; }
+.cine-status { font-size: 9px; color: var(--cine-muted); }
+.cine-status:empty { display: none; }
+.cine-progress-label { font-size: 10px; }
+.cine-progress-label span { color: #7d8985; margin: 0 8px; }
+.cine-hud button { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #111a19cc; backdrop-filter: blur(12px); color: var(--cine-ink); border: 1px solid #ffffff35; cursor: pointer; }
+.cine-progress { position: fixed; z-index: 6; bottom: 0; left: 0; right: 0; height: 2px; background: #ffffff10; }
+.cine-progress > span { display: block; height: 100%; background: var(--cine-accent); transform: scaleX(0); transform-origin: left; }
+.cine-skip { position: fixed; top: 12px; left: 12px; z-index: 10; padding: 12px 20px; background: #b7f470; color: #080b0c !important; transform: translateY(-150%); }
+.cine-skip:focus { transform: translateY(0); }
+.cine-unavailable .cine-object-label { display: none; }
+@media (min-width: 1800px) { .cine-hero-copy { margin-left: 4%; } .cinematic-world h1 { font-size: 136px; } }
+@media (max-width: 1100px) { .cinematic-world h1 { font-size: 88px; } .cinematic-world h2 { font-size: 66px; } .cine-section-copy { width: 450px; } .cine-chapters span { display: none; } .cine-object-label { right: 12%; bottom: 12%; } }
+@media (max-width: 700px) {
+  .cine-header { padding: 22px 6%; align-items: flex-start; }
+  .cine-brand { font-size: 11px; gap: 10px; }
+  .cine-brand small { font-size: 8px; }
+  .cine-return { font-size: 0; gap: 0; width: 32px; height: 32px; justify-content: center; }
+  .cine-return svg { width: 22px; height: 22px; }
+  .cine-section { padding: 100px 9% 100px 6%; min-height: 110svh; align-items: flex-end; }
+  .cine-hero { min-height: 96svh; padding-top: 42svh; padding-bottom: 105px; }
+  .cinematic-world h1 { font-size: 64px; }
+  .cinematic-world h2 { font-size: 54px; }
+  .cine-eyebrow { font-size: 8px; margin-bottom: 20px; }
+  .cine-hero-bottom { margin-top: 24px; justify-content: space-between; gap: 20px; }
+  .cine-hero-bottom p { font-size: 11px; }
+  .cine-hero-copy { width: 100%; }
+  .cine-atmosphere { background: linear-gradient(0deg, #080b0ccc 5%, transparent 95%); }
+  .cine-object-label { display: none; }
+  .cine-chapters { right: 7px; top: 44%; gap: 10px; }
+  .cine-chapters b { font-size: 8px; padding-right: 5px; }
+  .cine-section-foot { left: 6%; right: 9%; bottom: 38px; font-size: 7px; }
+  .cine-intro { font-size: 12px; margin-top: 20px; }
+  .cine-path { padding: 17px 13px; gap: 12px; }
+  .cine-path strong { font-size: 12px; }
+  .cine-path small { font-size: 10px; }
+  .cine-together { padding-right: 9%; }
+  .cine-finale { padding-top: 40svh; align-items: center; }
+  .cine-finale h2 { font-size: 60px; }
+  .cine-hud { right: 10px; bottom: 9px; gap: 12px; }
+  .cine-hud button { width: 32px; height: 32px; }
+  .cine-progress-label { font-size: 8px; }
+}
+@media (max-width: 360px) { .cinematic-world h1 { font-size: 54px; } .cinematic-world h2, .cine-finale h2 { font-size: 48px; } .cine-primary { gap: 14px; padding: 16px; } }
+@media (prefers-reduced-motion: reduce) { .cinematic-document { scroll-behavior: auto; } .cinematic-world * { transition: none !important; } }

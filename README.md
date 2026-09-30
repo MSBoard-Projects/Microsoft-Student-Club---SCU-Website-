@@ -1,5 +1,90 @@
 # Microsoft-Student-Club---SCU-Website-
 
+## Live Website
+
+**[Open Microsoft Student Club SCU](https://agreeable-rock-00f086503.5.azurestaticapps.net)**
+
+- [Events](https://agreeable-rock-00f086503.5.azurestaticapps.net/events)
+- [Members](https://agreeable-rock-00f086503.5.azurestaticapps.net/members)
+- [Sponsors & Partners](https://agreeable-rock-00f086503.5.azurestaticapps.net/sponsors)
+- [Admin login](https://agreeable-rock-00f086503.5.azurestaticapps.net/admin/login)
+
+Production was verified on September 14, 2026: 101 members, 7 events and 16 published
+sponsors/community partners. The homepage opens with the All Team photograph.
+Hacktoberfest uses the supplied **Microsoft AI Hackathon Day (1)** poster; Canal
+Startups Sprint Hackathon uses its Team photograph and a three-photo gallery.
+Sponsor logos come from the approved `Sponser/Logos 1` and `Sponser/Logos 2`
+catalogue. They are published as community partners without invented paid tiers.
+
+The React frontend runs on Azure Static Web Apps and uses the ASP.NET Core API.
+Production uses a **new, independent MSC_DB**; the legacy database was not changed.
+Approved public images and certificates are served as static website assets.
+Estimated hosting cost: **USD32.79/month**, not a spending cap.
+
+### Production Screenshots
+
+Actual production captures at 1440px desktop and 390px mobile, not mockups.
+
+![Homepage with the All Team photograph](docs/screenshots/home-1440.png)
+
+| Events | Members |
+| --- | --- |
+| ![Published events](docs/screenshots/events-1440.png) | ![Member directory](docs/screenshots/members-1440.png) |
+
+| Canal Startups Sprint Hackathon | Hacktoberfest Hack Day |
+| --- | --- |
+| ![Canal team photograph](docs/screenshots/canal-hackathon-1440.png) | ![Microsoft AI Hackathon Day poster](docs/screenshots/hacktoberfest-1440.png) |
+
+<details>
+<summary>Sponsors and mobile screenshots</summary>
+
+![All 16 published sponsors and community partners](docs/screenshots/sponsors-1440.png)
+
+<img src="docs/screenshots/home-390.png" alt="Mobile homepage with team photograph" width="390" />
+<img src="docs/screenshots/sponsors-390.png" alt="Mobile sponsors page" width="390" />
+
+Additional mobile captures: [events](docs/screenshots/events-390.png),
+[members](docs/screenshots/members-390.png),
+[Canal](docs/screenshots/canal-hackathon-390.png),
+[Hacktoberfest](docs/screenshots/hacktoberfest-390.png).
+
+</details>
+
+### Verification And Security
+
+- 45 focused frontend tests passed for the public experience and event media.
+- Six public routes passed browser checks at both viewport sizes: homepage,
+  events, both updated event pages, sponsors and members. No JavaScript errors
+  or horizontal overflow; team/event images and all 16 sponsor logos loaded.
+- Earlier live acceptance verified 100 PDF certificates, CORS, SPA routing,
+  authenticated admin login and rejection of unauthenticated writes.
+- `admin-credentials.json` must remain local, outside the repository. Its filename
+  is ignored at every directory level. Never commit credentials, deployment
+  parameters, tokens, local backup files or deployment ZIP packages.
+- If a password is exposed in chat, a commit or an artifact, rotate it. Adding a
+  ignore rule does not revoke a password or erase previously published history.
+- Automatic Application Insights failure-alert creation previously failed;
+  alert delivery, load testing and backup restoration remain unverified.
+
+### Push Changes And Open A Pull Request
+
+From a feature branch, after tests and review, use PowerShell. GitHub CLI (`gh`)
+must already be installed and authenticated to create the PR. These commands
+publish source changes to GitHub; they do not redeploy Azure or import data.
+
+```powershell
+git status --short
+git add -- .gitignore README.md docs/screenshots msc-webapp/src/content/eventsData.ts msc-webapp/src/pages/Events.test.js msc-webapp/public/club-media/hackathons
+if ($LASTEXITCODE -ne 0) { throw 'Staging failed' }
+git diff --cached --stat
+# Review staged files before continuing. Never stage secrets or deployment ZIPs.
+git commit -m "Publish live site links, event media and screenshots"
+if ($LASTEXITCODE -ne 0) { throw 'Commit failed' }
+git push --set-upstream origin HEAD
+if ($LASTEXITCODE -ne 0) { throw 'Push failed' }
+gh pr create --base main --fill
+```
+
 ## Design Preview And Rollback
 
 Public theme buttons control both the palette and the design.
@@ -23,8 +108,9 @@ all three buttons, persisted selection and independent admin design selection.
 Earlier glass baseline: 153 frontend tests across 17 suites and TypeScript passed. Headless
 Edge checked public routes and login at 320, 768 and 1440px, all three public
 themes, dialog Escape behavior, design restoration and recognition photo loading.
-Homepage layout also passed at 390 and 1024px. This does not verify live Azure
-authentication, database writes or deployment.
+Homepage layout also passed at 390 and 1024px. Those earlier design-only checks
+did not verify live Azure authentication, database writes or deployment; see the
+production verification above for the later live checks.
 
 # GitHub Copilot Instructions - MSC-SCU Website
 

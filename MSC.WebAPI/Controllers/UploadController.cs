@@ -51,9 +51,6 @@ namespace MSC.WebAPI.Controllers
                 // Get container client
                 var containerClient = _blobServiceClient.GetBlobContainerClient(request.ContainerName.ToLower());
 
-                // Ensure container exists
-                await containerClient.CreateIfNotExistsAsync();
-
                 // Get blob client
                 var blobClient = containerClient.GetBlobClient(request.FileName);
 
@@ -63,16 +60,22 @@ namespace MSC.WebAPI.Controllers
                     BlobContainerName = request.ContainerName.ToLower(),
                     BlobName = request.FileName,
                     Resource = "b", // "b" for blob
-                    ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(15)
+                    ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(15),
+                    Protocol = SasProtocol.Https
                 };
 
                 // Set permissions (write only)
                 sasBuilder.SetPermissions(BlobSasPermissions.Write | BlobSasPermissions.Create);
 
                 // Generate the SAS URI
-                Uri sasUri = blobClient.GenerateSasUri(sasBuilder);
+                var delegationKey = await _blobServiceClient.GetUserDelegationKeyAsync(
+                    DateTimeOffset.UtcNow.AddMinutes(-5), sasBuilder.ExpiresOn);
+                var sasUri = new BlobUriBuilder(blobClient.Uri)
+                {
+                    Sas = sasBuilder.ToSasQueryParameters(delegationKey.Value, _blobServiceClient.AccountName)
+                }.ToUri();
 
-                var expiresAt = DateTime.UtcNow.AddMinutes(15);
+                var expiresAt = sasBuilder.ExpiresOn.UtcDateTime;
 
                 _logger.LogInformation("Generated SAS token for blob {FileName} in container {ContainerName}, expires at {ExpiresAt}",
                     request.FileName, request.ContainerName, expiresAt);

@@ -1,0 +1,274 @@
+---
+import '../styles/cinematic.css';
+interface Props { title?: string }
+const { title = 'Microsoft Student Club | A New Dimension' } = Astro.props;
+---
+<!doctype html>
+<html lang="en" class="cinematic-document">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#080b0c" />
+    <meta name="description" content="Meet Microsoft Student Club at Suez Canal University. A community of curious minds, makers, and tomorrow's technologists." />
+    <title>{title}</title>
+  ---
+  interface Props {
+    title?: string;
+    modelUrl?: string;
+  }
+  const {
+    title = 'Microsoft Student Club | A New Dimension',
+    modelUrl = '/cinematic/models/innovation-core.glb',
+  } = Astro.props;
+  ---
+  <!doctype html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <meta name="theme-color" content="#080b0c" />
+      <meta name="description" content="Microsoft Student Club at Suez Canal University. A community of curious minds, makers, and tomorrow's technologists." />
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      <title>{title}</title>
+    </head>
+    <body>
+      <a class="skip-link" href="#cinematic-main">Skip to content</a>
+      <canvas id="webgl-canvas" data-model-url={modelUrl} aria-hidden="true"></canvas>
+      <slot />
+      <div class="scene-controls">
+        <span id="scene-status" role="status">Loading scene</span>
+        <button id="scene-motion" type="button" aria-label="Pause scene motion" aria-pressed="false" title="Pause scene motion"><i data-lucide="pause" aria-hidden="true"></i></button>
+      </div>
+      <noscript><p class="script-notice">The 3D scene requires JavaScript. All chapters remain available below.</p></noscript>
+
+      <script>
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        import { RoomEnvironment } from 'three/addifierons/environments/RoomEnvironment.js';
+        import gsap from 'gsap';
+        import { ScrollTrigger } from 'gsap/ScrollTrigger';
+        import { createIcons, ArrowUpRight, ArrowDown, ArrowRight, ArrowUp, Code2, Orbit, Users, Pause, Play } from 'lucide';
+
+        function initializeScene() {
+          const canvas = document.querySelector<HTMLCanvasElement>('#webgl-canvas');
+          const status = document.querySelector<HTMLElement>('#scene-status');
+          const button = document.querySelector<HTMLButtonElement>('#scene-motion');
+          if (!canvas || !status || !button) return;
+          const icons = { ArrowUpRight, ArrowDown, ArrowRight, ArrowUp, Code2, Pause, Play, Orbit, Users };
+          createIcons({ icons });
+          gsap.registerPlugin(ScrollTrigger);
+
+          const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+          const mobile = matchMedia('(max-width: 700px)');
+          let paused = reducedMotion.matches;
+          let disposed = false;
+          let contextLost = false;
+          let dirty = true;
+          let model: THREE.Group | undefined;
+          let timeline: gsap.core.Timeline | undefined;
+          let renderer: THREE.WebGLRenderer;
+          const scene = new THREE.Scene();
+          const camera = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 60);
+          const rig = new THREE.Group();
+          const target = new THREE.Vector3();
+          const pose = { cameraX: 0, cameraY: 0, cameraZ: 9.7, modelX: 1.85, modelY: 0.15, rotationX: 0.22, rotationY: -0.4, rotationZ: -0.12, lightX: 3 };
+          scene.add(rig);
+          const keyLight = new THREE.SpotLight(0xe7ffed, 95, 35, 0.6, 0.7, 1.6);
+          keyLight.position.set(3, 5, 6);
+          const rimLight = new THREE.SpotLight(0x50e6ff, 110, 30, 0.8, 1, 1.5);
+          rimLight.position.set(-5, 2, -2);
+          const warmLight = new THREE.PointLight(0xffb866, 22, 18, 2);
+          warmLight.position.set(2, -3, 3);
+          scene.add(new THREE.AmbientLight(0xd1eeeb, 0.7), keyLight, keyLight.target, rimLight, rimLight.target, warmLight);
+
+          function fallback(message: string) {
+            status!.textContent = message;
+            button!.hidden = true;
+          }
+          try {
+            renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
+          } catch {
+            fallback('3D unavailable. All chapters remain available.');
+            return;
+          }
+          renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+          renderer.setSize(innerWidth, innerHeight);
+          renderer.setClearColor(0x080b0c, 0);
+          renderer.toneMapping = THREE.ACESFilmicToneMapping;
+          renderer.toneMappingExposure = 1.35;
+
+          function createEnvironment() {
+            const generator = new THREE.PMREMGenerator(renderer);
+            const room = new RoomEnvironment();
+            const result = generator.fromScene(room, 0.04);
+            room.dispose();
+            generator.dispose();
+            return result;
+          }
+          let environment = createEnvironment();
+          scene.environment = environment.texture;
+
+          function invalidate() { dirty = true; }
+          function render() {
+            if (!dirty || disposed || contextLost || document.hidden) return;
+            dirty = false;
+            camera.position.set(pose.cameraX, pose.cameraY, pose.cameraZ);
+            camera.lookAt(target);
+            rig.position.set(pose.modelX, pose.modelY, 0);
+            rig.rotation.set(pose.rotationX, pose.rotationY, pose.rotationZ);
+            keyLight.position.x = pose.lightX;
+            keyLight.target.position.copy(rig.position);
+            rimLight.target.position.copy(rig.position);
+            renderer.render(scene, camera);
+          }
+          gsap.ticker.add(render);
+
+          function stopTimeline() {
+            timeline?.scrollTrigger?.kill();
+            timeline?.kill();
+            timeline = undefined;
+          }
+          function configureTimeline() {
+            stopTimeline();
+            const compact = mobile.matches;
+            Object.assign(pose, { cameraX: 0, cameraY: 0, cameraZ: compact ? 11.7 : 9.7, modelX: compact ? 0.25 : 1.85, modelY: compact ? 2.05 : 0.15, rotationX: 0.22, rotationY: -0.4, rotationZ: -0.12, lightX: 3 });
+            if (!paused) {
+              timeline = gsap.timeline({
+                defaults: { ease: 'none', duration: 1 },
+                onUpdate: invalidate,
+                scrollTrigger: { trigger: '#cinematic-main', start: 'top top', end: 'bottom bottom', scrub: 1, invalidateOnRefresh: true },
+              });
+              timeline.to(pose, { cameraX: 0.7, cameraY: 0.25, cameraZ: compact ? 12 : 8.7, modelX: compact ? 0.8 : 2.3, modelY: compact ? 2.5 : 0.15, rotationX: 0.5, rotationY: 1.25, rotationZ: 0.3, lightX: -3 })
+                .to(pose, { cameraX: -0.5, cameraY: -0.15, cameraZ: compact ? 12 : 9.2, modelX: compact ? -0.6 : -2.4, modelY: compact ? 2.5 : 0.4, rotationX: -0.25, rotationY: 3.5, rotationZ: -0.4, lightX: 5 })
+                .to(pose, { cameraX: 0, cameraY: 0.2, cameraZ: compact ? 13 : 12.8, modelX: 0, modelY: compact ? 3.1 : 3.2, rotationX: 0.18, rotationY: Math.PI * 2 - 0.3, rotationZ: 0, lightX: 2 });
+              timeline.scrollTrigger?.refresh();
+            }
+            invalidate();
+          }
+          function updateButton() {
+            const label = paused ? 'Resume scene motion' : 'Pause scene motion';
+            button!.setAttribute('aria-pressed', String(paused));
+            button!.setAttribute('aria-label', label);
+            button!.title = label;
+            button!.innerHTML = `<i data-lucide="${paused ? 'play' : 'pause'}" aria-hidden="true"></i>`;
+            createIcons({ icons });
+          }
+          function toggleMotion() {
+            paused = !paused;
+            updateButton();
+            if (paused) stopTimeline();
+            else configureTimeline();
+            invalidate();
+          }
+          function onPreferenceChange() {
+            paused = reducedMotion.matches;
+            updateButton();
+            configureTimeline();
+          }
+          function onResize() {
+            camera.aspect = innerWidth / innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+            renderer.setSize(innerWidth, innerHeight);
+            invalidate();
+          }
+          function onContextLost(event: Event) {
+            event.preventDefault();
+            contextLost = true;
+            status!.textContent = 'Scene paused. Recovering graphics...';
+          }
+          function onContextRestored() {
+            contextLost = false;
+            environment.dispose();
+            environment = createEnvironment();
+            scene.environment = environment.texture;
+            status!.textContent = '';
+            invalidate();
+          }
+          function disposeModel(object: THREE.Object3D) {
+            const geometries = new Set<THREE.BufferGeometry>();
+            const materials = new Set<THREE.Material>();
+            const textures = new Set<THREE.Texture>();
+            object.traverse((child) => {
+              if (!(child instanceof THREE.Mesh)) return;
+              geometries.add(child.geometry);
+              (Array.isArray(child.material) ? child.material : [child.material]).forEach((material: THREE.Material) => {
+                materials.add(material);
+                Object.values(material).forEach((value) => { if (value instanceof THREE.Texture) textures.add(value); });
+              });
+            });
+            textures.forEach((texture) => texture.dispose());
+            materials.forEach((material) => material.dispose());
+            geometries.forEach((geometry) => geometry.dispose());
+          }
+          function cleanup(event: PageTransitionEvent) {
+            if (event.persisted) return;
+            disposed = true;
+            stopTimeline();
+            gsap.ticker.remove(render);
+            button!.removeEventListener('click', toggleMotion);
+            removeEventListener('resize', onResize);
+            removeEventListener('pagehide', cleanup);
+            document.removeEventListener('visibilitychange', invalidate);
+            reducedMotion.removeEventListener('change', onPreferenceChange);
+            mobile.removeEventListener('change', configureTimeline);
+            canvas!.removeEventListener('webglcontextlost', onContextLost);
+            canvas!.removeEventListener('webglcontextrestored', onContextRestored);
+            if (model) disposeModel(model);
+            environment.dispose();
+            renderer.dispose();
+          }
+          button.addEventListener('click', toggleMotion);
+          addEventListener('resize', onResize, { passive: true });
+          addEventListener('pagehide', cleanup);
+          document.addEventListener('visibilitychange', invalidate);
+          reducedMotion.addEventListener('change', onPreferenceChange);
+          mobile.addEventListener('change', configureTimeline);
+          canvas.addEventListener('webglcontextlost', onContextLost);
+          canvas.addEventListener('webglcontextrestored', onContextRestored);
+          updateButton();
+          configureTimeline();
+          void document.fonts.ready.then(() => { if (!disposed) ScrollTrigger.refresh(); });
+
+          new GLTFLoader().load(canvas.dataset.modelUrl!, (gltf) => {
+            if (disposed) { disposeModel(gltf.scene); return; }
+            model = gltf.scene;
+            const bounds = new THREE.Box3().fromObject(model);
+            const size = bounds.getSize(new THREE.Vector3());
+            const center = bounds.getCenter(new THREE.Vector3());
+            const scale = 5 / Math.max(size.x, size.y, size.z, 0.001);
+            model.scale.multiplyScalar(scale);
+            model.position.sub(center.multiplyScalar(scale));
+            rig.add(model);
+            status.textContent = '';
+            canvas.dataset.ready = 'true';
+            invalidate();
+          }, undefined, () => {
+            if (disposed) return;
+            stopTimeline();
+            fallback('3D could not load. All chapters remain available.');
+          });
+        }
+        initializeScene();
+      </script>
+    </body>
+  </html>
+
+  <style>
+    html { background: #080b0c; color-scheme: dark; scroll-behavior: smooth; }
+    body { margin: 0; isolation: isolate; background: radial-gradient(ellipse at 75% 15%, #18333355, transparent 45%); color: #f3f5ef; font-family: 'Manrope', sans-serif; letter-spacing: 0; }
+    #webgl-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; display: block; }
+    .skip-link { position: fixed; top: 12px; left: 12px; z-index: 10; padding: 12px 20px; background: #b7f470; color: #080b0c; transform: translateY(-150%); }
+    .skip-link:focus { transform: translateY(0); }
+    .scene-controls { position: fixed; z-index: 5; right: 22px; bottom: 16px; display: flex; align-items: center; gap: 14px; }
+    #scene-status { font-size: 10px; max-width: 230px; color: #b3bdb9; }
+    #scene-status:empty { display: none; }
+    #scene-motion { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #111a19cc; backdrop-filter: blur(12px); color: #f3b5cf; border: 1px solid #ffffff35; cursor: pointer; }
+    #scene-motion[hidden] { display: none; }
+    #scene-motion :global(svg) { width: 18px; height: 18px; }
+    button:focus-visible, a:focus-visible { outline: 2px solid #b7f470; outline-offset: 6px; }
+    .script-notice { position: absolute; top: 100px; left: 6%; font-size: 12px; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>

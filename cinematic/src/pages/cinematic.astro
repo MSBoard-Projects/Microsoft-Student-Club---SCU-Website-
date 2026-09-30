@@ -1,0 +1,78 @@
+---
+import CinematicLayout from '../layouts/CinematicLayout.astro';
+const clubUrl = (import.meta.env.PUBLIC_CLUB_URL || (import.meta.env.DEV ? 'http://127.0.0.1:3000' : '')).replace(/\/$/, '');
+const chapters = ['Origin', 'Possibility', 'Together', 'Your turn'];
+---
+<CinematicLayout>
+  <header class="cine-header">
+    <a class="cine-brand" href={`${clubUrl}/`} aria-label="Microsoft Student Club home">
+      <span class="cine-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span>Microsoft Student Club<small>SUEZ CANAL UNIVERSITY</small></span>
+    </a>
+    <a class="cine-return" href={`${clubUrl}/`}>Original website <i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+  </header>
+
+  <nav class="cine-chapters" aria-label="Chapters">
+    {chapters.map((chapter, index) => <a href={`#chapter-${index + 1}`} aria-label={`${index + 1}. ${chapter}`} aria-current={index === 0 ? 'location' : undefined}><span>{chapter}</span><b>0{index + 1}</b></a>)}
+  </nav>
+
+  <main id="cinematic-main">
+    <section id="chapter-1" class="cine-section cine-hero" aria-labelledby="origin-title">
+      <div class="cine-hero-copy">
+        <p class="cine-eyebrow"><span></span> CURIOUS MINDS. REAL POSSIBILITIES.</p>
+        <h1 id="origin-title">Microsoft<br />Student Club<span class="cine-period">.</span></h1>
+        <div class="cine-hero-bottom">
+          <p>A new perspective.<br />A shared ambition.<br /><strong>A future we build together.</strong></p>
+          <a class="cine-circle-link" href="#chapter-2" aria-label="Explore the next chapter" title="Explore the next chapter"><i data-lucide="arrow-down" aria-hidden="true"></i></a>
+        </div>
+      </div>
+      <div class="cine-object-label" aria-hidden="true"><span>MSC / SCU</span><span>THE INNOVATION CORE</span><span>30.62 N &nbsp; 32.27 E</span></div>
+      <div class="cine-section-foot"><span>01 / ORIGIN</span><span>ISMAILIA, EGYPT</span></div>
+    </section>
+
+    <section id="chapter-2" class="cine-section cine-possibility" aria-labelledby="possibility-title">
+      <div class="cine-section-copy">
+        <p class="cine-eyebrow">02 / POSSIBILITY</p>
+        <h2 id="possibility-title">Curiosity.<br /><em>Meet momentum.</em></h2>
+        <p class="cine-intro">One community. Many ways to make your mark.</p>
+        <div class="cine-paths">
+          <a class="cine-glass cine-path" href={`${clubUrl}/tracks`}><i data-lucide="code-2" aria-hidden="true"></i><span><strong>Build something real</strong><small>Explore our technical tracks</small></span><i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+          <a class="cine-glass cine-path" href={`${clubUrl}/events`}><i data-lucide="orbit" aria-hidden="true"></i><span><strong>Go beyond the classroom</strong><small>Workshops, hackathons, new ideas</small></span><i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+          <a class="cine-glass cine-path" href={`${clubUrl}/members`}><i data-lucide="users" aria-hidden="true"></i><span><strong>Find your people</strong><small>Meet the minds behind the club</small></span><i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+        </div>
+      </div>
+      <div class="cine-section-foot"><span>LEARN / EXPERIMENT / CREATE</span><span>EVERY IDEA STARTS SOMEWHERE</span></div>
+    </section>
+
+    <section id="chapter-3" class="cine-section cine-together" aria-labelledby="together-title">
+      <div class="cine-section-copy">
+        <p class="cine-eyebrow">03 / TOGETHER</p>
+        <h2 id="together-title">Different minds.<br /><em>Shared energy.</em></h2>
+        <p class="cine-intro">The best part of technology is the people you get to build it with.</p>
+        <figure class="cine-memory">
+          <img src="/cinematic/media/community.jpg" width="1280" height="720" alt="Microsoft Student Club community celebrating their achievements together" loading="lazy" decoding="async" />
+          <figcaption><span>REAL PEOPLE. REAL MOMENTS.</span><a href={`${clubUrl}/gallery`} aria-label="Explore the club gallery" title="Explore the club gallery"><i data-lucide="arrow-up-right" aria-hidden="true"></i></a></figcaption>
+        </figure>
+      </div>
+      <div class="cine-section-foot"><span>MORE THAN A STUDENT CLUB</span><span>A PLACE TO BELONG</span></div>
+    </section>
+
+    <section id="chapter-4" class="cine-section cine-finale" aria-labelledby="finale-title">
+      <div class="cine-finale-copy">
+        <p class="cine-eyebrow">04 / YOUR TURN</p>
+        <h2 id="finale-title">The next chapter<br />has <em>your name</em> on it.</h2>
+        <p class="cine-intro">Bring your curiosity. We'll bring the community.</p>
+        <a class="cine-primary" href={`${clubUrl}/events`}>Find your next experience <i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+        <a class="cine-text-link" href={`${clubUrl}/members`}>Meet the community <i data-lucide="arrow-right" aria-hidden="true"></i></a>
+      </div>
+      <footer class="cine-section-foot"><span>MICROSOFT STUDENT CLUB / SCU</span><a href="#chapter-1">BACK TO TOP <i data-lucide="arrow-up" aria-hidden="true"></i></a></footer>
+    </section>
+  </main>
+
+  <div class="cine-hud">
+    <span class="cine-status" role="status" id="cine-status">Loading scene</span>
+    <span class="cine-progress-label" aria-hidden="true">01 <span>/</span> 04</span>
+    <button id="cine-motion" type="button" aria-label="Pause scene motion" aria-pressed="false" title="Pause scene motion"><i data-lucide="pause" aria-hidden="true"></i></button>
+  </div>
+  <div class="cine-progress" aria-hidden="true"><span></span></div>
+</CinematicLayout>

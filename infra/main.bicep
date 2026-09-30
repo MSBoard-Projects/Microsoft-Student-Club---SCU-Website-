@@ -1,6 +1,6 @@
 targetScope = 'subscription'
 
-@allowed(['mscscu-prod-0617'])
+@allowed(['mscscu-prod-0617', 'mscscu-prod-8a50'])
 param environmentName string
 
 @allowed(['italynorth'])
@@ -22,6 +22,7 @@ param insightsName string
 
 param sessionId string
 param deployedBy string
+param deployerPrincipalName string
 param createdAt string
 
 @description('Verified object ID in the target tenant. Empty parameter-file placeholder intentionally fails validation.')
@@ -33,21 +34,11 @@ param deployerObjectId string
 param deployerPrincipalType string
 
 @secure()
-@minLength(16)
-@maxLength(128)
-param sqlAdministratorPassword string
-
-@secure()
-@minLength(16)
-@maxLength(128)
-param sqlApplicationPassword string
-
-@secure()
 @minLength(32)
 param jwtKey string
 
-@description('Temporary publishing access. Set false after the approved package upload and retain false on later deployments.')
-param scmBasicPublishingEnabled bool = true
+@description('SCM basic publishing is disabled by default. Use Entra-authenticated package deployment.')
+param scmBasicPublishingEnabled bool = false
 
 var tags = {
   'app-onboard-skill': 'true'
@@ -57,7 +48,7 @@ var tags = {
   'deployed-by': deployedBy
 }
 
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2023-07-01' = {
   name: resourceGroupName
   location: location
   tags: tags
@@ -100,8 +91,9 @@ module sqlServer './modules/sql-server.bicep' = {
     name: serverName
     location: location
     tags: tags
-    administratorLogin: 'msc_admin'
-    administratorPassword: sqlAdministratorPassword
+    principalId: deployerObjectId
+    principalName: deployerPrincipalName
+    principalType: deployerPrincipalType == 'ServicePrincipal' ? 'Application' : (deployerPrincipalType == 'Group' ? 'Group' : 'User')
   }
 }
 
@@ -153,12 +145,9 @@ module secrets './modules/secrets.bicep' = {
   scope: resourceGroup
   params: {
     vaultName: keyVault.outputs.resourceName
-    storageAccountName: blobStorage.outputs.resourceName
     sqlServerHostname: sqlServer.outputs.fullyQualifiedDomainName
     databaseName: sqlDatabase.outputs.resourceName
     tags: tags
-    sqlAdministratorPassword: sqlAdministratorPassword
-    sqlApplicationPassword: sqlApplicationPassword
     jwtKey: jwtKey
   }
 }
@@ -172,6 +161,7 @@ module appService './modules/app-service.bicep' = {
     tags: tags
     planId: appServicePlan.outputs.id
     vaultName: secrets.outputs.keyVaultName
+    blobServiceUri: blobStorage.outputs.blobEndpoint
     frontendOrigin: staticWebApp.outputs.url
     applicationInsightsConnectionString: applicationInsights.outputs.connectionString
     scmBasicPublishingEnabled: scmBasicPublishingEnabled
@@ -184,6 +174,7 @@ module roleAssignments './modules/role-assignments.bicep' = {
   params: {
     vaultName: keyVault.outputs.resourceName
     apiPrincipalId: appService.outputs.principalId
+    storageAccountName: blobStorage.outputs.resourceName
     runtimeSecretNames: secrets.outputs.runtimeSecretNames
     deployerObjectId: deployerObjectId
     deployerPrincipalType: deployerPrincipalType

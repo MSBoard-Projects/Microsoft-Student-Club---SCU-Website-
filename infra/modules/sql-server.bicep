@@ -1,12 +1,16 @@
 param name string
 param location string
 param tags object
-param administratorLogin string
 
-@secure()
-@minLength(16)
-@maxLength(128)
-param administratorPassword string
+@minLength(36)
+@maxLength(36)
+param principalId string
+
+@minLength(1)
+param principalName string
+
+@allowed(['User', 'Group', 'Application'])
+param principalType string
 
 resource server 'Microsoft.Sql/servers@2023-08-01' = {
   name: name
@@ -14,8 +18,14 @@ resource server 'Microsoft.Sql/servers@2023-08-01' = {
   tags: tags
   properties: {
     version: '12.0'
-    administratorLogin: administratorLogin
-    administratorLoginPassword: administratorPassword
+    administrators: {
+      administratorType: 'ActiveDirectory'
+      principalType: principalType
+      login: principalName
+      sid: principalId
+      tenantId: subscription().tenantId
+      azureADOnlyAuthentication: true
+    }
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Enabled'
   }

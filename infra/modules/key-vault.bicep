@@ -1,6 +1,8 @@
 param name string
 param location string
 param tags object
+param skuName string = 'standard'
+param softDeleteRetentionInDays int = 7
 
 resource vault 'Microsoft.KeyVault/vaults@2024-11-01' = {
   name: name
@@ -10,11 +12,11 @@ resource vault 'Microsoft.KeyVault/vaults@2024-11-01' = {
     tenantId: subscription().tenantId
     sku: {
       family: 'A'
-      name: 'standard'
+      name: skuName
     }
     enableRbacAuthorization: true
     enableSoftDelete: true
-    softDeleteRetentionInDays: 7
+    softDeleteRetentionInDays: softDeleteRetentionInDays
     publicNetworkAccess: 'Enabled'
     networkAcls: {
       bypass: 'AzureServices'

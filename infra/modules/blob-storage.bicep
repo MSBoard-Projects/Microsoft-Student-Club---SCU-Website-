@@ -2,6 +2,8 @@ param name string
 param location string
 param tags object
 param frontendOrigin string
+param skuName string = 'Standard_LRS'
+param accessTier string = 'Hot'
 
 resource storage 'Microsoft.Storage/storageAccounts@2025-01-01' = {
   name: name
@@ -9,14 +11,14 @@ resource storage 'Microsoft.Storage/storageAccounts@2025-01-01' = {
   tags: tags
   kind: 'StorageV2'
   sku: {
-    name: 'Standard_LRS'
+    name: skuName
   }
   properties: {
-    accessTier: 'Hot'
+    accessTier: accessTier
     supportsHttpsTrafficOnly: true
     minimumTlsVersion: 'TLS1_2'
     allowBlobPublicAccess: false
-    allowSharedKeyAccess: true
+    allowSharedKeyAccess: false
     publicNetworkAccess: 'Enabled'
     networkAcls: {
       bypass: 'None'
