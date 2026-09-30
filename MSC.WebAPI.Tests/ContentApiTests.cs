@@ -2,10 +2,17 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Azure;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using ClosedXML.Excel;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using MSC.WebAPI.Controllers;
 using MSC.WebAPI.Data;
 using MSC.WebAPI.DTOs;
 using MSC.WebAPI.Models;
@@ -15,6 +22,51 @@ namespace MSC.WebAPI.Tests;
 
 public class ContentApiTests
 {
+    [Fact]
+    public async Task UploadSasUsesDelegationWithOnlyCreateAndWriteForFifteenMinutes()
+    {
+        var storage = new DelegationBlobServiceClient();
+        var controller = new UploadController(storage, NullLogger<UploadController>.Instance);
+        var before = DateTime.UtcNow;
+        var result = await controller.GenerateSasToken(new GenerateSasTokenRequest
+        {
+            ContainerName = "member-images",
+            FileName = "member photo.png"
+        });
+        var response = Assert.IsType<SasTokenResponse>(Assert.IsType<OkObjectResult>(result.Result).Value);
+        var uri = new Uri(response.SasUrl);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+        Assert.Equal("https", uri.Scheme);
+        Assert.Equal("/member-images/member photo.png", Uri.UnescapeDataString(uri.AbsolutePath));
+        Assert.Equal("https", query["spr"].ToString());
+        Assert.Equal("cw", query["sp"].ToString());
+        Assert.Equal("b", query["sr"].ToString());
+        Assert.Equal("11111111-1111-1111-1111-111111111111", query["skoid"].ToString());
+        Assert.False(string.IsNullOrWhiteSpace(query["sig"]));
+        Assert.InRange(response.ExpiresAt, before.AddMinutes(15), DateTime.UtcNow.AddMinutes(15));
+        Assert.Equal(response.ExpiresAt, storage.RequestedExpiry!.Value.UtcDateTime);
+        Assert.InRange(storage.RequestedStart!.Value.UtcDateTime, before.AddMinutes(-5), DateTime.UtcNow.AddMinutes(-5));
+    }
+
+    private sealed class DelegationBlobServiceClient : BlobServiceClient
+    {
+        public DateTimeOffset? RequestedStart { get; private set; }
+        public DateTimeOffset? RequestedExpiry { get; private set; }
+
+        public DelegationBlobServiceClient() : base(new Uri("https://teststorage.blob.core.windows.net")) { }
+
+        public override Task<Response<UserDelegationKey>> GetUserDelegationKeyAsync(
+            DateTimeOffset? startsOn, DateTimeOffset expiresOn, CancellationToken cancellationToken = default)
+        {
+            RequestedStart = startsOn;
+            RequestedExpiry = expiresOn;
+            var key = BlobsModelFactory.UserDelegationKey(
+                "11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222",
+                startsOn!.Value, expiresOn, "b", "2025-01-05", Convert.ToBase64String(new byte[32]));
+            return Task.FromResult(Response.FromValue(key, null!));
+        }
+    }
+
     [Fact]
     public void SqlServerStoresCollectionsWithoutTruncatingSerializedJson()
     {

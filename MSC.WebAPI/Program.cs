@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -47,8 +48,9 @@ builder.Services.AddIdentityCore<AdminUser>(options =>
 }).AddEntityFrameworkStores<ApplicationDbContext>().AddSignInManager();
 builder.Services.AddScoped<IPasswordHasher<AdminUser>, CustomPasswordHasher>();
 builder.Services.AddSingleton(_ => new BlobServiceClient(
-	builder.Configuration["Azure:BlobStorage:ConnectionString"]
-		?? throw new InvalidOperationException("Configure Azure:BlobStorage:ConnectionString.")));
+	new Uri(builder.Configuration["Azure:BlobStorage:ServiceUri"]
+		?? throw new InvalidOperationException("Configure Azure:BlobStorage:ServiceUri.")),
+	builder.Environment.IsDevelopment() ? new DefaultAzureCredential() : new ManagedIdentityCredential()));
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
 	options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());

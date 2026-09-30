@@ -1,0 +1,26 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": { "value": "mscscu-prod-8a50" },
+    "location": { "value": "italynorth" },
+    "frontendLocation": { "value": "westeurope" },
+    "resourceGroupName": { "value": "rg-mscscu-prod-8a50" },
+    "staticWebAppName": { "value": "swa-mscscu-prod-8a50" },
+    "appServicePlanName": { "value": "asp-mscscu-prod-8a50" },
+    "webAppName": { "value": "app-mscscu-prod-8a50-8a0c" },
+    "serverName": { "value": "sql-mscscu-prod-8a50-8a0c" },
+    "sqlDatabaseName": { "value": "MSC_DB" },
+    "storageAccountName": { "value": "stmscscuprod8a508a0c" },
+    "vaultName": { "value": "kv-mscscu-prod-8a50-8a0c" },
+    "workspaceName": { "value": "log-mscscu-prod-8a50" },
+    "insightsName": { "value": "appi-mscscu-prod-8a50" },
+    "sessionId": { "value": "8a508da8-dbd6-4cff-a369-430e355bb109" },
+    "deployedBy": { "value": "Ali Arabi Ali Mohamed" },
+    "deployerPrincipalName": { "value": "Ali.ArabiAliMohamed@studentambassadors.com" },
+    "createdAt": { "value": "2026-09-14T16:16:01.4847851+03:00" },
+    "deployerObjectId": { "value": "dd3f9f41-b201-4be2-81a4-e0aeb6aafa40" },
+    "deployerPrincipalType": { "value": "User" },
+    "scmBasicPublishingEnabled": { "value": false }
+  }
+}

@@ -3,6 +3,7 @@
 .env.local
 .env.production
 .env.development
+admin-credentials.json
 
 # User-specific files
 *.suo
@@ -55,6 +56,7 @@ Desktop.ini
 # Azure publish profiles
 *.pubxml
 *.publishsettings
+*-app.zip
 
 # Database files
 *.mdf

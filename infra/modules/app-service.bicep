@@ -3,6 +3,7 @@ param location string
 param tags object
 param planId string
 param vaultName string
+param blobServiceUri string
 param frontendOrigin string
 param applicationInsightsConnectionString string
 param scmBasicPublishingEnabled bool
@@ -11,13 +12,14 @@ var settings = {
   ASPNETCORE_ENVIRONMENT: 'Production'
   WEBSITE_RUN_FROM_PACKAGE: '1'
   SCM_DO_BUILD_DURING_DEPLOYMENT: 'false'
+  ENABLE_ORYX_BUILD: 'false'
   ConnectionStrings__DefaultConnection: '@Microsoft.KeyVault(VaultName=${vaultName};SecretName=sql-connection-string)'
   Jwt__Key: '@Microsoft.KeyVault(VaultName=${vaultName};SecretName=jwt-key)'
   Jwt__Issuer: 'MSC.WebAPI'
   Jwt__Audience: 'MSC.WebApp'
   Jwt__ExpiresInHours: '1'
   Cors__AllowedOrigins__0: frontendOrigin
-  Azure__BlobStorage__ConnectionString: '@Microsoft.KeyVault(VaultName=${vaultName};SecretName=blob-connection-string)'
+  Azure__BlobStorage__ServiceUri: blobServiceUri
   Azure__BlobStorage__Containers__MemberImages: 'member-images'
   Azure__BlobStorage__Containers__EventImages: 'event-images'
   Azure__BlobStorage__Containers__Certificates: 'certificates'
@@ -47,6 +49,7 @@ resource app 'Microsoft.Web/sites@2024-11-01' = {
     siteConfig: {
       linuxFxVersion: 'DOTNETCORE|8.0'
       alwaysOn: true
+      healthCheckPath: '/api/showcase'
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
       scmMinTlsVersion: '1.2'

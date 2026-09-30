@@ -1,6 +1,8 @@
 param name string
 param location string
 param tags object
+param skuName string = 'PerGB2018'
+param retentionInDays int = 30
 
 resource workspace 'Microsoft.OperationalInsights/workspaces@2025-02-01' = {
   name: name
@@ -8,9 +10,9 @@ resource workspace 'Microsoft.OperationalInsights/workspaces@2025-02-01' = {
   tags: tags
   properties: {
     sku: {
-      name: 'PerGB2018'
+      name: skuName
     }
-    retentionInDays: 30
+    retentionInDays: retentionInDays
     publicNetworkAccessForIngestion: 'Enabled'
     publicNetworkAccessForQuery: 'Enabled'
   }
